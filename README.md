@@ -1,5 +1,68 @@
 # Hybrid Bar
 A Wayland status bar made in Rust
+
+## Preview
+With blur through Hyprland.
+![image](https://user-images.githubusercontent.com/54314240/185250795-b5c1b948-ef69-4293-bd1b-4deedbbaa82d.png)
+
+### Config
+Requires:
+- Hyprland;
+- IVPN
+
+`config.json`:
+```json
+{
+    "background": {
+        "r": 10,
+        "g": 10,
+        "b": 10,
+        "a": 0.5
+    },
+    "label_username": {
+        "text": " ",
+        "command": "whoami"
+    },
+    "label_current_workspace": {
+        "text": " |  ",
+        "command": "hyprctl monitors -j | jq -r \".[].activeWorkspace.id\""
+    },
+    "label_max_workspaces": {
+        "text": "/10",
+        "command": ""
+    },
+    "centered-label_active_window": {
+        "text": "",
+        "command": "hyprctl activewindow -j | jq -r \".title\""
+    },
+    "right-label_ivpn": {
+        "text": "嬨 ",
+        "command": "sh /home/undefined/Scripts/VPNCheck.sh"
+    },
+    "right-label_volume": {
+        "text": " |  ",
+        "command": "echo $(pactl get-sink-volume @DEFAULT_SINK@ | rg -o '[0-9]{1,3}%' | head -n 1 | cut -d '%' -f 1)%"
+    },
+    "right-label_time": {
+        "text": " |  ",
+        "command": "date +%H:%M" 
+    }
+}
+```
+`VPNCheck.sh`:
+```sh
+connected=$(ivpn status | rg Connected | wc -l)
+short_country=$(ivpn status | cut -d ',' -f2 | sed -n '2 p' | cut -d '(' -f2 | cut -d ')' -f1)
+# full_country=$(ivpn status | cut -d ',' -f3 | sed -n '2 p' | cut -d ' ' -f2)
+
+if [ $connected = 1 ]
+then
+    echo "IVPN Connected ($short_country)"
+else
+    echo "IVPN Disconnected"
+fi
+```
+
 ## What does it support?
 It supports:
 - Basic labels;
