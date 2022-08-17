@@ -1,0 +1,22 @@
+/* Window Background Color. Config default is #0A0A0A. */
+window {
+    background:     #0A0A0A;
+}
+
+/* Label Color. Config default is white. */
+label {
+    color:          white;
+}
+
+/* Button Configuration, currently only used for workspaces. */
+button {
+    border:         none;
+    padding-top:    0px;
+    padding-bottom: 0px;
+    margin-bottom: -5px;
+    margin-top:    -5px;
+    padding:        0px;
+    background:     none;
+    box-shadow:     none;
+    font-weight:    normal;
+}

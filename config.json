@@ -1,0 +1,7 @@
+{
+    "label_username": {
+        "text": "",
+        "command": "whoami"
+    }
+    "label_workspaces": " @ACTIVE_WORKSPACE/10"
+}
