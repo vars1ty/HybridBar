@@ -8,7 +8,8 @@ With blur through Hyprland.
 ### Config
 Requires:
 - Hyprland;
-- IVPN
+- IVPN;
+- ripgrep
 
 `config.json`:
 ```json
