@@ -1,4 +1,4 @@
-# HybridBar
+# Hybrid Bar
 A Wayland status bar made in Rust
 ## What does it support?
 It supports:
