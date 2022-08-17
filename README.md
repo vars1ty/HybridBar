@@ -3,7 +3,7 @@ A Wayland status bar made in Rust
 ## What does it support?
 It supports:
 - Basic labels;
-- Labels with output from a terminal command (or script);
+- Labels with output from a bash command;
 - Transparency
 
 A.K.A It's a simple status bar I put together with gtk-layer-shell and GTK 3 because I couldn't be bothered with more weird, half-broken bars.
