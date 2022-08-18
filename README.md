@@ -53,16 +53,16 @@ Buttons:
 - centered-button: Centered button
 - right-button: Right-aligned button
 
-To actually use a component, here's an example:
+To actually use a widget, here's an example:
 
 ```json
-"label_UNIQUE_NAME": {
+"left-label_UNIQUE_NAME": {
         "text": "whomai stdout ",
         "command": "whoami"
     }
 ```
 
-Every component **has** to end with `_`, then you add the unique name for that component.
+Every widget **has** to end with `_`, then you add the unique name for that widget.
 
 The `text` and `command` nested JSON keys are simply described as:
 - text: Raw Label Text
