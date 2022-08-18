@@ -5,65 +5,6 @@ A Wayland status bar made in Rust
 With blur through Hyprland.
 ![image](https://user-images.githubusercontent.com/54314240/185250795-b5c1b948-ef69-4293-bd1b-4deedbbaa82d.png)
 
-### Config
-Requires:
-- Hyprland;
-- IVPN;
-- ripgrep
-
-`config.json`:
-```json
-{
-    "background": {
-        "r": 10,
-        "g": 10,
-        "b": 10,
-        "a": 0.5
-    },
-    "label_username": {
-        "text": " ",
-        "command": "whoami"
-    },
-    "label_current_workspace": {
-        "text": " |  ",
-        "command": "hyprctl monitors -j | jq -r \".[].activeWorkspace.id\""
-    },
-    "label_max_workspaces": {
-        "text": "/10",
-        "command": ""
-    },
-    "centered-label_active_window": {
-        "text": "",
-        "command": "hyprctl activewindow -j | jq -r \".title\""
-    },
-    "right-label_ivpn": {
-        "text": "嬨 ",
-        "command": "sh /home/undefined/Scripts/VPNCheck.sh"
-    },
-    "right-label_volume": {
-        "text": " |  ",
-        "command": "echo $(pactl get-sink-volume @DEFAULT_SINK@ | rg -o '[0-9]{1,3}%' | head -n 1 | cut -d '%' -f 1)%"
-    },
-    "right-label_time": {
-        "text": " |  ",
-        "command": "date +%H:%M" 
-    }
-}
-```
-`VPNCheck.sh`:
-```sh
-connected=$(ivpn status | rg Connected | wc -l)
-short_country=$(ivpn status | cut -d ',' -f2 | sed -n '2 p' | cut -d '(' -f2 | cut -d ')' -f1)
-# full_country=$(ivpn status | cut -d ',' -f3 | sed -n '2 p' | cut -d ' ' -f2)
-
-if [ $connected = 1 ]
-then
-    echo "IVPN Connected ($short_country)"
-else
-    echo "IVPN Disconnected"
-fi
-```
-
 ## What does it support?
 It supports:
 - Basic labels;
@@ -73,7 +14,7 @@ It supports:
 
 A.K.A It's a simple status bar I put together with gtk-layer-shell and GTK 3 because I couldn't be bothered with more weird, half-broken bars.
 ## I have no config
-You have to make one yourself.
+You have to make one yourself for now, until Hybrid has a default example config available.
 
 ```sh
 mkdir -p ~/.config/HybridBar
@@ -99,12 +40,16 @@ Here's an example:
     }
 }
 ```
-## Components
-Available "components":
-- label: Left-aligned label
+## Widgets
+Available widgets:
+
+Labels:
+- left-label: Left-aligned label
 - centered-label: Centered label
 - right-label: Right-aligned label
-- button: Left-aligned button
+
+Buttons:
+- left-button: Left-aligned button
 - centered-button: Centered button
 - right-button: Right-aligned button
 
@@ -139,15 +84,15 @@ Made for [Hyprland](https://github.com/hyprwm/Hyprland).
         "b": 10,
         "a": 0.5
     },
-    "label_username": {
+    "left-label_username": {
         "text": "user: ",
         "command": "whoami"
     },
-    "label_current_workspace": {
+    "left-label_current_workspace": {
         "text": " | workspace: ",
         "command": "hyprctl monitors -j | jq -r \".[].activeWorkspace.id\""
     },
-    "label_max_workspaces": {
+    "left-label_max_workspaces": {
         "text": "/10",
         "command": ""
     },

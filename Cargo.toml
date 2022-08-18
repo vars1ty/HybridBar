@@ -11,6 +11,8 @@ json = "0.12.4"
 glib = "0.15.12"
 gtk = "0.15.5"
 gtk-layer-shell = "0.4.1"
+strum = { version = "0.24", features = ["derive"] }
+strum_macros = "0.24"
 
 # Optimizes for size
 [profile.release]

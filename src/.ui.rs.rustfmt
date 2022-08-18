@@ -1,17 +1,10 @@
-use std::str::FromStr;
-
 use crate::config;
 use crate::proc;
-use crate::r#loop::update;
+use crate::r#loop::*;
 use gtk::{traits::*, *};
-
-use strum_macros::EnumString;
 
 /// Static mutable HashMap, because I'm not dealing with lifetime bullshit one more fucking minute.
 pub static mut VEC: Option<Vec<GTKWidget>> = None;
-
-/// Alignment separator.
-const ALIGNMENT: char = '-';
 
 /// Identifier separator.
 const SEPARATOR: char = '_';
@@ -37,16 +30,17 @@ impl GTKWidget {
     }
 
     /// Creates a label.
-    fn create_label(&mut self) {
+    fn 
+        create_label(
+        &mut self) {
         self.label = Some(Label::new(None));
     }
 }
 
 /// Widget alignment.
-#[derive(EnumString)]
 enum Align {
     LEFT,
-    CENTERED,
+    CENTER,
     RIGHT,
 }
 
@@ -77,24 +71,16 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
 fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
     // Add all of the widgets defined from the config.
     for (key, value) in config::read_config().entries() {
-        if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
+        if !key.contains(SEPARATOR) {
             continue;
         }
 
-        // Identifiers are the first part of the JSON Key.
-        // For example: label_hello <= "label" being the identifier, "hello" being the name.
+        // Identifiers are the first part of the JSON Key, for example:
+        // label_hello <= "label" being the identifier, "hello" being the name.
         let identifier = key
             .split(SEPARATOR)
             .nth(0)
             .expect("[ERROR] Failed splitting key!\n");
-
-        // Get the alignment of the widget.
-        // For example: left-label_abc <= "left" being the alignment.
-        let alignment = key
-            .split('-')
-            .nth(0)
-            .expect("[ERROR] Failed splitting alignment!\n")
-            .to_uppercase();
 
         // Create the properties structure.
         let widget_properties = WidgetProperties {
@@ -109,31 +95,42 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
             properties: widget_properties,
         };
 
-        // The alignment grabbed.
-        // If no valid alignment was found, panic.
-        let e_alignment = Align::from_str(&alignment)
-            .expect(format!("[ERROR] There is no '{identifier}' identifier!\n").as_str());
-
         // Check for identifiers.
-        // Defo. not clean or pretty, will probably fix it later.
-        if identifier.contains("label") {
-            widget_structure.create_label();
-            add_label(
-                &draw,
-                &draw_centered,
-                &draw_right,
-                widget_structure,
-                e_alignment,
-            )
-        } else if identifier.contains("button") {
-            widget_structure.create_button();
-            add_button(
-                &draw,
-                &draw_centered,
-                &draw_right,
-                widget_structure,
-                e_alignment,
-            )
+        match
+            identifier {
+
+
+
+            "label" => {
+                widget_structure.create_label();
+                add_label(&draw, &draw_centered, &draw_right, widget_structure, Align::LEFT)
+            }
+            "centered-label" => {
+                widget_structure.create_label();
+                add_label(&draw, &draw_centered, &draw_right, widget_structure, Align::CENTER);
+            }
+            "right-label" => {
+                widget_structure.create_label();
+                add_label(&draw, &draw_centered, &draw_right, widget_structure, Align::RIGHT)
+            }
+            "button" => {
+                widget_structure.create_button();
+                add_button(&draw, &draw_centered, &draw_right, widget_structure, Align::LEFT);
+                
+            }
+            "centered-button" => {
+                widget_structure.create_button();
+                add_button(&draw, &draw_centered, &draw_right, widget_structure, Align::CENTER);
+                
+            }
+            "right-button" => {
+                widget_structure.create_button();
+                add_button(&draw, &draw_centered, &draw_right, widget_structure, Align::RIGHT);
+                
+            }
+            _ => panic!(
+                "[ERROR] Invalid identifier! You can only use [ label / centered-label / right-label / button / centered-button / right-button ]\n"
+            ),
         }
     }
 }
@@ -150,7 +147,7 @@ fn add_button(
     let button = gtk_widget_structure
         .button
         .as_ref()
-        .expect("[ERROR] Failed to access Button!\n");
+        .expect("[ERROR] Failed to access Button!");
 
     button.set_label(&gtk_widget_structure.properties.text);
     let c_command = gtk_widget_structure.properties.command.clone();
@@ -162,7 +159,7 @@ fn add_button(
 
     match align {
         Align::LEFT => draw.add(button),
-        Align::CENTERED => draw_centered.add(button),
+        Align::CENTER => draw_centered.add(button),
         Align::RIGHT => draw_right.add(button),
     }
 
@@ -188,7 +185,7 @@ fn add_label(
         .expect("[ERROR] Failed to access Label!");
     match align {
         Align::LEFT => draw.add(label),
-        Align::CENTERED => draw_centered.add(label),
+        Align::CENTER => draw_centered.add(label),
         Align::RIGHT => draw_right.add(label),
     }
 
