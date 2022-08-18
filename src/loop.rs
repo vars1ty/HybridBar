@@ -19,10 +19,21 @@ pub fn update() {
 
 /// Updates all of the labels.
 unsafe fn update_labels() {
-    for (label, dynamic) in ui::MAP.as_mut().unwrap().iter() {
-        let mut text = dynamic.text.clone();
-        if !dynamic.command.is_empty() {
-            text += &proc::execute(dynamic.command.clone());
+    for gtk_widget in ui::VEC.as_mut().unwrap().iter() {
+        if !gtk_widget.label.is_some() {
+            // Unassigned Label, don't continue.
+            println!("Unassigned; return");
+            return;
+        };
+
+        let label = gtk_widget
+            .label
+            .as_ref()
+            .expect("[ERROR] Failed retrieving Label!");
+        let mut text = gtk_widget.properties.text.clone();
+        // Append to the cloned text if the command isn't empty.
+        if !gtk_widget.properties.command.is_empty() {
+            text += &proc::execute(gtk_widget.properties.command.clone());
         }
 
         // Check: never cause a redraw of the label by setting the text, if the new text is the

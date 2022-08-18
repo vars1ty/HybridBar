@@ -1,18 +1,37 @@
 use crate::config;
 use crate::r#loop::update;
-use gtk::{traits::*, Box, Label};
-use std::collections::HashMap;
+use gtk::{traits::*, *};
 
 /// Static mutable HashMap, because I'm not dealing with lifetime bullshit one more fucking minute.
-pub static mut MAP: Option<HashMap<Label, DynamicWidget>> = None;
+pub static mut VEC: Option<Vec<GTKWidget>> = None;
 
 /// Identifier separator.
 const SEPARATOR: char = '_';
 
-/// Dynamic Widget structure.
-pub struct DynamicWidget {
+/// GTK Widget structure.
+pub struct GTKWidget {
+    pub button: Option<Button>,
+    pub label: Option<Label>,
+    pub properties: WidgetProperties,
+}
+
+/// Widget properties structure.
+pub struct WidgetProperties {
     pub text: String,
     pub command: String,
+}
+
+/// Easy mutable implementions for GTKWidget.
+impl GTKWidget {
+    /// Creates a button.
+    fn create_button(&mut self) {
+        self.button = Some(Button::new());
+    }
+
+    /// Creates a label.
+    fn create_label(&mut self) {
+        self.label = Some(Label::new(None));
+    }
 }
 
 /// Widget alignment.
@@ -34,21 +53,19 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
     draw.pack_end(&draw_right, false, true, 0);
     window.add(&draw);
 
-    // Create the HashMap.
-    unsafe {
-        MAP = Some(HashMap::new());
-    }
+    // Create the Vector.
+    unsafe { VEC = Some(Vec::new()) }
 
     // Prepare all of the widgets.
-    pre_create(&draw, &draw_right, &draw_centered);
-    // Make every widget visible
+    create_components(&draw, &draw_right, &draw_centered);
+    // Make every widget visible.
     window.show_all();
     // Update dynamic content.
     update();
 }
 
-/// Prepares everything for widgets.
-fn pre_create(draw: &Box, draw_right: &Box, draw_centered: &Box) {
+/// Creates all of the widgets.
+fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
     // Add all of the widgets defined from the config.
     for (key, value) in config::read_config().entries() {
         if !key.contains(SEPARATOR) {
@@ -62,20 +79,32 @@ fn pre_create(draw: &Box, draw_right: &Box, draw_centered: &Box) {
             .nth(0)
             .expect("[ERROR] Failed splitting key!\n");
 
-        // Create the structure.
-        let structure = DynamicWidget {
+        // Create the properties structure.
+        let widget_properties = WidgetProperties {
             text: value["text"].to_string(),
             command: value["command"].to_string(),
         };
 
+        // Create the widget structure.
+        let mut widget_structure = GTKWidget {
+            button: None,
+            label: None,
+            properties: widget_properties,
+        };
+
         // Check for identifiers.
         match identifier {
-            "centered-label" => {
-                create_labels(&draw, &draw_centered, &draw_right, structure, Align::CENTER)
+            "label" => {
+                widget_structure.create_label();
+                add_label(&draw, &draw_centered, &draw_right, widget_structure, Align::LEFT)
             }
-            "label" => create_labels(&draw, &draw_centered, &draw_right, structure, Align::LEFT),
+            "centered-label" => {
+                widget_structure.create_label();
+                add_label(&draw, &draw_centered, &draw_right, widget_structure, Align::CENTER);
+            }
             "right-label" => {
-                create_labels(&draw, &draw_centered, &draw_right, structure, Align::RIGHT)
+                widget_structure.create_label();
+                add_label(&draw, &draw_centered, &draw_right, widget_structure, Align::RIGHT)
             }
             _ => panic!(
                 "[ERROR] Invalid identifier! You can only use [ centered-label / label / right-label ]\n"
@@ -84,26 +113,29 @@ fn pre_create(draw: &Box, draw_right: &Box, draw_centered: &Box) {
     }
 }
 
-/// Creates all of the labels.
-fn create_labels(
+/// Adds a label.
+fn add_label(
     draw: &Box,
     draw_centered: &Box,
     draw_right: &Box,
-    dynamic_widget: DynamicWidget,
+    gtk_widget_structure: GTKWidget,
     align: Align,
 ) {
     // The values and such is all set from `loop.rs`.
-    let label = Label::new(None);
+    let label = gtk_widget_structure
+        .label
+        .as_ref()
+        .expect("[ERROR] Failed to access Label!");
     match align {
-        Align::LEFT => draw.add(&label),
-        Align::CENTER => draw_centered.add(&label),
-        Align::RIGHT => draw_right.add(&label),
+        Align::LEFT => draw.add(label),
+        Align::CENTER => draw_centered.add(label),
+        Align::RIGHT => draw_right.add(label),
     }
 
     unsafe {
-        MAP.as_mut()
-            .expect("[ERROR] Failed accessing MAP!\n")
-            .insert(label, dynamic_widget);
+        VEC.as_mut()
+            .expect("[ERROR] Failed accessing VEC!\n")
+            .push(gtk_widget_structure);
     }
 }
 
