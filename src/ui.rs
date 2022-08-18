@@ -1,5 +1,6 @@
 use crate::config;
-use crate::r#loop::update;
+use crate::proc;
+use crate::r#loop::*;
 use gtk::{traits::*, *};
 
 /// Static mutable HashMap, because I'm not dealing with lifetime bullshit one more fucking minute.
@@ -106,10 +107,60 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
                 widget_structure.create_label();
                 add_label(&draw, &draw_centered, &draw_right, widget_structure, Align::RIGHT)
             }
+            "button" => {
+                widget_structure.create_button();
+                add_button(&draw, &draw_centered, &draw_right, widget_structure, Align::LEFT);
+                
+            }
+            "centered-button" => {
+                widget_structure.create_button();
+                add_button(&draw, &draw_centered, &draw_right, widget_structure, Align::CENTER);
+                
+            }
+            "right-button" => {
+                widget_structure.create_button();
+                add_button(&draw, &draw_centered, &draw_right, widget_structure, Align::RIGHT);
+                
+            }
             _ => panic!(
-                "[ERROR] Invalid identifier! You can only use [ centered-label / label / right-label ]\n"
+                "[ERROR] Invalid identifier! You can only use [ label / centered-label / right-label / button / centered-button / right-button ]\n"
             ),
         }
+    }
+}
+
+/// Adds a button.
+fn add_button(
+    draw: &Box,
+    draw_centered: &Box,
+    draw_right: &Box,
+    gtk_widget_structure: GTKWidget,
+    align: Align,
+) {
+    // The values and such is all set from `loop.rs`.
+    let button = gtk_widget_structure
+        .button
+        .as_ref()
+        .expect("[ERROR] Failed to access Button!");
+
+    button.set_label(&gtk_widget_structure.properties.text);
+    let c_command = gtk_widget_structure.properties.command.clone();
+    if !c_command.is_empty() {
+    button.connect_clicked(move |_| {
+        proc::execute(c_command.to_string());
+    });
+    }
+
+    match align {
+        Align::LEFT => draw.add(button),
+        Align::CENTER => draw_centered.add(button),
+        Align::RIGHT => draw_right.add(button),
+    }
+
+    unsafe {
+        VEC.as_mut()
+            .expect("[ERROR] Failed accessing VEC!\n")
+            .push(gtk_widget_structure);
     }
 }
 
