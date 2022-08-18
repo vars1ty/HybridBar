@@ -68,13 +68,10 @@ fi
 It supports:
 - Basic labels;
 - Labels with output from a bash command;
-- Transparency
+- Transparency;
+- Buttons
 
 A.K.A It's a simple status bar I put together with gtk-layer-shell and GTK 3 because I couldn't be bothered with more weird, half-broken bars.
-## Does it support buttons?
-No, if you want buttons support then you either wait for me to add it (a.k.a when I need it), or you can submit a PR and add it yourself.
-
-**Make sure all PRs follow the current code style**.
 ## I have no config
 You have to make one yourself.
 
@@ -107,6 +104,9 @@ Available "components":
 - label: Left-aligned label
 - centered-label: Centered label
 - right-label: Right-aligned label
+- button: Left-aligned button
+- centered-button: Centered button
+- right-button: Right-aligned button
 
 To actually use a component, here's an example:
 
@@ -126,6 +126,8 @@ The `text` and `command` nested JSON keys are simply described as:
 Before you ask; yes, they are both required but you don't have to specify a value to them.
 
 No, the unique name isn't actually displayed anywhere, it's just to be able to differ each component from another.
+## Video Tutorial
+You can watch a video tutorial made by Foren [here](https://www.youtube.com/watch?v=5g7MX3jgv8A)
 ## Example Config
 Made for [Hyprland](https://github.com/hyprwm/Hyprland).
 
