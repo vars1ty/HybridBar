@@ -22,7 +22,6 @@ unsafe fn update_labels() {
     for gtk_widget in ui::VEC.as_mut().unwrap().iter() {
         if !gtk_widget.label.is_some() {
             // Unassigned Label, don't continue.
-            println!("Unassigned; return");
             return;
         };
 
