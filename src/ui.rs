@@ -18,6 +18,7 @@ const SEPARATOR: char = '_';
 pub struct GTKWidget {
     pub button: Option<Button>,
     pub label: Option<Label>,
+    pub spacing: Option<Box>,
     pub properties: WidgetProperties,
 }
 
@@ -38,11 +39,19 @@ impl GTKWidget {
     fn create_label(&mut self) {
         self.label = Some(Label::new(None));
     }
+
+    /// Creates a box.
+    fn create_spacing(&mut self, spacing_start: i32, spacing_end: i32) {
+        let w_box = widget_builder::create_box();
+        w_box.set_margin_start(spacing_start);
+        w_box.set_margin_end(spacing_end);
+        self.spacing = Some(w_box);
+    }
 }
 
 /// Widget alignment.
 #[derive(EnumString)]
-enum Align {
+pub enum Align {
     LEFT,
     CENTERED,
     RIGHT,
@@ -51,9 +60,9 @@ enum Align {
 /// Builds all of the widgets.
 pub fn build_widgets(window: &gtk::ApplicationWindow) {
     // Create box widgets, which we'll be using to draw the content onto.
-    let draw = create_box();
-    let draw_centered = create_box();
-    let draw_right = create_box();
+    let draw = widget_builder::create_box();
+    let draw_centered = widget_builder::create_box();
+    let draw_right = widget_builder::create_box();
 
     // Add and align all of the box widgets.
     draw.set_center_widget(Some(&draw_centered));
@@ -96,14 +105,15 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
 
         // Create the properties structure.
         let widget_properties = WidgetProperties {
-            text: value["text"].to_string(),
-            command: value["command"].to_string(),
+            text: config::try_get_string(key, "text"),
+            command: config::try_get_string(key, "command"),
         };
 
         // Create the widget structure.
         let mut widget_structure = GTKWidget {
             button: None,
             label: None,
+            spacing: None,
             properties: widget_properties,
         };
 
@@ -121,7 +131,7 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
             widget_structure.create_label();
-            add_label(
+            widget_builder::add_label(
                 &draw,
                 &draw_centered,
                 &draw_right,
@@ -130,7 +140,19 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
             )
         } else if identifier.contains("button") {
             widget_structure.create_button();
-            add_button(
+            widget_builder::add_button(
+                &draw,
+                &draw_centered,
+                &draw_right,
+                widget_structure,
+                e_alignment,
+            )
+        } else if identifier.contains("spacing") {
+            widget_structure.create_spacing(
+                config::try_get_i32(key, "spacing_start"),
+                config::try_get_i32(key, "spacing_end"),
+            );
+            widget_builder::add_box(
                 &draw,
                 &draw_centered,
                 &draw_right,
@@ -139,76 +161,4 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
             )
         }
     }
-}
-
-/// Adds a button.
-fn add_button(
-    draw: &Box,
-    draw_centered: &Box,
-    draw_right: &Box,
-    gtk_widget_structure: GTKWidget,
-    align: Align,
-) {
-    // The values and such is all set from `loop.rs`.
-    let button = gtk_widget_structure
-        .button
-        .as_ref()
-        .expect("[ERROR] Failed to access Button!\n");
-
-    button.set_label(&gtk_widget_structure.properties.text);
-    let c_command = gtk_widget_structure.properties.command.clone();
-    if !c_command.is_empty() {
-        button.connect_clicked(move |_| {
-            proc::execute(c_command.to_string());
-        });
-    }
-
-    debug_log("Adding button");
-    match align {
-        Align::LEFT => draw.add(button),
-        Align::CENTERED => draw_centered.add(button),
-        Align::RIGHT => draw_right.add(button),
-    }
-
-    unsafe {
-        VEC.as_mut()
-            .expect("[ERROR] Failed accessing VEC!\n")
-            .push(gtk_widget_structure);
-    }
-}
-
-/// Adds a label.
-fn add_label(
-    draw: &Box,
-    draw_centered: &Box,
-    draw_right: &Box,
-    gtk_widget_structure: GTKWidget,
-    align: Align,
-) {
-    // The values and such is all set from `loop.rs`.
-    let label = gtk_widget_structure
-        .label
-        .as_ref()
-        .expect("[ERROR] Failed to access Label!");
-    debug_log("Adding label");
-    match align {
-        Align::LEFT => draw.add(label),
-        Align::CENTERED => draw_centered.add(label),
-        Align::RIGHT => draw_right.add(label),
-    }
-
-    unsafe {
-        // If the command is empty, there is no need to add it to the VEC list.
-        // Since it won't have to be redrawn.
-        if !gtk_widget_structure.properties.command.is_empty() {
-            VEC.as_mut()
-                .expect("[ERROR] Failed accessing VEC!\n")
-                .push(gtk_widget_structure);
-        }
-    }
-}
-
-/// Creates a standard Box widget with horizontal orientation.
-fn create_box() -> Box {
-    Box::new(gtk::Orientation::Horizontal, 0)
 }

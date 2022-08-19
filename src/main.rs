@@ -3,6 +3,7 @@ mod debug;
 mod r#loop;
 mod proc;
 mod ui;
+mod widget_builder;
 
 use gtk::gdk::*;
 use gtk::prelude::*;
@@ -90,7 +91,7 @@ fn set_visual(window: &ApplicationWindow, _screen: Option<&gdk::Screen>) {
     }
 }
 
-/// Converts the value of a child inside "background" to a `f64`.
+/// Converts the value of a child inside `background` to a `f64`.
 fn get_background_float(cfg: &JsonValue, identifier: &str) -> f64 {
     cfg["background"][identifier]
         .as_f64()

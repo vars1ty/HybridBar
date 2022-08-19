@@ -15,3 +15,27 @@ pub fn read_config() -> JsonValue {
     )
     .expect("[ERROR] Failed parsing config!\n")
 }
+
+/// If the `key` exists inside `root`, the value of it is returned.
+/// If not, an empty value is instead returned.
+pub fn try_get_string(root: &str, key: &str) -> String {
+    let cfg = &read_config()[root];
+    if cfg.has_key(key) {
+        cfg[key].to_string()
+    } else {
+        String::from("")
+    }
+}
+
+/// If the `key` exists inside `root`, the value of it is returned.
+/// If not, `0` is instead returned.
+pub fn try_get_i32(root: &str, key: &str) -> i32 {
+    let cfg = &read_config()[root];
+    if cfg.has_key(key) {
+        cfg[key]
+            .as_i32()
+            .expect("[ERROR] Failed retrieving value as i32!\n")
+    } else {
+        0
+    }
+}
