@@ -6,10 +6,10 @@ description = "A simple status bar made for Wayland."
 license = "MIT"
 
 [dependencies]
-reqwest = { version = "0.11", features = ["blocking", "json"] }
 strum = { version = "0.24", features = ["derive"] }
 gtk-layer-shell = "0.4.1"
 strum_macros = "0.24"
+cmd_lib = "1.3.0"
 glib = "0.15.12"
 json = "0.12.4"
 gtk = "0.15.5"
