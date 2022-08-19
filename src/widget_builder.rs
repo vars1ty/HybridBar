@@ -5,14 +5,15 @@ use gtk::{traits::*, *};
 /// Error message to be displayed if we can't access ui::VEC.
 const FAILED_ACCESSING_VEC: &str = "[ERROR] Failed to access VEC!\n";
 
+/// Boxes used to render content.
+pub struct RenderBoxes {
+    pub draw_left: Box,
+    pub draw_centered: Box,
+    pub draw_right: Box,
+}
+
 /// Adds a box.
-pub fn add_box(
-    draw_left: &Box,
-    draw_centered: &Box,
-    draw_right: &Box,
-    gtk_widget_structure: GTKWidget,
-    align: Align,
-) {
+pub fn add_box(render_boxes: &RenderBoxes, gtk_widget_structure: GTKWidget, align: Align) {
     // The values and such is all set from `loop.rs`.
     let w_box = gtk_widget_structure
         .spacing
@@ -20,17 +21,11 @@ pub fn add_box(
         .expect("[ERROR] Failed to access Box!\n");
 
     debug_log("Adding label");
-    add(w_box, draw_left, draw_centered, draw_right, align);
+    add(w_box, render_boxes, align);
 }
 
 /// Adds a button.
-pub fn add_button(
-    draw_left: &Box,
-    draw_centered: &Box,
-    draw_right: &Box,
-    gtk_widget_structure: GTKWidget,
-    align: Align,
-) {
+pub fn add_button(render_boxes: &RenderBoxes, gtk_widget_structure: GTKWidget, align: Align) {
     // The values and such is all set from `loop.rs`.
     let button = gtk_widget_structure
         .button
@@ -46,22 +41,13 @@ pub fn add_button(
     }
 
     debug_log("Adding button");
-    add(button, draw_left, draw_centered, draw_right, align);
-    unsafe {
-        VEC.as_mut()
-            .expect(FAILED_ACCESSING_VEC)
-            .push(gtk_widget_structure);
-    }
+    add(button, render_boxes, align);
+    // Buttons don't need to exist inside of the Vector list, since there's nothing to redraw nor
+    // update.
 }
 
 /// Adds a label.
-pub fn add_label(
-    draw_left: &Box,
-    draw_centered: &Box,
-    draw_right: &Box,
-    gtk_widget_structure: GTKWidget,
-    align: Align,
-) {
+pub fn add_label(render_boxes: &RenderBoxes, gtk_widget_structure: GTKWidget, align: Align) {
     // The values and such is all set from `loop.rs`.
     let label = gtk_widget_structure
         .label
@@ -69,7 +55,7 @@ pub fn add_label(
         .expect("[ERROR] Failed to access Label!\n");
 
     debug_log("Adding label");
-    add(label, draw_left, draw_centered, draw_right, align);
+    add(label, render_boxes, align);
     unsafe {
         // If the command is empty, there is no need to add it to the VEC list.
         // Since it won't have to be redrawn.
@@ -82,17 +68,11 @@ pub fn add_label(
 }
 
 /// Adds a widget and aligns it automatically.
-fn add(
-    widget: &impl IsA<Widget>,
-    draw_left: &Box,
-    draw_centered: &Box,
-    draw_right: &Box,
-    align: Align,
-) {
+fn add(widget: &impl IsA<Widget>, render_boxes: &RenderBoxes, align: Align) {
     match align {
-        Align::LEFT => draw_left.add(widget),
-        Align::CENTERED => draw_centered.add(widget),
-        Align::RIGHT => draw_right.add(widget),
+        Align::LEFT => render_boxes.draw_left.add(widget),
+        Align::CENTERED => render_boxes.draw_centered.add(widget),
+        Align::RIGHT => render_boxes.draw_right.add(widget),
     }
 }
 

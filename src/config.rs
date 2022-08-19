@@ -11,7 +11,7 @@ pub fn read_config() -> JsonValue {
     let b_path = &path;
     json::parse(
         &fs::read_to_string(b_path)
-            .expect(format!("[ERROR] Failed reading config file from \"{b_path}\"!\n").as_str()),
+            .expect(format!("[ERROR] Failed reading config file from '{b_path}'!\n").as_str()),
     )
     .expect("[ERROR] Failed parsing config!\n")
 }
@@ -34,7 +34,7 @@ pub fn try_get_i32(root: &str, key: &str) -> i32 {
     if cfg.has_key(key) {
         cfg[key]
             .as_i32()
-            .expect("[ERROR] Failed retrieving value as i32!\n")
+            .expect("[ERROR] Failed returning value as i32!\n")
     } else {
         0
     }

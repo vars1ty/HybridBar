@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::{debug::debug_log, r#loop::update, *};
+use crate::{debug::debug_log, r#loop::update, widget_builder::RenderBoxes, *};
 use gtk::{traits::*, *};
 
 use strum_macros::EnumString;
@@ -60,20 +60,27 @@ pub enum Align {
 /// Builds all of the widgets.
 pub fn build_widgets(window: &gtk::ApplicationWindow) {
     // Create box widgets, which we'll be using to draw the content onto.
-    let draw = widget_builder::create_box();
-    let draw_centered = widget_builder::create_box();
-    let draw_right = widget_builder::create_box();
+    let left = widget_builder::create_box();
+    let centered = widget_builder::create_box();
+    let right = widget_builder::create_box();
 
     // Add and align all of the box widgets.
-    draw.set_center_widget(Some(&draw_centered));
-    draw.pack_end(&draw_right, false, true, 0);
-    window.add(&draw);
+    left.set_center_widget(Some(&centered));
+    left.pack_end(&right, false, true, 0);
+    window.add(&left);
 
     // Create the Vector.
     unsafe { VEC = Some(Vec::new()) }
 
+    // Create the Render Boxes structure.
+    let render_boxes = RenderBoxes {
+        draw_left: left,
+        draw_centered: centered,
+        draw_right: right,
+    };
+
     // Prepare all of the widgets.
-    create_components(&draw, &draw_right, &draw_centered);
+    create_components(&render_boxes);
     // Make every widget visible.
     window.show_all();
     // Update dynamic content.
@@ -81,9 +88,9 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
 }
 
 /// Creates all of the widgets.
-fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
+fn create_components(render_boxes: &RenderBoxes) {
     // Add all of the widgets defined from the config.
-    for (key, value) in config::read_config().entries() {
+    for (key, _) in config::read_config().entries() {
         if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
             continue;
         }
@@ -131,34 +138,16 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
             widget_structure.create_label();
-            widget_builder::add_label(
-                &draw,
-                &draw_centered,
-                &draw_right,
-                widget_structure,
-                e_alignment,
-            )
+            widget_builder::add_label(render_boxes, widget_structure, e_alignment)
         } else if identifier.contains("button") {
             widget_structure.create_button();
-            widget_builder::add_button(
-                &draw,
-                &draw_centered,
-                &draw_right,
-                widget_structure,
-                e_alignment,
-            )
+            widget_builder::add_button(render_boxes, widget_structure, e_alignment)
         } else if identifier.contains("spacing") {
             widget_structure.create_spacing(
                 config::try_get_i32(key, "spacing_start"),
                 config::try_get_i32(key, "spacing_end"),
             );
-            widget_builder::add_box(
-                &draw,
-                &draw_centered,
-                &draw_right,
-                widget_structure,
-                e_alignment,
-            )
+            widget_builder::add_box(render_boxes, widget_structure, e_alignment)
         }
     }
 }
