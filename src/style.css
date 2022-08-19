@@ -5,11 +5,11 @@ label {
 
 /* Button Configuration */
 button {
-    border:         none;
-    padding-left:   0;
-    padding-right:  0;
-    margin-bottom: -7px;
-    margin-top:    -7px;
-    box-shadow:     none;
     font-weight:    normal;
+    border:         none;
+    box-shadow:     none;
+    margin-bottom: -8px;
+    margin-top:    -8px;
+    padding-right:  0;
+    padding-left:   0;
 }

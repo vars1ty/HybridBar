@@ -1,4 +1,5 @@
 mod config;
+mod debug;
 mod r#loop;
 mod proc;
 mod ui;

@@ -1,8 +1,6 @@
 use std::str::FromStr;
 
-use crate::config;
-use crate::proc;
-use crate::r#loop::update;
+use crate::{debug::debug_log, r#loop::update, *};
 use gtk::{traits::*, *};
 
 use strum_macros::EnumString;
@@ -114,6 +112,11 @@ fn create_components(draw: &Box, draw_right: &Box, draw_centered: &Box) {
         let e_alignment = Align::from_str(&alignment)
             .expect(format!("[ERROR] There is no '{identifier}' identifier!\n").as_str());
 
+        // Debug messages.
+        debug_log(format!(
+            "Adding widget '{identifier}' with alignment '{alignment}'"
+        ));
+
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
@@ -160,6 +163,7 @@ fn add_button(
         });
     }
 
+    debug_log("Adding button");
     match align {
         Align::LEFT => draw.add(button),
         Align::CENTERED => draw_centered.add(button),
@@ -186,6 +190,7 @@ fn add_label(
         .label
         .as_ref()
         .expect("[ERROR] Failed to access Label!");
+    debug_log("Adding label");
     match align {
         Align::LEFT => draw.add(label),
         Align::CENTERED => draw_centered.add(label),
@@ -193,9 +198,13 @@ fn add_label(
     }
 
     unsafe {
-        VEC.as_mut()
-            .expect("[ERROR] Failed accessing VEC!\n")
-            .push(gtk_widget_structure);
+        // If the command is empty, there is no need to add it to the VEC list.
+        // Since it won't have to be redrawn.
+        if !gtk_widget_structure.properties.command.is_empty() {
+            VEC.as_mut()
+                .expect("[ERROR] Failed accessing VEC!\n")
+                .push(gtk_widget_structure);
+        }
     }
 }
 

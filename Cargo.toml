@@ -1,18 +1,18 @@
 [package]
 name = "hybrid_bar"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A simple status bar made for Wayland."
 license = "MIT"
 
 [dependencies]
 reqwest = { version = "0.11", features = ["blocking", "json"] }
-json = "0.12.4"
-glib = "0.15.12"
-gtk = "0.15.5"
-gtk-layer-shell = "0.4.1"
 strum = { version = "0.24", features = ["derive"] }
+gtk-layer-shell = "0.4.1"
 strum_macros = "0.24"
+glib = "0.15.12"
+json = "0.12.4"
+gtk = "0.15.5"
 
 # Optimizes for size
 [profile.release]
