@@ -44,14 +44,31 @@ Here's an example:
 Available widgets:
 
 Labels:
-- left-label: Left-aligned label
+- left-label: Left-aligned label;
 - centered-label: Centered label
 - right-label: Right-aligned label
+
+Optional Keys Supported:
+- text: String
+- command: String
 
 Buttons:
 - left-button: Left-aligned button
 - centered-button: Centered button
 - right-button: Right-aligned button
+
+Optional Keys Supported:
+- text: String
+- command: String
+
+Spacing:
+- left-spacing: Left-focused spacing
+- centered-spacing: Centered-focused spacing
+- right-spacing: Right-focused spacing
+
+Optional Keys Supported:
+- spacing_start: int
+- spacing_end: int
 
 To actually use a widget, here's an example:
 
@@ -68,7 +85,7 @@ The `text` and `command` nested JSON keys are simply described as:
 - text: Raw Label Text
 - command: Optional bash command
 
-Before you ask; yes, they are both required but you don't have to specify a value to them.
+**All** keys are optional, if you skip `text` for example, it'll be using an empty value.
 
 No, the unique name isn't actually displayed anywhere, it's just to be able to differ each component from another.
 ## Video Tutorial
@@ -93,11 +110,9 @@ Made for [Hyprland](https://github.com/hyprwm/Hyprland).
         "command": "hyprctl monitors -j | jq -r \".[].activeWorkspace.id\""
     },
     "left-label_max_workspaces": {
-        "text": "/10",
-        "command": ""
+        "text": "/10"
     },
     "centered-label_active_window": {
-        "text": "",
         "command": "hyprctl activewindow -j | jq -r \".title\""
     },
     "right-label_volume": {
@@ -107,6 +122,9 @@ Made for [Hyprland](https://github.com/hyprwm/Hyprland).
     "right-label_time": {
         "text": " | time: ",
         "command": "date +%H:%M" 
+    },
+    "right-spacing_end": {
+        "spacing_end": 5
     }
 }
 ```

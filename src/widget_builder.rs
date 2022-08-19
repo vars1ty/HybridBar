@@ -67,6 +67,7 @@ pub fn add_label(
         .label
         .as_ref()
         .expect("[ERROR] Failed to access Label!\n");
+
     debug_log("Adding label");
     add(label, draw_left, draw_centered, draw_right, align);
     unsafe {
