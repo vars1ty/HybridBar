@@ -17,7 +17,7 @@ pub fn read_config() -> JsonValue {
 }
 
 /// If the `key` exists inside `root`, the value of it is returned.
-/// If not, an default value is instead returned.
+/// If not, a default value is instead returned.
 pub fn try_get<T>(root: &str, key: &str) -> Result<(String, i32), Error>
 where
     T: Display + 'static,
