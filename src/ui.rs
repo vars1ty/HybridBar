@@ -1,7 +1,6 @@
-use std::str::FromStr;
-
 use crate::{debug::debug_log, r#loop::update, widget_builder::RenderBoxes, *};
 use gtk::{traits::*, *};
+use std::str::FromStr;
 
 use strum_macros::EnumString;
 
@@ -112,8 +111,8 @@ fn create_components(render_boxes: &RenderBoxes) {
 
         // Create the properties structure.
         let widget_properties = WidgetProperties {
-            text: config::try_get_string(key, "text"),
-            command: config::try_get_string(key, "command"),
+            text: config::try_get::<String>(key, "text").unwrap().0,
+            command: config::try_get::<String>(key, "command").unwrap().0,
         };
 
         // Create the widget structure.
@@ -144,8 +143,8 @@ fn create_components(render_boxes: &RenderBoxes) {
             widget_builder::add_button(render_boxes, widget_structure, e_alignment)
         } else if identifier.contains("spacing") {
             widget_structure.create_spacing(
-                config::try_get_i32(key, "spacing_start"),
-                config::try_get_i32(key, "spacing_end"),
+                config::try_get::<i32>(key, "spacing_start").unwrap().1,
+                config::try_get::<i32>(key, "spacing_end").unwrap().1,
             );
             widget_builder::add_box(render_boxes, widget_structure, e_alignment)
         }

@@ -1,6 +1,6 @@
 use crate::proc;
 use json::JsonValue;
-use std::fs;
+use std::{any::TypeId, fmt::Display, fs, io::Error};
 
 /// Parses the config and returns it.
 pub fn read_config() -> JsonValue {
@@ -17,25 +17,22 @@ pub fn read_config() -> JsonValue {
 }
 
 /// If the `key` exists inside `root`, the value of it is returned.
-/// If not, an empty value is instead returned.
-pub fn try_get_string(root: &str, key: &str) -> String {
+/// If not, an default value is instead returned.
+pub fn try_get<T>(root: &str, key: &str) -> Result<(String, i32), Error>
+where
+    T: Display + 'static,
+{
     let cfg = &read_config()[root];
+    // This is probably the wrong way of doing it, but I can't think of a better way rn.
+    let is_string = TypeId::of::<T>() == TypeId::of::<String>();
+    const ERROR_I32: &str = "[ERROR] Failed parsing content as i32!";
     if cfg.has_key(key) {
-        cfg[key].to_string()
-    } else {
-        String::from("")
-    }
-}
+        if !is_string {
+            return Ok((String::default(), cfg[key].as_i32().expect(ERROR_I32)));
+        }
 
-/// If the `key` exists inside `root`, the value of it is returned.
-/// If not, `0` is instead returned.
-pub fn try_get_i32(root: &str, key: &str) -> i32 {
-    let cfg = &read_config()[root];
-    if cfg.has_key(key) {
-        cfg[key]
-            .as_i32()
-            .expect("[ERROR] Failed returning value as i32!\n")
+        Ok((cfg[key].to_string(), 0))
     } else {
-        0
+        Ok((String::default(), 0))
     }
 }
