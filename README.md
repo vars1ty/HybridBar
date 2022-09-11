@@ -133,9 +133,9 @@ Starting from `0.1.3`, CSS is now supported and you can make it auto-load on sta
 
 If you want a sample CSS which has been used up until now, check `examples/style.css`.
 
-Note: currently you can't identity custom components through the CSS, this will be supported soon though by using the components JSON-Identifier.
+Since 0.1.4, you can now also style separate labels and buttons.
 
-For example: `left-button_HELLO_THERE` « `HELLO_THERE` is the identifier, `button` is the component.
+For example: `left-label_username_stuff` can be styled using CSS via `#username_stuff { /* Code */ }`.
 # Building
 Dependencies:
 

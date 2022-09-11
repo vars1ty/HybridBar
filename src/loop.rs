@@ -34,7 +34,7 @@ unsafe fn update_labels() {
         if !widget.properties.command.is_empty() {
             // TODO: This is slow and causes frequent micro-blocking, so it should really be
             // reconsidered in the future.
-            // The root cause seems to be the cloning of command.
+            // The root cause is because execute() is interrupting the UI Thread.
             text += &proc::execute(widget.properties.command.clone());
         }
 

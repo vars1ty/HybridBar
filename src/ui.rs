@@ -7,11 +7,13 @@ use strum_macros::EnumString;
 /// Static mutable HashMap, because I'm not dealing with lifetime bullshit one more fucking minute.
 pub static mut VEC: Option<Vec<GTKWidget>> = None;
 
-/// Alignment separator.
+/// Key separator.
 const ALIGNMENT: char = '-';
 
 /// Identifier separator.
 const SEPARATOR: char = '_';
+
+// TODO: Possibly rework the structures.
 
 /// GTK Widget structure.
 pub struct GTKWidget {
@@ -30,13 +32,17 @@ pub struct WidgetProperties {
 /// Easy mutable implementions for GTKWidget.
 impl GTKWidget {
     /// Creates a button.
-    fn create_button(&mut self) {
-        self.button = Some(Button::new());
+    fn create_button(&mut self, name: &str) {
+        let button = Button::new();
+        button.set_widget_name(name);
+        self.button = Some(button);
     }
 
     /// Creates a label.
-    fn create_label(&mut self) {
-        self.label = Some(Label::new(None));
+    fn create_label(&mut self, name: &str) {
+        let label = Label::new(None);
+        label.set_widget_name(name);
+        self.label = Some(label);
     }
 
     /// Creates a box.
@@ -94,20 +100,32 @@ fn create_components(render_boxes: &RenderBoxes) {
             continue;
         }
 
-        // Identifiers are the first part of the JSON Key.
-        // For example: label_hello <= "label" being the identifier, "hello" being the name.
+        // Gets the amount of entires in the split key.
+        let count = key.split(SEPARATOR).count();
+
+        // Gets the widget identifier.
+        // For example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
         let identifier = key
             .split(SEPARATOR)
             .nth(0)
-            .expect("[ERROR] Failed splitting key!\n");
+            .expect("[ERROR] Failed retrieving widget identifier!\n");
 
-        // Get the alignment of the widget.
-        // For example: left-label_abc <= "left" being the alignment.
-        let alignment = key
-            .split('-')
+        // Grabs the widget alignment.
+        let widget_alignment = key
+            .split(ALIGNMENT)
             .nth(0)
-            .expect("[ERROR] Failed splitting alignment!\n")
+            .expect("[ERROR] Failed retrieving widget alignment!\n")
             .to_uppercase();
+
+        // Stores the unique widget name temporarily.
+        let mut widget_name = String::default();
+        for i in 1..count {
+            widget_name.push_str(key.split(SEPARATOR).nth(i).unwrap());
+            // Only add '_' to the end if we haven't reached the end.
+            if i != count - 1 {
+                widget_name.push(SEPARATOR);
+            }
+        }
 
         // Create the properties structure.
         let widget_properties = WidgetProperties {
@@ -125,21 +143,21 @@ fn create_components(render_boxes: &RenderBoxes) {
 
         // The alignment grabbed.
         // If no valid alignment was found, panic.
-        let e_alignment = Align::from_str(&alignment)
+        let e_alignment = Align::from_str(&widget_alignment)
             .expect(format!("[ERROR] There is no '{identifier}' identifier!\n").as_str());
 
         // Debug messages.
         debug_log(format!(
-            "Adding widget '{identifier}' with alignment '{alignment}'"
+            "Adding widget '{identifier}' with alignment '{widget_alignment}'"
         ));
 
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
-            widget_structure.create_label();
+            widget_structure.create_label(&widget_name);
             widget_builder::add_label(render_boxes, widget_structure, e_alignment)
         } else if identifier.contains("button") {
-            widget_structure.create_button();
+            widget_structure.create_button(&widget_name);
             widget_builder::add_button(render_boxes, widget_structure, e_alignment)
         } else if identifier.contains("spacing") {
             widget_structure.create_spacing(
