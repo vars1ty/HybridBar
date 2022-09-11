@@ -1,5 +1,5 @@
 # Hybrid Bar
-A Wayland status bar made in Rust
+A status bar focused on wl-roots Wayland compositors
 
 ## Preview
 With blur through Hyprland.
