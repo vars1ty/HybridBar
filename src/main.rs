@@ -5,6 +5,8 @@ mod proc;
 mod ui;
 mod widget_builder;
 
+use std::path::Path;
+
 use gtk::gdk::*;
 use gtk::prelude::*;
 use gtk::*;
@@ -54,10 +56,16 @@ fn activate(application: &gtk::Application) {
 }
 
 /// Loads the CSS
-#[allow(unused_must_use)] // Only for this because load_from_data is a special snowflake.
+#[allow(unused_must_use)]
 fn load_css() {
     let provider = CssProvider::new();
-    provider.load_from_data(include_bytes!("style.css"));
+    let mut css_path = config::get_path();
+    css_path.push_str("style.css");
+    if !Path::new(&css_path).is_file() {
+        prefix_print("No style.css file was found, falling back to default GTK settings!")
+    }
+
+    provider.load_from_path(&css_path);
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(
@@ -103,12 +111,11 @@ fn get_background_float(cfg: &JsonValue, identifier: &str) -> f64 {
 /// Draws the window using a custom color and opacity.
 fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     let cfg = config::read_config();
-    let b_cfg = &cfg;
     // Fetch config for the values.
-    let r: f64 = get_background_float(b_cfg, "r");
-    let g: f64 = get_background_float(b_cfg, "g");
-    let b: f64 = get_background_float(b_cfg, "b");
-    let a: f64 = get_background_float(b_cfg, "a");
+    let r = get_background_float(&cfg, "r");
+    let g = get_background_float(&cfg, "g");
+    let b = get_background_float(&cfg, "b");
+    let a = get_background_float(&cfg, "a");
     // Apply
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);

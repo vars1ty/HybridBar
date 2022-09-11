@@ -7,10 +7,10 @@ With blur through Hyprland.
 
 ## What does it support?
 It supports:
-- Basic labels;
-- Labels with output from a bash command;
-- Transparency;
-- Buttons
+- Labels (static and inherit text from a command);
+- Buttons with `on click` actions via a bash command;
+- Transparency (+ blur if your compositor supports it);
+- Custom CSS
 
 A.K.A It's a simple status bar I put together with gtk-layer-shell and GTK 3 because I couldn't be bothered with more weird, half-broken bars.
 ## I have no config
@@ -67,8 +67,8 @@ Spacing:
 - right-spacing: Right-focused spacing
 
 Optional Keys Supported:
-- spacing_start: int
-- spacing_end: int
+- spacing_start: i32
+- spacing_end: i32
 
 To actually use a widget, here's an example:
 
@@ -128,8 +128,21 @@ Made for [Hyprland](https://github.com/hyprwm/Hyprland).
     }
 }
 ```
+## CSS Support
+Starting from `0.1.3`, CSS is now supported and you can make it auto-load on startup by making a `style.css` file next to your `config.json` at the same path.
+
+If you want a sample CSS which has been used up until now, check `examples/style.css`.
+
+Note: currently you can't identity custom components through the CSS, this will be supported soon though by using the components JSON-Identifier.
+
+For example: `left-button_HELLO_THERE` « `HELLO_THERE` is the identifier, `button` is the component.
 # Building
-Make sure you have Rust installed before.
+Dependencies:
+
+1. gtk-layer-shell
+2. gtk3
+3. bash
+
 ***
 1. `git clone https://github.com/dev11n/HybridBar`
 2. `cd HybridBar`

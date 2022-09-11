@@ -2,23 +2,21 @@ use crate::proc;
 use json::JsonValue;
 use std::{any::TypeId, fmt::Display, fs, io::Error};
 
-fn get_path() -> String {
-    String::from(format!(
+/// Gets the root home path to Hybrid.
+pub fn get_path() -> String {
+    format!(
         "/home/{}/.config/HybridBar/",
-        proc::execute_str("whoami")
-    ))
+        proc::execute(String::from("whoami"))
+    )
 }
 
 /// Parses the config and returns it.
 pub fn read_config() -> JsonValue {
-    let path = format!(
-        "/home/{}/.config/HybridBar/config.json",
-        proc::execute(String::from("whoami"))
-    );
-    let b_path = &path;
+    let mut conf_path = get_path();
+    conf_path.push_str("config.json");
     json::parse(
-        &fs::read_to_string(b_path)
-            .expect(format!("[ERROR] Failed reading config file from '{b_path}'!\n").as_str()),
+        &fs::read_to_string(&conf_path)
+            .expect(format!("[ERROR] Failed reading config file from '{conf_path}'!\n").as_str()),
     )
     .expect("[ERROR] Failed parsing config!\n")
 }

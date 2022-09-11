@@ -36,7 +36,7 @@ pub fn add_button(render_boxes: &RenderBoxes, gtk_widget_structure: GTKWidget, a
     let c_command = gtk_widget_structure.properties.command.clone();
     if !c_command.is_empty() {
         button.connect_clicked(move |_| {
-            proc::execute(c_command.to_string());
+            proc::execute(c_command.clone());
         });
     }
 
