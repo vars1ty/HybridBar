@@ -2,7 +2,9 @@
 pkgname=hybrid-bar-git
 pkgver=0.1.4
 pkgrel=1
-makedepends=('rust' 'cargo' 'gtk-layer-shell' 'gtk3')
+makedepends=('rust' 'cargo' 'git')
+depends=('gtk3' 'gtk-layer-shell')
+url="https://github.com/vars1ty/HybridBar"
 arch=('i686' 'x86_64' 'armv6h' 'armv7h')
 pkgdesc="A status bar focused on wl-roots Wayland compositors"
 license=('MIT')
