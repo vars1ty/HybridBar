@@ -1,5 +1,5 @@
 # Maintainer: varsity <varsity@duck.com>
-pkgname=hybrid-bar
+pkgname=hybrid-bar-git
 pkgver=0.1.4
 pkgrel=1
 makedepends=('rust' 'cargo' 'gtk-layer-shell' 'gtk3')
@@ -26,5 +26,6 @@ check() {
 }
 
 package() {
-  install -Dm0755 -t "$pkgdir/usr/bin/" "src/target/release/$pkgname"
+  pwd
+  install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/hybrid-bar"
 }
