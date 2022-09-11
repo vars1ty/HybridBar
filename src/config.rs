@@ -2,6 +2,13 @@ use crate::proc;
 use json::JsonValue;
 use std::{any::TypeId, fmt::Display, fs, io::Error};
 
+fn get_path() -> String {
+    String::from(format!(
+        "/home/{}/.config/HybridBar/",
+        proc::execute_str("whoami")
+    ))
+}
+
 /// Parses the config and returns it.
 pub fn read_config() -> JsonValue {
     let path = format!(
