@@ -144,7 +144,7 @@ Dependencies:
 3. bash
 
 ***
-1. `git clone https://github.com/dev11n/HybridBar`
+1. `git clone https://github.com/vars1ty/HybridBar`
 2. `cd HybridBar`
 3. `cargo build --release`
 4. `cd target/release`
