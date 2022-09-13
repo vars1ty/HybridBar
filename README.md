@@ -158,4 +158,4 @@ AUR: `paru -S hybrid-bar-git`
 2. `cd HybridBar`
 3. `cargo build --release`
 4. `cd target/release`
-5. Run the `hybrid_bar` executable.
+5. Run the `hybrid-bar` executable.
