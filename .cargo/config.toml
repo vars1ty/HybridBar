@@ -1,3 +1,8 @@
 [env]
 # If passed as `1` (env HYBRID_LOG=1 ...), the bar will log debug messges to the terminal.
 HYBRID_LOG = "0"
+# Where the bar should be positioned at.
+# Valid options are: `TOP` and `BOTTOM`.
+HYBRID_POS = "TOP"
+# Config file to read for this session.
+HYBRID_CONFIG = "config.json"

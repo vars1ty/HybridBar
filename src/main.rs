@@ -1,5 +1,6 @@
 mod config;
 mod debug;
+mod environment;
 mod r#loop;
 mod proc;
 mod ui;
@@ -15,6 +16,22 @@ use json::JsonValue;
 /// Prints a message with the [Hybrid] prefix.
 fn prefix_print(msg: &str) {
     println!("[Hybrid] {msg}")
+}
+
+/// Gets the anchors.
+fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
+    let pos = environment::try_get_var("HYBRID_POS");
+    if pos != "TOP" && pos != "BOTTOM" {
+        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ]\n")
+    }
+
+    // If the position was valid, return the result.
+    [
+        (gtk_layer_shell::Edge::Left, true),
+        (gtk_layer_shell::Edge::Right, true),
+        (gtk_layer_shell::Edge::Top, pos == "TOP"),
+        (gtk_layer_shell::Edge::Bottom, pos == "BOTTOM"),
+    ]
 }
 
 /// Initializes the status bar.
@@ -35,15 +52,7 @@ fn activate(application: &gtk::Application) {
     // Toggling this off may help some if they are in applications that have weird unicode text, which may mess with the bars scaling.
     gtk_layer_shell::auto_exclusive_zone_enable(&window);
 
-    // Scale and set the bar to the top.
-    let anchors = [
-        (gtk_layer_shell::Edge::Left, true),
-        (gtk_layer_shell::Edge::Right, true),
-        (gtk_layer_shell::Edge::Top, true),
-        (gtk_layer_shell::Edge::Bottom, false),
-    ];
-
-    for (anchor, state) in anchors {
+    for (anchor, state) in get_anchors() {
         gtk_layer_shell::set_anchor(&window, anchor, state);
     }
 

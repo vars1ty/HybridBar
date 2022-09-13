@@ -133,17 +133,27 @@ Starting from `0.1.3`, CSS is now supported and you can make it auto-load on sta
 
 If you want a sample CSS which has been used up until now, check `examples/style.css`.
 
-Since 0.1.4, you can now also style separate labels and buttons.
+Since `0.1.4`, you can now also style separate labels and buttons.
 
 For example: `left-label_username_stuff` can be styled using CSS via `#username_stuff { /* Code */ }`.
-# Building
+## Environment Variables
+`HYBRID_LOG` = `0 OR 1` : Logs debug output to stdout.
+
+`HYBRID_POS` = `TOP OR BOTTOM` : Tells the bar where to position itself, TOP or BOTTOM.
+
+`HYBRID_CONFIG` = `name.json` : Locates the config inside the HybridBar config path, then uses it for the rest of the bars session.
+# Installation
 Dependencies:
 
 1. gtk-layer-shell
 2. gtk3
 3. bash
 
-***
+## Arch Linux
+AUR: `paru -S hybrid-bar-git`
+
+**NOTE**: This builds the bar, so you'll need Rust installed.
+## Building
 1. `git clone https://github.com/vars1ty/HybridBar`
 2. `cd HybridBar`
 3. `cargo build --release`

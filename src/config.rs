@@ -1,4 +1,4 @@
-use crate::proc;
+use crate::{environment, proc};
 use json::JsonValue;
 use std::{any::TypeId, fmt::Display, fs, io::Error};
 
@@ -13,7 +13,7 @@ pub fn get_path() -> String {
 /// Parses the config and returns it.
 pub fn read_config() -> JsonValue {
     let mut conf_path = get_path();
-    conf_path.push_str("config.json");
+    conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG"));
     json::parse(
         &fs::read_to_string(&conf_path)
             .expect(format!("[ERROR] Failed reading config file from '{conf_path}'!\n").as_str()),
