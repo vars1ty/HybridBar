@@ -1,4 +1,4 @@
-use crate::{debug::debug_log, proc, ui::Align, ui::GTKWidget, ui::VEC};
+use crate::{debug::log, proc, ui::Align, ui::GTKWidget, ui::VEC};
 use glib::IsA;
 use gtk::{traits::*, *};
 
@@ -20,7 +20,7 @@ pub fn add_box(render_boxes: &RenderBoxes, gtk_widget_structure: GTKWidget, alig
         .as_ref()
         .expect("[ERROR] Failed to access Box!\n");
 
-    debug_log("Adding label");
+    log("Adding label");
     add(w_box, render_boxes, align);
 }
 
@@ -36,11 +36,12 @@ pub fn add_button(render_boxes: &RenderBoxes, gtk_widget_structure: GTKWidget, a
     let c_command = gtk_widget_structure.properties.command.clone();
     if !c_command.is_empty() {
         button.connect_clicked(move |_| {
+            log("Button.connect_clicked()");
             proc::execute(c_command.clone());
         });
     }
 
-    debug_log("Adding button");
+    log("Adding button");
     add(button, render_boxes, align);
     // Buttons don't need to exist inside of the Vector list, since there's nothing to redraw nor
     // update.
@@ -54,7 +55,7 @@ pub fn add_label(render_boxes: &RenderBoxes, gtk_widget_structure: GTKWidget, al
         .as_ref()
         .expect("[ERROR] Failed to access Label!\n");
 
-    debug_log("Adding label");
+    log("Adding label");
     add(label, render_boxes, align);
     unsafe {
         // If the command is empty, there is no need to add it to the VEC list.
@@ -78,5 +79,5 @@ fn add(widget: &impl IsA<Widget>, render_boxes: &RenderBoxes, align: Align) {
 
 /// Creates a standard Box widget with horizontal orientation.
 pub fn create_box() -> Box {
-    Box::new(gtk::Orientation::Horizontal, 0)
+    Box::new(Orientation::Horizontal, 0)
 }

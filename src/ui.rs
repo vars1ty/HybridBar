@@ -1,4 +1,4 @@
-use crate::{debug::debug_log, r#loop::update, widget_builder::RenderBoxes, *};
+use crate::{debug::log, r#loop::update, widget_builder::RenderBoxes, *};
 use gtk::{traits::*, *};
 use std::str::FromStr;
 
@@ -147,7 +147,7 @@ fn create_components(render_boxes: &RenderBoxes) {
             .expect(format!("[ERROR] There is no '{identifier}' identifier!\n").as_str());
 
         // Debug messages.
-        debug_log(format!(
+        log(format!(
             "Adding widget '{identifier}' with alignment '{widget_alignment}'"
         ));
 

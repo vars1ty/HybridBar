@@ -8,15 +8,12 @@ mod widget_builder;
 
 use std::path::Path;
 
+use debug::log;
 use gtk::gdk::*;
 use gtk::prelude::*;
 use gtk::*;
+use gtk_layer_shell::Edge;
 use json::JsonValue;
-
-/// Prints a message with the [Hybrid] prefix.
-fn prefix_print(msg: &str) {
-    println!("[Hybrid] {msg}")
-}
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
@@ -27,17 +24,17 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
 
     // If the position was valid, return the result.
     [
-        (gtk_layer_shell::Edge::Left, true),
-        (gtk_layer_shell::Edge::Right, true),
-        (gtk_layer_shell::Edge::Top, pos == "TOP"),
-        (gtk_layer_shell::Edge::Bottom, pos == "BOTTOM"),
+        (Edge::Left, true),
+        (Edge::Right, true),
+        (Edge::Top, pos == "TOP"),
+        (Edge::Bottom, pos == "BOTTOM"),
     ]
 }
 
 /// Initializes the status bar.
-fn activate(application: &gtk::Application) {
+fn activate(application: &Application) {
     // Create a normal GTK window however you like
-    let window = gtk::ApplicationWindow::new(application);
+    let window = ApplicationWindow::new(application);
 
     window.connect_screen_changed(set_visual);
     window.connect_draw(draw);
@@ -61,7 +58,7 @@ fn activate(application: &gtk::Application) {
 
     // Build all the widgets.
     ui::build_widgets(&window);
-    prefix_print("Ready!")
+    log("Ready!")
 }
 
 /// Loads the CSS
@@ -71,7 +68,7 @@ fn load_css() {
     let mut css_path = config::get_path();
     css_path.push_str("style.css");
     if !Path::new(&css_path).is_file() {
-        prefix_print("No style.css file was found, falling back to default GTK settings!")
+        log("No style.css file was found, falling back to default GTK settings!")
     }
 
     provider.load_from_path(&css_path);
@@ -80,17 +77,17 @@ fn load_css() {
     StyleContext::add_provider_for_screen(
         &Screen::default().expect("[ERROR] Could not connect to a display, fix your PC.\n"),
         &provider,
-        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+        STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
 }
 
 /// Called upon application startup.
 fn main() {
-    prefix_print("Building application...");
-    let application = gtk::Application::new(None, Default::default());
-    prefix_print("Loading CSS...");
+    log("Building application...");
+    let application = Application::new(None, Default::default());
+    log("Loading CSS...");
     application.connect_startup(|_| load_css());
-    prefix_print("Creating viewport...");
+    log("Creating viewport...");
     // Activate the layer shell.
     application.connect_activate(|app| {
         activate(app);

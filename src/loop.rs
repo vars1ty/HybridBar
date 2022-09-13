@@ -1,4 +1,4 @@
-use crate::{debug::debug_log, proc, ui};
+use crate::{debug::log, proc, ui};
 use gtk::traits::*;
 use std::time::Duration;
 
@@ -35,14 +35,14 @@ unsafe fn update_labels() {
             // TODO: This is slow and causes frequent micro-blocking, so it should really be
             // reconsidered in the future.
             // The root cause is because execute() is interrupting the UI Thread.
-            text += &proc::execute(widget.properties.command.clone());
+            text.push_str(&proc::execute(widget.properties.command.clone()))
         }
 
         // Check: never cause a redraw of the label by setting the text, if the new text is the
         // exact same as the current one.
         if text != label.text() {
-            debug_log("Redrawing bar");
-            label.set_text(&text);
+            log("Redrawing bar");
+            label.set_text(&text)
         }
     }
 }
