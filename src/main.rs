@@ -17,7 +17,7 @@ use json::JsonValue;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let pos = environment::try_get_var("HYBRID_POS");
+    let pos = environment::try_get_var("HYBRID_POS", "TOP");
     if pos != "TOP" && pos != "BOTTOM" {
         panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ]\n")
     }

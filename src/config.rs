@@ -13,7 +13,7 @@ pub fn get_path() -> String {
 /// Parses the config and returns it.
 pub fn read_config() -> JsonValue {
     let mut conf_path = get_path();
-    conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG"));
+    conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", "config.json"));
     json::parse(
         &fs::read_to_string(&conf_path)
             .expect(format!("[ERROR] Failed reading config file from '{conf_path}'!\n").as_str()),
