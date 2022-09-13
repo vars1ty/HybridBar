@@ -6,7 +6,7 @@ pub fn debug_log<T>(msg: T)
 where
     T: Display + Clone + Debug,
 {
-    if env!("HYBRID_LOG") == "1" {
+    if env::var("HYBRID_LOG").expect("[ERROR] Failed getting HYRBID_LOG!") == "1" {
         println!("[DEBUG] {}", msg);
     }
 }
