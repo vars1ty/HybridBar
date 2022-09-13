@@ -1,4 +1,7 @@
-use crate::{environment, proc};
+use crate::{
+    constant_messages::{FAILED_PARSING_CONFIG, FAILED_PARSING_CONTENT},
+    environment, proc,
+};
 use json::JsonValue;
 use std::{any::TypeId, fmt::Display, fs, io::Error};
 
@@ -18,7 +21,7 @@ pub fn read_config() -> JsonValue {
         &fs::read_to_string(&conf_path)
             .expect(format!("[ERROR] Failed reading config file from '{conf_path}'!\n").as_str()),
     )
-    .expect("[ERROR] Failed parsing config!\n")
+    .expect(FAILED_PARSING_CONFIG)
 }
 
 /// If the `key` exists inside `root`, the value of it is returned.
@@ -30,10 +33,12 @@ where
     let cfg = &read_config()[root];
     // This is probably the wrong way of doing it, but I can't think of a better way rn.
     let is_string = TypeId::of::<T>() == TypeId::of::<String>();
-    const ERROR_I32: &str = "[ERROR] Failed parsing content as i32!";
     if cfg.has_key(key) {
         if !is_string {
-            return Ok((String::default(), cfg[key].as_i32().expect(ERROR_I32)));
+            return Ok((
+                String::default(),
+                cfg[key].as_i32().expect(FAILED_PARSING_CONTENT),
+            ));
         }
 
         Ok((cfg[key].to_string(), 0))

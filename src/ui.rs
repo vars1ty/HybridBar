@@ -1,8 +1,13 @@
-use crate::{debug::log, r#loop::update, widget_builder::RenderBoxes, *};
-use gtk::{traits::*, *};
+use crate::{
+    constant_messages::{INVALID_IDENTIFIER, INVALID_WIDGET_ALIGNMENT, INVALID_WIDGET_IDENTIFIER},
+    debug::log,
+    r#loop::update,
+    structures::{GTKWidget, WidgetProperties},
+    widget_builder::RenderBoxes,
+    *,
+};
+use gtk::traits::*;
 use std::str::FromStr;
-
-use strum_macros::EnumString;
 
 /// Static mutable HashMap, because I'm not dealing with lifetime bullshit one more fucking minute.
 pub static mut VEC: Option<Vec<GTKWidget>> = None;
@@ -12,55 +17,6 @@ const ALIGNMENT: char = '-';
 
 /// Identifier separator.
 const SEPARATOR: char = '_';
-
-// TODO: Possibly rework the structures.
-
-/// GTK Widget structure.
-pub struct GTKWidget {
-    pub button: Option<Button>,
-    pub label: Option<Label>,
-    pub spacing: Option<Box>,
-    pub properties: WidgetProperties,
-}
-
-/// Widget properties structure.
-pub struct WidgetProperties {
-    pub text: String,
-    pub command: String,
-}
-
-/// Easy mutable implementions for GTKWidget.
-impl GTKWidget {
-    /// Creates a button.
-    fn create_button(&mut self, name: &str) {
-        let button = Button::new();
-        button.set_widget_name(name);
-        self.button = Some(button);
-    }
-
-    /// Creates a label.
-    fn create_label(&mut self, name: &str) {
-        let label = Label::new(None);
-        label.set_widget_name(name);
-        self.label = Some(label);
-    }
-
-    /// Creates a box.
-    fn create_spacing(&mut self, spacing_start: i32, spacing_end: i32) {
-        let w_box = widget_builder::create_box();
-        w_box.set_margin_start(spacing_start);
-        w_box.set_margin_end(spacing_end);
-        self.spacing = Some(w_box);
-    }
-}
-
-/// Widget alignment.
-#[derive(EnumString)]
-pub enum Align {
-    LEFT,
-    CENTERED,
-    RIGHT,
-}
 
 /// Builds all of the widgets.
 pub fn build_widgets(window: &gtk::ApplicationWindow) {
@@ -89,7 +45,9 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
     // Make every widget visible.
     window.show_all();
     // Update dynamic content.
-    update();
+    unsafe {
+        update();
+    }
 }
 
 /// Creates all of the widgets.
@@ -108,13 +66,13 @@ fn create_components(render_boxes: &RenderBoxes) {
         let identifier = key
             .split(SEPARATOR)
             .nth(0)
-            .expect("[ERROR] Failed retrieving widget identifier!\n");
+            .expect(INVALID_WIDGET_IDENTIFIER);
 
         // Grabs the widget alignment.
         let widget_alignment = key
             .split(ALIGNMENT)
             .nth(0)
-            .expect("[ERROR] Failed retrieving widget alignment!\n")
+            .expect(INVALID_WIDGET_ALIGNMENT)
             .to_uppercase();
 
         // Stores the unique widget name temporarily.
@@ -143,8 +101,7 @@ fn create_components(render_boxes: &RenderBoxes) {
 
         // The alignment grabbed.
         // If no valid alignment was found, panic.
-        let e_alignment = Align::from_str(&widget_alignment)
-            .expect(format!("[ERROR] There is no '{identifier}' identifier!\n").as_str());
+        let e_alignment = structures::Align::from_str(&widget_alignment).expect(INVALID_IDENTIFIER);
 
         // Debug messages.
         log(format!(

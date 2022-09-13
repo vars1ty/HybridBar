@@ -1,13 +1,18 @@
 mod config;
+mod constant_messages;
 mod debug;
 mod environment;
 mod r#loop;
 mod proc;
+mod structures;
 mod ui;
 mod widget_builder;
 
+use crate::constant_messages::INVALID_BAR_POSITION;
 use std::path::Path;
 
+use constant_messages::FAILED_PAINTING;
+use constant_messages::MISSING_DISPLAY;
 use debug::log;
 use gtk::gdk::*;
 use gtk::prelude::*;
@@ -19,7 +24,7 @@ use json::JsonValue;
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
     let pos = environment::try_get_var("HYBRID_POS", "TOP");
     if pos != "TOP" && pos != "BOTTOM" {
-        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ]\n")
+        panic!("{}", INVALID_BAR_POSITION)
     }
 
     // If the position was valid, return the result.
@@ -75,7 +80,7 @@ fn load_css() {
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(
-        &Screen::default().expect("[ERROR] Could not connect to a display, fix your PC.\n"),
+        &Screen::default().expect(MISSING_DISPLAY),
         &provider,
         STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
@@ -125,6 +130,6 @@ fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     // Apply
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);
-    ctx.paint().expect("[ERROR] Failed painting!\n");
+    ctx.paint().expect(FAILED_PAINTING);
     Inhibit(false)
 }
