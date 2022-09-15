@@ -111,26 +111,29 @@ fn set_visual(window: &ApplicationWindow, _screen: Option<&gdk::Screen>) {
 }
 
 /// Converts the value of a child inside `background` to a `f64`.
-fn get_background_float(cfg: &JsonValue, identifier: &str) -> f64 {
-    cfg["background"][identifier]
+fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f64 {
+    let mut res = cfg["background"][identifier]
         .as_f64()
-        .expect("[ERROR] Failed converting background:{identifier} to f64!\n")
-        / 255.0
-    // Divide by 255 so that RGB values apply and users don't have to use 0-1 values.
+        .expect("[ERROR] Failed converting background:{identifier} to f64!\n");
+
+    // Only divide by 255 if explicitly told to.
+    if from_255 {
+        res = res / 255.0;
+    }
+
+    // Return the result.
+    res
 }
 
 /// Draws the window using a custom color and opacity.
 fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     let cfg = config::read_config();
     // Fetch config for the values.
-    let r = get_background_float(&cfg, "r");
-    let g = get_background_float(&cfg, "g");
-    let b = get_background_float(&cfg, "b");
-    let a = cfg["background"]["a"]
-        .as_f64()
-        .expect("[ERROR] Failed converting background:a to f64!");
+    let r = get_background_float(&cfg, "r", true);
+    let g = get_background_float(&cfg, "g", true);
+    let b = get_background_float(&cfg, "b", true);
+    let a = get_background_float(&cfg, "a", false);
     // Apply
-    println!("{a}");
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);
     ctx.paint().expect(FAILED_PAINTING);
