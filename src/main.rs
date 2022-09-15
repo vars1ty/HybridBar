@@ -126,8 +126,11 @@ fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     let r = get_background_float(&cfg, "r");
     let g = get_background_float(&cfg, "g");
     let b = get_background_float(&cfg, "b");
-    let a = get_background_float(&cfg, "a");
+    let a = cfg["background"]["a"]
+        .as_f64()
+        .expect("[ERROR] Failed converting background:a to f64!");
     // Apply
+    println!("{a}");
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);
     ctx.paint().expect(FAILED_PAINTING);
