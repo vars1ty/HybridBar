@@ -6,7 +6,7 @@ pub fn try_get_var(variable: &str, fallback_value: &str) -> String {
     match this {
         Ok(t) => t,
         Err(_) => {
-            println!("[HYBRID] [WARN] Unassigned environment variable '{variable}', using fallback '{fallback_value}'.");
+            println!("[HYBRID] [INFO] Unassigned environment variable '{variable}', using fallback '{fallback_value}'.");
             String::from(fallback_value)
         }
     }

@@ -8,6 +8,10 @@ const DEFAULT_ARG: &str = "-c";
 
 /// Executes a command and returns the output.
 pub fn execute(cmd: String) -> String {
+    if cmd.is_empty() {
+        return String::default();
+    }
+
     let output = Command::new(DEFAULT_PROC)
         .args([DEFAULT_ARG, &cmd])
         .output()

@@ -73,6 +73,7 @@ pub fn add_label(
         .expect(CANNOT_ACCESS_LABEL);
 
     log("Adding label");
+    label.set_text(&gtk_widget_structure.properties.text);
     add(label, render_boxes, align);
     unsafe {
         // If the command is empty, there is no need to add it to the VEC list.

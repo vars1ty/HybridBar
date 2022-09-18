@@ -1,0 +1,18 @@
+{
+    "background": {
+        "r": 10,
+        "g": 10,
+        "b": 10,
+        "a": 1.0
+    },
+    "left-label_username": {
+        "text": "user: ",
+        "command": "whoami"
+    },
+    "centered-label_centerdummy": {
+        "text": "dummy centered label"
+    },
+    "right-label_rightdummy": {
+        "text": "dummy right aligned label"
+    }
+}
