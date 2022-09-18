@@ -14,19 +14,13 @@ It supports:
 
 A.K.A It's a simple status bar I put together with gtk-layer-shell and GTK 3 because I couldn't be bothered with more weird, half-broken bars.
 ## I have no config
-You have to make one yourself for now, until Hybrid has a default example config available.
-
-```sh
-mkdir -p ~/.config/HybridBar
-cd ~/.config/HybridBar
-touch config.json
-```
-
-Now edit the config in your favorite text-editor (better be NeoVim) and begin configuring it.
+If the AUR version for whatever reason didn't give you the example one, copy the example one from `examples/config.json` into `~/.config/HybridBar/`.
 # Config Layout
 I'm assuming you are familiar with JSON, if you aren't, well too bad.
 ## Base
 Before you can use the bar, you have to adjust the color and alpha.
+
+RGB Colors are 0-255 as an integer, Alpha is 0.0-1.0 as a float.
 
 Here's an example:
 
@@ -44,7 +38,7 @@ Here's an example:
 Available widgets:
 
 Labels:
-- left-label: Left-aligned label;
+- left-label: Left-aligned label
 - centered-label: Centered label
 - right-label: Right-aligned label
 
@@ -90,44 +84,6 @@ The `text` and `command` nested JSON keys are simply described as:
 No, the unique name isn't actually displayed anywhere, it's just to be able to differ each component from another.
 ## Video Tutorial
 You can watch a video tutorial made by Foren [here](https://www.youtube.com/watch?v=5g7MX3jgv8A)
-## Example Config
-Made for [Hyprland](https://github.com/hyprwm/Hyprland).
-
-```json
-{
-    "background": {
-        "r": 10,
-        "g": 10,
-        "b": 10,
-        "a": 0.5
-    },
-    "left-label_username": {
-        "text": "user: ",
-        "command": "whoami"
-    },
-    "left-label_current_workspace": {
-        "text": " | workspace: ",
-        "command": "hyprctl monitors -j | jq -r \".[].activeWorkspace.id\""
-    },
-    "left-label_max_workspaces": {
-        "text": "/10"
-    },
-    "centered-label_active_window": {
-        "command": "hyprctl activewindow -j | jq -r \".title\""
-    },
-    "right-label_volume": {
-        "text": " | vol: ",
-        "command": "echo $(pactl get-sink-volume @DEFAULT_SINK@ | rg -o '[0-9]{1,3}%' | head -n 1 | cut -d '%' -f 1)%"
-    },
-    "right-label_time": {
-        "text": " | time: ",
-        "command": "date +%H:%M" 
-    },
-    "right-spacing_end": {
-        "spacing_end": 5
-    }
-}
-```
 ## CSS Support
 Starting from `0.1.3`, CSS is now supported and you can make it auto-load on startup by making a `style.css` file next to your `config.json` at the same path.
 
@@ -137,9 +93,9 @@ Since `0.1.4`, you can now also style separate labels and buttons.
 
 For example: `left-label_username_stuff` can be styled using CSS via `#username_stuff { /* Code */ }`.
 ## Environment Variables
-`HYBRID_LOG` = `0 OR 1` : Logs debug output to stdout.
+`HYBRID_LOG` = `0` OR `1` : Logs debug output to stdout.
 
-`HYBRID_POS` = `TOP OR BOTTOM` : Tells the bar where to position itself, TOP or BOTTOM.
+`HYBRID_POS` = `TOP` OR `BOTTOM` : Tells the bar where to position itself, TOP or BOTTOM.
 
 `HYBRID_CONFIG` = `name.json` : Locates the config inside the HybridBar config path, then uses it for the rest of the bars session.
 # Installation
@@ -158,4 +114,5 @@ AUR: `paru -S hybrid-bar-git`
 2. `cd HybridBar`
 3. `cargo build --release`
 4. `cd target/release`
-5. Run the `hybrid-bar` executable.
+5. `chmod +x hybrid-bar` (Optional, but recommended)
+5. Done, the executable is called `hybrid-bar`.
