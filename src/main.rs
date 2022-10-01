@@ -2,11 +2,12 @@ mod config;
 mod constant_messages;
 mod debug;
 mod environment;
+mod label_widget;
 mod r#loop;
 mod proc;
 mod structures;
 mod ui;
-mod widget_builder;
+mod widget;
 
 use crate::constant_messages::INVALID_BAR_POSITION;
 use std::path::Path;
@@ -19,6 +20,8 @@ use gtk::prelude::*;
 use gtk::*;
 use gtk_layer_shell::Edge;
 use json::JsonValue;
+use label_widget::LabelWidget;
+use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {

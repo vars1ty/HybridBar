@@ -2,15 +2,13 @@ use crate::{
     constant_messages::{INVALID_IDENTIFIER, INVALID_WIDGET_ALIGNMENT, INVALID_WIDGET_IDENTIFIER},
     debug::log,
     r#loop::update,
-    structures::{GTKWidget, WidgetProperties},
-    widget_builder::RenderBoxes,
     *,
 };
 use gtk::traits::*;
 use std::str::FromStr;
 
-/// Static mutable HashMap, because I'm not dealing with lifetime bullshit one more fucking minute.
-pub static mut VEC: Option<Vec<GTKWidget>> = None;
+/// Static mutable Vector, because I'm not dealing with lifetime bullshit one more fucking minute.
+pub static mut VEC: Option<Vec<LabelWidget>> = None;
 
 /// Key separator.
 const ALIGNMENT: char = '-';
@@ -21,9 +19,9 @@ const SEPARATOR: char = '_';
 /// Builds all of the widgets.
 pub fn build_widgets(window: &gtk::ApplicationWindow) {
     // Create box widgets, which we'll be using to draw the content onto.
-    let left = widget_builder::create_box();
-    let centered = widget_builder::create_box();
-    let right = widget_builder::create_box();
+    let left = Box::new(Orientation::Horizontal, 0);
+    let centered = Box::new(Orientation::Horizontal, 0);
+    let right = Box::new(Orientation::Horizontal, 0);
 
     // Add and align all of the box widgets.
     left.set_center_widget(Some(&centered));
@@ -33,15 +31,8 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
     // Create the Vector.
     unsafe { VEC = Some(Vec::new()) }
 
-    // Create the Render Boxes structure.
-    let render_boxes = RenderBoxes {
-        draw_left: left,
-        draw_centered: centered,
-        draw_right: right,
-    };
-
     // Prepare all of the widgets.
-    create_components(&render_boxes);
+    create_components(&left, &centered, &right);
     // Make every widget visible.
     window.show_all();
     // Update dynamic content.
@@ -51,7 +42,7 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
 }
 
 /// Creates all of the widgets.
-fn create_components(render_boxes: &RenderBoxes) {
+fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
     for (key, _) in config::read_config().entries() {
         if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
@@ -79,31 +70,17 @@ fn create_components(render_boxes: &RenderBoxes) {
         let mut widget_name = String::default();
         for i in 1..count {
             widget_name.push_str(key.split(SEPARATOR).nth(i).unwrap());
-            // Only add '_' to the end if we haven't reached the end.
+            // Only add '_' to the end if the remaining amount of items isn't 1.
             if i != count - 1 {
                 widget_name.push(SEPARATOR);
             }
         }
 
-        // Create the properties structure.
-        let widget_properties = WidgetProperties {
-            text: config::try_get::<String>(key, "text").unwrap().0,
-            command: config::try_get::<String>(key, "command").unwrap().0,
-        };
+        // Base keys, text and command being optional.
+        let text = config::try_get::<String>(key, "text").unwrap().0;
+        let command = config::try_get::<String>(key, "command").unwrap().0;
+        let alignment = structures::Align::from_str(&widget_alignment).expect(INVALID_IDENTIFIER);
 
-        // Create the widget structure.
-        let mut widget_structure = GTKWidget {
-            button: None,
-            label: None,
-            spacing: None,
-            properties: widget_properties,
-        };
-
-        // The alignment grabbed.
-        // If no valid alignment was found, panic.
-        let e_alignment = structures::Align::from_str(&widget_alignment).expect(INVALID_IDENTIFIER);
-
-        // Debug messages.
         log(format!(
             "Adding widget '{identifier}' with alignment '{widget_alignment}'"
         ));
@@ -111,17 +88,27 @@ fn create_components(render_boxes: &RenderBoxes) {
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
-            widget_structure.create_label(&widget_name);
-            widget_builder::add_label(render_boxes, widget_structure, e_alignment)
-        } else if identifier.contains("button") {
-            widget_structure.create_button(&widget_name);
-            widget_builder::add_button(render_boxes, widget_structure, e_alignment)
-        } else if identifier.contains("spacing") {
-            widget_structure.create_spacing(
-                config::try_get::<i32>(key, "spacing_start").unwrap().1,
-                config::try_get::<i32>(key, "spacing_end").unwrap().1,
-            );
-            widget_builder::add_box(render_boxes, widget_structure, e_alignment)
+            let label = LabelWidget {
+                name: widget_name,
+                text,
+                command,
+                label: Label::new(None),
+            };
+
+            label.add(alignment, left, centered, right);
+
+            /*
+            } else if identifier.contains("button") {
+                widget_structure.create_button(&widget_name);
+                widget_builder::add_button(&render_boxes, widget_structure, e_alignment)
+            } else if identifier.contains("spacing") {
+                widget_structure.create_spacing(
+                    config::try_get::<i32>(key, "spacing_start").unwrap().1,
+                    config::try_get::<i32>(key, "spacing_end").unwrap().1,
+                );
+                widget_builder::add_box(&render_boxes, widget_structure, e_alignment)
+            }
+            */
         }
     }
 }
