@@ -1,3 +1,4 @@
+mod button_widget;
 mod config;
 mod constant_messages;
 mod debug;

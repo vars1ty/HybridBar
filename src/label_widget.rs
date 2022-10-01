@@ -1,5 +1,5 @@
 use gtk::{
-    traits::{ContainerExt, LabelExt, WidgetExt},
+    traits::{ContainerExt, WidgetExt},
     Box, Label,
 };
 
@@ -18,7 +18,6 @@ pub struct LabelWidget {
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
     fn add(self, align: Align, left: &Box, centered: &Box, right: &Box) {
-        self.label.set_text(&self.text);
         self.label.set_widget_name(&self.name);
 
         // Align and add the widget
