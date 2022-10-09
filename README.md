@@ -1,5 +1,5 @@
 # Hybrid Bar
-A status bar focused on wl-roots Wayland compositors
+A status bar focused on wlroots Wayland compositors
 
 ## Preview
 With blur through Hyprland.
@@ -9,6 +9,7 @@ With blur through Hyprland.
 It supports:
 - Labels (static and inherit text from a command);
 - Buttons with `on click` actions via a bash command;
+- Spacings;
 - Transparency (+ blur if your compositor supports it);
 - Custom CSS
 
@@ -16,7 +17,7 @@ A.K.A It's a simple status bar I put together with gtk-layer-shell and GTK 3 bec
 ## I have no config
 If the AUR version for whatever reason didn't give you the example one, copy the example one from `examples/config.json` into `~/.config/HybridBar/`.
 # Config Layout
-I'm assuming you are familiar with JSON, if you aren't, well too bad.
+I'm assuming you are familiar with JSON. If you aren't, well too bad.
 ## Base
 Before you can use the bar, you have to adjust the color and alpha.
 
@@ -42,28 +43,28 @@ Labels:
 - centered-label: Centered label
 - right-label: Right-aligned label
 
-Optional Keys Supported:
+Keys Supported:
 - text: String
 - command: String
-
+***
 Buttons:
 - left-button: Left-aligned button
 - centered-button: Centered button
 - right-button: Right-aligned button
 
-Optional Keys Supported:
+Keys Supported:
 - text: String
 - command: String
-
+***
 Spacing:
 - left-spacing: Left-focused spacing
 - centered-spacing: Centered-focused spacing
 - right-spacing: Right-focused spacing
 
-Optional Keys Supported:
+Keys Supported:
 - spacing_start: i32
 - spacing_end: i32
-
+***
 To actually use a widget, here's an example:
 
 ```json
@@ -73,7 +74,7 @@ To actually use a widget, here's an example:
     }
 ```
 
-Every widget **has** to end with `_`, then you add the unique name for that widget.
+Every widget **has** to contain an underscore (`_`) after the type, then you add the unique name for that widget.
 
 The `text` and `command` nested JSON keys are simply described as:
 - text: Raw Label Text
@@ -104,6 +105,7 @@ Dependencies:
 1. gtk-layer-shell
 2. gtk3
 3. bash
+4. a brain
 
 ## Arch Linux
 AUR: `paru -S hybrid-bar-git`
@@ -114,5 +116,6 @@ AUR: `paru -S hybrid-bar-git`
 2. `cd HybridBar`
 3. `cargo build --release`
 4. `cd target/release`
-5. `chmod +x hybrid-bar` (Optional, but recommended)
 5. Done, the executable is called `hybrid-bar`.
+
+Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
