@@ -6,6 +6,7 @@ mod environment;
 mod label_widget;
 mod r#loop;
 mod proc;
+mod spacing_widget;
 mod structures;
 mod ui;
 mod widget;

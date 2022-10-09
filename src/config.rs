@@ -31,7 +31,6 @@ where
     T: Display + 'static,
 {
     let cfg = &read_config()[root];
-    // This is probably the wrong way of doing it, but I can't think of a better way rn.
     let is_string = TypeId::of::<T>() == TypeId::of::<String>();
     if cfg.has_key(key) {
         if !is_string {

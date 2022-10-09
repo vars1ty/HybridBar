@@ -3,6 +3,7 @@ use crate::{
     constant_messages::{INVALID_IDENTIFIER, INVALID_WIDGET_ALIGNMENT, INVALID_WIDGET_IDENTIFIER},
     debug::log,
     r#loop::update,
+    spacing_widget::SpacingWidget,
     *,
 };
 use gtk::traits::*;
@@ -90,13 +91,13 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
             let label = LabelWidget {
-                name: &widget_name,
+                name: widget_name.clone(),
                 text,
                 command,
                 label: Label::new(Some(&widget_name)),
             };
 
-            label.add(alignment, left, centered, right);
+            label.add(alignment, left, centered, right)
         } else if identifier.contains("button") {
             let button = ButtonWidget {
                 name: widget_name,
@@ -104,19 +105,14 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 button: Button::with_label(&text),
             };
 
-            button.add(alignment, left, centered, right);
-        }
-        /*
-        } else if identifier.contains("button") {
-            widget_structure.create_button(&widget_name);
-            widget_builder::add_button(&render_boxes, widget_structure, e_alignment)
+            button.add(alignment, left, centered, right)
         } else if identifier.contains("spacing") {
-            widget_structure.create_spacing(
-                config::try_get::<i32>(key, "spacing_start").unwrap().1,
-                config::try_get::<i32>(key, "spacing_end").unwrap().1,
-            );
-            widget_builder::add_box(&render_boxes, widget_structure, e_alignment)
+            let spacing = SpacingWidget {
+                spacing_start: config::try_get::<i32>(key, "spacing_start").unwrap().1,
+                spacing_end: config::try_get::<i32>(key, "spacing_end").unwrap().1,
+            };
+
+            spacing.add(alignment, left, centered, right)
         }
-        */
     }
 }
