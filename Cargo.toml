@@ -1,9 +1,9 @@
 [package]
 name = "hybrid-bar"
 authors = [ "varsity <varsity@duck.com>" ]
-version = "0.1.9"
+version = "0.2.0"
 edition = "2021"
-description = "A simple status bar made for wl-roots compositors."
+description = "A simple status bar made for wlroots compositors."
 license = "MIT"
 
 [dependencies]
