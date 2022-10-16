@@ -13,7 +13,7 @@ It supports:
 - Transparency (+ blur if your compositor supports it);
 - Custom CSS
 
-A.K.A It's a simple status bar I put together with gtk-layer-shell and GTK 3 because I couldn't be bothered with more weird, half-broken bars.
+In other words, it's a simple Wayland status bar that does one thing: Display the stuff __you__ put onto it. Nothing more, nothing less, no over-engineered dogshit.
 ## I have no config
 If the AUR version for whatever reason didn't give you the example one, copy the example one from `examples/config.json` into `~/.config/HybridBar/`.
 # Config Layout

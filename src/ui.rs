@@ -1,16 +1,21 @@
 use crate::{
     button_widget::ButtonWidget,
-    constant_messages::{INVALID_IDENTIFIER, INVALID_WIDGET_ALIGNMENT, INVALID_WIDGET_IDENTIFIER},
+    constant_messages::{INVALID_IDENTIFIER, INVALID_WIDGET_ALIGNMENT},
     debug::log,
     r#loop::update,
     spacing_widget::SpacingWidget,
     *,
 };
 use gtk::traits::*;
-use std::str::FromStr;
+use std::{str::FromStr, sync::Mutex};
 
-/// Static mutable Vector, because I'm not dealing with lifetime bullshit one more fucking minute.
-pub static mut VEC: Option<Vec<LabelWidget>> = None;
+lazy_static! {
+    /// Holds all the dynamic label widgets.
+    pub static ref VEC: Mutex<Vec<LabelWidget>> = {
+        let v = Vec::new();
+        Mutex::new(v)
+    };
+}
 
 /// Builds all of the widgets.
 pub fn build_widgets(window: &gtk::ApplicationWindow) {
@@ -24,17 +29,12 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
     left.pack_end(&right, false, true, 0);
     window.add(&left);
 
-    // Create the Vector.
-    unsafe { VEC = Some(Vec::new()) }
-
     // Prepare all of the widgets.
     create_components(&left, &centered, &right);
     // Make every widget visible.
     window.show_all();
     // Update dynamic content.
-    unsafe {
-        update();
-    }
+    update();
 }
 
 /// Creates all of the widgets.
@@ -108,6 +108,9 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             };
 
             spacing.add(alignment, left, centered, right)
+        } else {
+            // You are stupid.
+            panic!("{}", INVALID_WIDGET_IDENTIFIER)
         }
     }
 }

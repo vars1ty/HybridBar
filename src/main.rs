@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 #[path = "widgets/button_widget.rs"]
 mod button_widget;
 mod config;
@@ -68,7 +71,7 @@ fn activate(application: &Application) {
 
     // Build all the widgets.
     ui::build_widgets(&window);
-    log("Ready!")
+    log("Ready!");
 }
 
 /// Loads the CSS

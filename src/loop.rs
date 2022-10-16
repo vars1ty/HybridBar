@@ -3,7 +3,7 @@ use gtk::traits::*;
 use std::time::Duration;
 
 /// Updates dynamic bar content.
-pub unsafe fn update() {
+pub fn update() {
     let tick = move || {
         update_labels();
         // Indicates that we want to continue using our timer, false makes it stop.
@@ -15,8 +15,8 @@ pub unsafe fn update() {
 }
 
 /// Updates all of the labels.
-unsafe fn update_labels() {
-    for widget in ui::VEC.as_mut().expect(CANNOT_ACCESS_VEC) {
+fn update_labels() {
+    for widget in ui::VEC.lock().expect(CANNOT_ACCESS_VEC).iter() {
         let mut text = widget.text.clone();
         // Append to the cloned text if the command isn't empty.
         if !widget.command.is_empty() {

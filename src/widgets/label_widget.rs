@@ -15,6 +15,10 @@ pub struct LabelWidget {
     pub label: Label,
 }
 
+// For VEC to work.
+unsafe impl Send for LabelWidget {}
+unsafe impl Sync for LabelWidget {}
+
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
     fn add(self, align: Align, left: &Box, centered: &Box, right: &Box) {
@@ -28,8 +32,6 @@ impl HWidget for LabelWidget {
         }
 
         log(format!("Added a new label widget named '{}'", self.name));
-        unsafe {
-            VEC.as_mut().expect(CANNOT_ACCESS_VEC).push(self);
-        }
+        VEC.lock().expect(CANNOT_ACCESS_VEC).push(self);
     }
 }
