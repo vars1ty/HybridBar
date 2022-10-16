@@ -12,12 +12,6 @@ use std::str::FromStr;
 /// Static mutable Vector, because I'm not dealing with lifetime bullshit one more fucking minute.
 pub static mut VEC: Option<Vec<LabelWidget>> = None;
 
-/// Key separator.
-const ALIGNMENT: char = '-';
-
-/// Identifier separator.
-const SEPARATOR: char = '_';
-
 /// Builds all of the widgets.
 pub fn build_widgets(window: &gtk::ApplicationWindow) {
     // Create box widgets, which we'll be using to draw the content onto.
@@ -46,6 +40,8 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
 /// Creates all of the widgets.
 fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
+    const ALIGNMENT: char = '-';
+    const SEPARATOR: char = '_';
     for (key, _) in config::read_config().entries() {
         if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
             continue;
@@ -54,12 +50,11 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Gets the amount of entires in the split key.
         let count = key.split(SEPARATOR).count();
 
-        // Gets the widget identifier.
-        // For example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
-        let identifier = key
-            .split(SEPARATOR)
-            .nth(0)
-            .expect(INVALID_WIDGET_IDENTIFIER);
+        // Gets the widget identifiers.
+        let identifiers = key.split(SEPARATOR).collect::<Vec<&str>>();
+
+        // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
+        let identifier = identifiers[0];
 
         // Grabs the widget alignment.
         let widget_alignment = key
@@ -71,7 +66,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Stores the unique widget name temporarily.
         let mut widget_name = String::default();
         for i in 1..count {
-            widget_name.push_str(key.split(SEPARATOR).nth(i).unwrap());
+            widget_name.push_str(identifiers[i]);
             // Only add '_' to the end if the remaining amount of items isn't 1.
             if i != count - 1 {
                 widget_name.push(SEPARATOR);
@@ -84,17 +79,17 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let alignment = structures::Align::from_str(&widget_alignment).expect(INVALID_IDENTIFIER);
 
         log(format!(
-            "Adding widget '{identifier}' with alignment '{widget_alignment}'"
+            "Adding widget '{identifier}' with alignment '{widget_alignment}'",
         ));
 
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
             let label = LabelWidget {
-                name: widget_name.clone(),
+                name: widget_name,
                 text,
                 command,
-                label: Label::new(Some(&widget_name)),
+                label: Label::new(None),
             };
 
             label.add(alignment, left, centered, right)

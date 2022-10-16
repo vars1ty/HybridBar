@@ -1,21 +1,20 @@
+#[path = "widgets/button_widget.rs"]
 mod button_widget;
 mod config;
 mod constant_messages;
 mod debug;
 mod environment;
+#[path = "widgets/label_widget.rs"]
 mod label_widget;
 mod r#loop;
 mod proc;
+#[path = "widgets/spacing_widget.rs"]
 mod spacing_widget;
 mod structures;
 mod ui;
 mod widget;
 
-use crate::constant_messages::INVALID_BAR_POSITION;
-use std::path::Path;
-
-use constant_messages::FAILED_PAINTING;
-use constant_messages::MISSING_DISPLAY;
+use constant_messages::*;
 use debug::log;
 use gtk::gdk::*;
 use gtk::prelude::*;
@@ -23,6 +22,7 @@ use gtk::*;
 use gtk_layer_shell::Edge;
 use json::JsonValue;
 use label_widget::LabelWidget;
+use std::path::Path;
 use widget::HWidget;
 
 /// Gets the anchors.
