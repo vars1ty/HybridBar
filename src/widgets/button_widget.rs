@@ -34,3 +34,4 @@ impl HWidget for ButtonWidget {
         log(format!("Added a new button widget named '{}'", self.name));
     }
 }
+
