@@ -1,11 +1,5 @@
-use gtk::{
-    traits::{ContainerExt, WidgetExt},
-    Box, Label,
-};
-
-use crate::{
-    constant_messages::CANNOT_ACCESS_VEC, debug::log, structures::Align, ui::VEC, widget::HWidget,
-};
+use crate::{debug::log, structures::Align, ui::VEC, widget::HWidget};
+use gtk::{traits::*, *};
 
 /// Creates a new label widget.
 pub struct LabelWidget {
@@ -32,6 +26,8 @@ impl HWidget for LabelWidget {
         }
 
         log(format!("Added a new label widget named '{}'", self.name));
-        VEC.lock().expect(CANNOT_ACCESS_VEC).push(self);
+        VEC.lock()
+            .expect("[ERROR] Cannot access ui::VEC!\n")
+            .push(self);
     }
 }

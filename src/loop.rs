@@ -1,4 +1,4 @@
-use crate::{constant_messages::CANNOT_ACCESS_VEC, debug::log, proc, ui};
+use crate::{config, debug::log, proc, ui};
 use gtk::traits::*;
 use std::time::Duration;
 
@@ -10,13 +10,35 @@ pub fn update() {
         glib::Continue(true)
     };
 
-    // Executes the "tick" closure every 100ms.
-    glib::timeout_add_local(Duration::from_millis(100), tick);
+    // Executes the "tick" closure for every millisecond specified in hybrid:update_rate.
+
+    glib::timeout_add_local(Duration::from_millis(get_update_rate()), tick);
+}
+
+/// Returns the set update-rate.
+fn get_update_rate() -> u64 {
+    let mut update_rate = config::try_get::<i32>("hybrid", "update_rate").1;
+    // Clamp the value to a minimum of 5.
+    if update_rate < 5 {
+        update_rate = 5;
+    }
+
+    if update_rate < 100 {
+        println!("[HYBRID] [CRITICAL WARNING] Your update-rate is {update_rate}ms! Expect performance drawbacks")
+    }
+
+    update_rate
+        .try_into()
+        .expect("[ERROR] Cannot convert update_rate into u64!\n")
 }
 
 /// Updates all of the labels.
 fn update_labels() {
-    for widget in ui::VEC.lock().expect(CANNOT_ACCESS_VEC).iter() {
+    for widget in ui::VEC
+        .lock()
+        .expect("[ERROR] Cannot access ui::VEC!\n")
+        .iter()
+    {
         let mut text = widget.text.clone();
         // Append to the cloned text if the command isn't empty.
         if !widget.command.is_empty() {

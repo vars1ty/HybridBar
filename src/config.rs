@@ -1,9 +1,6 @@
-use crate::{
-    constant_messages::{FAILED_PARSING_CONFIG, FAILED_PARSING_CONTENT},
-    environment, proc,
-};
+use crate::{environment, proc};
 use json::JsonValue;
-use std::{any::TypeId, fmt::Display, fs, io::Error};
+use std::{any::TypeId, fmt::Display, fs};
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
@@ -21,12 +18,12 @@ pub fn read_config() -> JsonValue {
         &fs::read_to_string(&conf_path)
             .expect(format!("[ERROR] Failed reading config file from '{conf_path}'!\n").as_str()),
     )
-    .expect(FAILED_PARSING_CONFIG)
+    .expect(format!("[ERROR] Failed parsing config from '{conf_path}'!\n").as_str())
 }
 
 /// If the `key` exists inside `root`, the value of it is returned.
 /// If not, a default value is instead returned.
-pub fn try_get<T>(root: &str, key: &str) -> Result<(String, i32), Error>
+pub fn try_get<T>(root: &str, key: &str) -> (String, i32)
 where
     T: Display + 'static,
 {
@@ -34,14 +31,16 @@ where
     let is_string = TypeId::of::<T>() == TypeId::of::<String>();
     if cfg.has_key(key) {
         if !is_string {
-            return Ok((
+            return (
                 String::default(),
-                cfg[key].as_i32().expect(FAILED_PARSING_CONTENT),
-            ));
+                cfg[key]
+                    .as_i32()
+                    .expect(format!("[ERROR] Failed parsing {root}:{key} as i32!\n").as_str()),
+            );
         }
 
-        Ok((cfg[key].to_string(), 0))
+        (cfg[key].to_string(), 0)
     } else {
-        Ok((String::default(), 0))
+        (String::default(), 0)
     }
 }

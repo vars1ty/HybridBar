@@ -1,10 +1,5 @@
 use crate::{
-    button_widget::ButtonWidget,
-    constant_messages::{INVALID_IDENTIFIER, INVALID_WIDGET_ALIGNMENT},
-    debug::log,
-    r#loop::update,
-    spacing_widget::SpacingWidget,
-    *,
+    button_widget::ButtonWidget, debug::log, r#loop::update, spacing_widget::SpacingWidget, *,
 };
 use gtk::traits::*;
 use std::{str::FromStr, sync::Mutex};
@@ -37,6 +32,21 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
     update();
 }
 
+/// Gets the widget name for a specific key.
+fn get_widget_name(identifiers: Vec<&str>, separator: char, count: usize) -> String {
+    // Stores the unique widget name temporarily.
+    let mut widget_name = String::default();
+    for i in 1..count {
+        widget_name.push_str(identifiers[i]);
+        // Only add '_' to the end if the remaining amount of items isn't 1.
+        if i != count - 1 {
+            widget_name.push(separator);
+        }
+    }
+
+    widget_name
+}
+
 /// Creates all of the widgets.
 fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
@@ -60,27 +70,20 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let widget_alignment = key
             .split(ALIGNMENT)
             .nth(0)
-            .expect(INVALID_WIDGET_ALIGNMENT)
+            .expect("[ERROR] Invalid widget alignment!\n")
             .to_uppercase();
 
-        // Stores the unique widget name temporarily.
-        let mut widget_name = String::default();
-        for i in 1..count {
-            widget_name.push_str(identifiers[i]);
-            // Only add '_' to the end if the remaining amount of items isn't 1.
-            if i != count - 1 {
-                widget_name.push(SEPARATOR);
-            }
-        }
-
         // Base keys, text and command being optional.
-        let text = config::try_get::<String>(key, "text").unwrap().0;
-        let command = config::try_get::<String>(key, "command").unwrap().0;
-        let alignment = structures::Align::from_str(&widget_alignment).expect(INVALID_IDENTIFIER);
+        let text = config::try_get::<String>(key, "text").0;
+        let command = config::try_get::<String>(key, "command").0;
+        let alignment = structures::Align::from_str(&widget_alignment)
+            .expect("[ERROR] Invalid widget alignment!\n");
 
         log(format!(
             "Adding widget '{identifier}' with alignment '{widget_alignment}'",
         ));
+
+        let widget_name = get_widget_name(identifiers, SEPARATOR, count);
 
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.
@@ -103,14 +106,15 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             button.add(alignment, left, centered, right)
         } else if identifier.contains("spacing") {
             let spacing = SpacingWidget {
-                spacing_start: config::try_get::<i32>(key, "spacing_start").unwrap().1,
-                spacing_end: config::try_get::<i32>(key, "spacing_end").unwrap().1,
+                name: widget_name,
+                spacing_start: config::try_get::<i32>(key, "spacing_start").1,
+                spacing_end: config::try_get::<i32>(key, "spacing_end").1,
             };
 
             spacing.add(alignment, left, centered, right)
         } else {
             // You are stupid.
-            panic!("{}", INVALID_WIDGET_IDENTIFIER)
+            panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }
     }
 }

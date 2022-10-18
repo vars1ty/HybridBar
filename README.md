@@ -11,7 +11,8 @@ It supports:
 - Buttons with `on click` actions via a bash command;
 - Spacings;
 - Transparency (+ blur if your compositor supports it);
-- Custom CSS
+- Custom CSS;
+- Custom update-frequency for dynamic widgets (ones with a `command` set)
 
 In other words, it's a simple Wayland status bar that does one thing: Display the stuff __you__ put onto it. Nothing more, nothing less, no over-engineered dogshit.
 ## I have no config
@@ -27,7 +28,7 @@ Here's an example:
 
 ```json
 {
-    "background": {
+    "hybrid": {
         "r": 10,
         "g": 10,
         "b": 10,

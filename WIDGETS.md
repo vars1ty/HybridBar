@@ -1,4 +1,11 @@
 # Widgets
+> **Warning**:
+> Widgets with a command set are updated every few milliseconds from the value at `hybrid:update_rate`.
+>
+> An unspecified value (or one below `5`) will default to `5`, meaning it calls bash-commands every 5 milliseconds.
+>
+> This can be performance intensive, so it's recommended that you set the update-rate to something like `100`.
+***
 Available widgets:
 
 Labels:

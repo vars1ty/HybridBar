@@ -1,8 +1,5 @@
 use crate::{debug::log, structures::Align, widget::HWidget};
-use gtk::{
-    traits::{ButtonExt, ContainerExt, WidgetExt},
-    Box, Button,
-};
+use gtk::{traits::*, *};
 
 /// Creates a new button widget.
 pub struct ButtonWidget {
@@ -34,4 +31,3 @@ impl HWidget for ButtonWidget {
         log(format!("Added a new button widget named '{}'", self.name));
     }
 }
-

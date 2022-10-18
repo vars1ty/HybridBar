@@ -4,7 +4,6 @@ extern crate lazy_static;
 #[path = "widgets/button_widget.rs"]
 mod button_widget;
 mod config;
-mod constant_messages;
 mod debug;
 mod environment;
 #[path = "widgets/label_widget.rs"]
@@ -17,9 +16,9 @@ mod structures;
 mod ui;
 mod widget;
 
-use constant_messages::*;
 use debug::log;
 use gtk::gdk::*;
+use gtk::gio::ApplicationFlags;
 use gtk::prelude::*;
 use gtk::*;
 use gtk_layer_shell::Edge;
@@ -32,7 +31,7 @@ use widget::HWidget;
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
     let pos = environment::try_get_var("HYBRID_POS", "TOP");
     if pos != "TOP" && pos != "BOTTOM" {
-        panic!("{}", INVALID_BAR_POSITION)
+        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ]\n")
     }
 
     // If the position was valid, return the result.
@@ -88,7 +87,7 @@ fn load_css() {
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(
-        &Screen::default().expect(MISSING_DISPLAY),
+        &Screen::default().expect("[ERROR] Couldn't find any valid displays!\n"),
         &provider,
         STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
@@ -97,7 +96,7 @@ fn load_css() {
 /// Called upon application startup.
 fn main() {
     log("Building application...");
-    let application = Application::new(None, Default::default());
+    let application = Application::new(None, ApplicationFlags::default());
     log("Loading CSS...");
     application.connect_startup(|_| load_css());
     log("Creating viewport...");
@@ -120,9 +119,9 @@ fn set_visual(window: &ApplicationWindow, _screen: Option<&gdk::Screen>) {
 
 /// Converts the value of a child inside `background` to a `f64`.
 fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f64 {
-    let mut res = cfg["background"][identifier]
+    let mut res = cfg["hybrid"][identifier]
         .as_f64()
-        .expect("[ERROR] Failed converting background:{identifier} to f64!\n");
+        .expect(format!("[ERROR] Failed converting hybrid:{identifier} to f64!\n").as_str());
 
     // Only divide by 255 if explicitly told to.
     if from_255 {
@@ -144,6 +143,6 @@ fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     // Apply
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);
-    ctx.paint().expect(FAILED_PAINTING);
+    ctx.paint().expect("[ERROR] Failed painting!\n");
     Inhibit(false)
 }
