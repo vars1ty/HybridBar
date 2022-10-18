@@ -35,54 +35,6 @@ Here's an example:
     }
 }
 ```
-## Widgets
-Available widgets:
-
-Labels:
-- left-label: Left-aligned label
-- centered-label: Centered label
-- right-label: Right-aligned label
-
-Keys Supported:
-- text: String
-- command: String
-***
-Buttons:
-- left-button: Left-aligned button
-- centered-button: Centered button
-- right-button: Right-aligned button
-
-Keys Supported:
-- text: String
-- command: String
-***
-Spacing:
-- left-spacing: Left-focused spacing
-- centered-spacing: Centered-focused spacing
-- right-spacing: Right-focused spacing
-
-Keys Supported:
-- spacing_start: i32
-- spacing_end: i32
-***
-To actually use a widget, here's an example:
-
-```json
-"left-label_UNIQUE_NAME": {
-        "text": "whomai stdout ",
-        "command": "whoami"
-    }
-```
-
-Every widget **has** to contain an underscore (`_`) after the type, then you add the unique name for that widget.
-
-The `text` and `command` nested JSON keys are simply described as:
-- text: Raw Label Text
-- command: Optional bash command
-
-**All** keys are optional, if you skip `text` for example, it'll be using an empty value.
-
-No, the unique name isn't actually displayed anywhere, it's just to be able to differ each component from another.
 ## Video Tutorial
 You can watch a video tutorial made by Foren [here](https://www.youtube.com/watch?v=5g7MX3jgv8A)
 ## CSS Support
@@ -119,3 +71,10 @@ AUR: `paru -S hybrid-bar-git`
 5. Done, the executable is called `hybrid-bar`.
 
 Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
+# Roadmap
+- ~~Make the code for widgets cleaner and more portable~~ - **Done**
+- Quit blocking the UI Thread when executing bash-commands and retrieving the output
+- Port over to GTK4 - Not possible right now due to GTK being 0IQ and [screwing shit up](https://github.com/wmww/gtk-layer-shell/issues/37)
+- Refactor parts of the code to make it more readable and easier to maintain - **In progress**
+- Publish a non-git AUR package which uses the latest built binary
+- Potentially more widgets
