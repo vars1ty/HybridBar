@@ -65,9 +65,10 @@ fn update_labels() {
         // exact same as the current one.
         if text != widget.label.text() {
             log(format!(
-                "Label update received (from => \"{}\", to => \"{text}\") -- redrawing",
+                "Label update received (from => \"{}\", to => \"{text}\")",
                 widget.label.text()
             ));
+            log("redrawing");
             widget.label.set_text(&text)
         }
     }
