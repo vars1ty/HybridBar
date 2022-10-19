@@ -58,7 +58,7 @@ fn update_labels() {
             // TODO: This is slow and causes frequent micro-blocking, so it should really be
             // reconsidered in the future.
             // The root cause is because execute() is interrupting the UI Thread.
-            text.push_str(&proc::execute(widget.command.clone()))
+            text.push_str(&proc::execute(&widget.command))
         }
 
         // Check: never cause a redraw of the label by setting the text, if the new text is the

@@ -6,7 +6,7 @@ use std::{any::TypeId, fmt::Display, fs};
 pub fn get_path() -> String {
     format!(
         "/home/{}/.config/HybridBar/",
-        proc::execute(String::from("whoami"))
+        proc::execute(&String::from("whoami"))
     )
 }
 
