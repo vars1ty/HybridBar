@@ -109,9 +109,10 @@ fn main() {
 }
 
 /// Applies custom visuals.
-fn set_visual(window: &ApplicationWindow, _screen: Option<&gdk::Screen>) {
-    if let Some(screen) = window.screen() {
-        if let Some(ref visual) = screen.rgba_visual() {
+fn set_visual(window: &ApplicationWindow, screen: Option<&gdk::Screen>) {
+    if screen.is_some() {
+        let u_screen = screen.unwrap();
+        if let Some(ref visual) = u_screen.rgba_visual() {
             window.set_visual(Some(visual)); // crucial for transparency
         }
     }
