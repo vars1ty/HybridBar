@@ -1,18 +1,31 @@
-use crate::{config, debug::log, proc, ui};
+use crate::{config, debug::log, load_css_from, proc, ui};
 use gtk::traits::*;
-use std::time::Duration;
+use std::{path::Path, time::Duration};
 
 /// Updates dynamic bar content.
 pub fn update() {
+    let mut css_path = config::get_path();
+    css_path.push_str("style.css");
     let tick = move || {
         update_labels();
+        update_css(&css_path);
         // Indicates that we want to continue using our timer, false makes it stop.
         glib::Continue(true)
     };
 
     // Executes the "tick" closure for every millisecond specified in hybrid:update_rate.
-
     glib::timeout_add_local(Duration::from_millis(get_update_rate()), tick);
+}
+
+/// Updates the CSS.
+fn update_css(css_path: &String) {
+    // Only watch the file if it actually exists.
+    if !Path::new(&css_path).is_file() {
+        return;
+    }
+
+    let path = Path::new(&css_path);
+    load_css_from(path)
 }
 
 /// Returns the set update-rate.

@@ -75,7 +75,7 @@ fn activate(application: &Application) {
 
 /// Loads the CSS
 #[allow(unused_must_use)]
-fn load_css() {
+pub fn load_css() {
     let provider = CssProvider::new();
     let mut css_path = config::get_path();
     css_path.push_str("style.css");
@@ -84,6 +84,24 @@ fn load_css() {
     }
 
     provider.load_from_path(&css_path);
+
+    // Add the provider to the default screen
+    StyleContext::add_provider_for_screen(
+        &Screen::default().expect("[ERROR] Couldn't find any valid displays!\n"),
+        &provider,
+        STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
+}
+
+/// Loads the CSS
+#[allow(unused_must_use)]
+pub fn load_css_from(path: &Path) {
+    if !path.is_file() {
+        return
+    }
+
+    let provider = CssProvider::new();
+    provider.load_from_path(path.to_str().unwrap());
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(

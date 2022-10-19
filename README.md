@@ -52,6 +52,12 @@ For example: `left-label_username_stuff` can be styled using CSS via `#username_
 `HYBRID_POS` = `TOP` OR `BOTTOM` : Tells the bar where to position itself, TOP or BOTTOM.
 
 `HYBRID_CONFIG` = `name.json` : Locates the config inside the HybridBar config path, then uses it for the rest of the bars session.
+## Background Updates
+Hybrid performs background updates for labels with the key `command` set, and for hot-reloading CSS.
+
+The rate for updating everything is read from `hybrid`, `update_rate` (i32).
+
+It's worth noting that low update-rates may lead to performance decreases, the value specified is in **milliseconds**.
 # Installation
 Dependencies:
 

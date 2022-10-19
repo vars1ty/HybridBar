@@ -7,11 +7,13 @@ description = "A simple status bar made for wlroots compositors."
 license = "MIT"
 
 [dependencies]
+notify-debouncer-mini = { version = "*", default-features = false }
 strum = { version = "0.24", features = [ "derive" ] }
 lazy_static = "1.4.0"
 gtk-layer-shell = "0.4.1"
 strum_macros = "0.24"
 glib = "0.15.12"
+notify = "5.0.0"
 json = "0.12.4"
 gtk = "0.15.5"
 
