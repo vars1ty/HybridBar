@@ -80,7 +80,7 @@ AUR: `paru -S hybrid-bar-git`
 Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
 # Roadmap
 - ~~Make the code for widgets cleaner and more portable~~ - **Done**
-- Quit blocking the UI Thread when executing bash-commands and retrieving the output
+- ~~Quit blocking the UI Thread when executing bash-commands and retrieving the output~~ - **Done**
 - Port over to GTK4 - Not possible right now due to GTK being 0IQ and [screwing shit up](https://github.com/wmww/gtk-layer-shell/issues/37)
 - Refactor parts of the code to make it more readable and easier to maintain - **In progress**
 - Publish a non-git AUR package which uses the latest built binary

@@ -1,13 +1,14 @@
 use crate::{config, debug::log, load_css_from, proc, ui};
 use gtk::traits::*;
 use std::{path::Path, time::Duration};
+use tokio::task;
 
 /// Updates dynamic bar content.
 pub fn update() {
-    let mut css_path = config::get_path();
+    let mut css_path = config::get_path_blocking();
     css_path.push_str("style.css");
+    update_labels(get_update_rate());
     let tick = move || {
-        update_labels();
         update_css(&css_path);
         // Indicates that we want to continue using our timer, false makes it stop.
         glib::Continue(true)
@@ -46,30 +47,35 @@ fn get_update_rate() -> u64 {
 }
 
 /// Updates all of the labels.
-fn update_labels() {
-    for widget in ui::VEC
-        .lock()
-        .expect("[ERROR] Cannot access ui::VEC!\n")
-        .iter()
-    {
-        let mut text = widget.text.clone();
-        // Append to the cloned text if the command isn't empty.
-        if !widget.command.is_empty() {
-            // TODO: This is slow and causes frequent micro-blocking, so it should really be
-            // reconsidered in the future.
-            // The root cause is because execute() is interrupting the UI Thread.
-            text.push_str(&proc::execute(&widget.command))
-        }
+fn update_labels(update_rate: u64) {
+    // Async looping task in order not to interrupt the UI and cause lag to widgets like button
+    // animations.
+    task::spawn(async move {
+        log("created update_labels task");
+        loop {
+            for widget in ui::VEC
+                .lock()
+                .expect("[ERROR] Cannot access ui::VEC!\n")
+                .iter()
+            {
+                let mut text = widget.text.clone();
+                // Append to the cloned text if the command isn't empty.
+                if !widget.command.is_empty() {
+                    text.push_str(&proc::execute(&widget.command))
+                }
 
-        // Check: never cause a redraw of the label by setting the text, if the new text is the
-        // exact same as the current one.
-        if text != widget.label.text() {
-            log(format!(
-                "Label update received (from => \"{}\", to => \"{text}\")",
-                widget.label.text()
-            ));
-            log("redrawing");
-            widget.label.set_text(&text)
+                // Check: never cause a redraw of the label by setting the text, if the new text is the
+                // exact same as the current one.
+                if text != widget.label.text() {
+                    log(format!(
+                        "Label update received (from => \"{}\", to => \"{text}\")",
+                        widget.label.text()
+                    ));
+                    log("redrawing");
+                    widget.label.set_text(&text)
+                }
+            }
+            std::thread::sleep(Duration::from_millis(update_rate));
         }
-    }
+    });
 }

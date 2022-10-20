@@ -77,7 +77,7 @@ fn activate(application: &Application) {
 #[allow(unused_must_use)]
 pub fn load_css() {
     let provider = CssProvider::new();
-    let mut css_path = config::get_path();
+    let mut css_path = config::get_path_blocking();
     css_path.push_str("style.css");
     if !Path::new(&css_path).is_file() {
         log("No style.css file was found, falling back to default GTK settings!")
@@ -97,7 +97,7 @@ pub fn load_css() {
 #[allow(unused_must_use)]
 pub fn load_css_from(path: &Path) {
     if !path.is_file() {
-        return
+        return;
     }
 
     let provider = CssProvider::new();
@@ -112,7 +112,8 @@ pub fn load_css_from(path: &Path) {
 }
 
 /// Called upon application startup.
-fn main() {
+#[tokio::main]
+async fn main() {
     log("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
     log("Loading CSS...");

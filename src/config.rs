@@ -10,6 +10,14 @@ pub fn get_path() -> String {
     )
 }
 
+/// Gets the root home path to Hybrid.
+pub fn get_path_blocking() -> String {
+    format!(
+        "/home/{}/.config/HybridBar/",
+        proc::execute(&String::from("whoami"))
+    )
+}
+
 /// Parses the config and returns it.
 pub fn read_config() -> JsonValue {
     let mut conf_path = get_path();
