@@ -5,7 +5,7 @@ use tokio::task;
 
 /// Updates dynamic bar content.
 pub fn update() {
-    let mut css_path = config::get_path_blocking();
+    let mut css_path = config::get_path();
     css_path.push_str("style.css");
     update_labels(get_update_rate());
     let tick = move || {

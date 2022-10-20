@@ -77,7 +77,7 @@ fn activate(application: &Application) {
 #[allow(unused_must_use)]
 pub fn load_css() {
     let provider = CssProvider::new();
-    let mut css_path = config::get_path_blocking();
+    let mut css_path = config::get_path();
     css_path.push_str("style.css");
     if !Path::new(&css_path).is_file() {
         log("No style.css file was found, falling back to default GTK settings!")
