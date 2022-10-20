@@ -32,21 +32,6 @@ pub fn build_widgets(window: &gtk::ApplicationWindow) {
     update();
 }
 
-/// Gets the widget name for a specific key.
-fn get_widget_name(identifiers: Vec<&str>, separator: char, count: usize) -> String {
-    // Stores the unique widget name temporarily.
-    let mut widget_name = String::default();
-    for i in 1..count {
-        widget_name.push_str(identifiers[i]);
-        // Only add '_' to the end if the remaining amount of items isn't 1.
-        if i != count - 1 {
-            widget_name.push(separator);
-        }
-    }
-
-    widget_name
-}
-
 /// Creates all of the widgets.
 fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
@@ -56,9 +41,6 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
             continue;
         }
-
-        // Gets the amount of entires in the split key.
-        let count = key.split(SEPARATOR).count();
 
         // Gets the widget identifiers.
         let identifiers = key.split(SEPARATOR).collect::<Vec<&str>>();
@@ -83,7 +65,8 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             "Adding widget '{identifier}' with alignment '{widget_alignment}'",
         ));
 
-        let widget_name = get_widget_name(identifiers, SEPARATOR, count);
+        // Gets every element after the widget identifier, then appends '_' in between.
+        let widget_name = (&identifiers[1..].join("_")).to_string();
 
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.
