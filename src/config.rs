@@ -1,6 +1,6 @@
 use crate::{environment, proc};
 use json::JsonValue;
-use std::{any::TypeId, fmt::Display, fs};
+use std::fs;
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
@@ -23,14 +23,10 @@ pub fn read_config() -> JsonValue {
 
 /// If the `key` exists inside `root`, the value of it is returned.
 /// If not, a default value is instead returned.
-pub fn try_get<T>(root: &str, key: &str) -> (String, i32)
-where
-    T: Display + 'static,
-{
+pub fn try_get(root: &str, key: &str, string_value: bool) -> (String, i32) {
     let cfg = &read_config()[root];
-    let is_string = TypeId::of::<T>() == TypeId::of::<String>();
     if cfg.has_key(key) {
-        if !is_string {
+        if !string_value {
             return (
                 String::default(),
                 cfg[key]

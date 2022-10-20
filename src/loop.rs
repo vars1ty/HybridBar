@@ -30,7 +30,7 @@ fn update_css(css_path: &String) {
 
 /// Returns the set update-rate.
 fn get_update_rate() -> u64 {
-    let mut update_rate = config::try_get::<i32>("hybrid", "update_rate").1;
+    let mut update_rate = config::try_get("hybrid", "update_rate", false).1;
     // Clamp the value to a minimum of 5.
     if update_rate < 5 {
         update_rate = 5;

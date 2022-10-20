@@ -74,8 +74,8 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             .to_uppercase();
 
         // Base keys, text and command being optional.
-        let text = config::try_get::<String>(key, "text").0;
-        let command = config::try_get::<String>(key, "command").0;
+        let text = config::try_get(key, "text", true).0;
+        let command = config::try_get(key, "command", true).0;
         let alignment = structures::Align::from_str(&widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
@@ -107,8 +107,8 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         } else if identifier.contains("spacing") {
             let spacing = SpacingWidget {
                 name: widget_name,
-                spacing_start: config::try_get::<i32>(key, "spacing_start").1,
-                spacing_end: config::try_get::<i32>(key, "spacing_end").1,
+                spacing_start: config::try_get(key, "spacing_start", false).1,
+                spacing_end: config::try_get(key, "spacing_end", false).1,
             };
 
             spacing.add(alignment, left, centered, right)
