@@ -71,11 +71,15 @@ fn update_labels(update_rate: u64) {
                         "Label update received (from => \"{}\", to => \"{text}\")",
                         widget.label.text()
                     ));
+
                     log("redrawing");
                     widget.label.set_text(&text)
                 }
             }
-            std::thread::sleep(Duration::from_millis(update_rate));
+
+            // We could even remove this line, but it's staying because there's no need to update
+            // it 24/7.
+            tokio::time::sleep(Duration::from_millis(update_rate)).await;
         }
     });
 }
