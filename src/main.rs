@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate lazy_static;
 
+#[path = "widgets/box_widget.rs"]
+mod box_widget;
 #[path = "widgets/button_widget.rs"]
 mod button_widget;
 mod config;

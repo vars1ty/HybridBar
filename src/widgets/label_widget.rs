@@ -1,4 +1,9 @@
-use crate::{debug::log, structures::Align, ui::VEC, widget::HWidget};
+use crate::{
+    debug::log,
+    structures::Align,
+    ui::{self, VEC},
+    widget::HWidget,
+};
 use gtk::{traits::*, *};
 
 /// Creates a new label widget.
@@ -18,13 +23,7 @@ impl HWidget for LabelWidget {
     fn add(self, align: Align, left: &Box, centered: &Box, right: &Box) {
         self.label.set_widget_name(&self.name);
 
-        // Align and add the widget
-        match align {
-            Align::LEFT => left.add(&self.label),
-            Align::CENTERED => centered.add(&self.label),
-            Align::RIGHT => right.add(&self.label),
-        }
-
+        ui::add_and_align(&self.label, align, left, centered, right);
         log(format!("Added a new label widget named '{}'", self.name));
         VEC.lock()
             .expect("[ERROR] Cannot access ui::VEC!\n")

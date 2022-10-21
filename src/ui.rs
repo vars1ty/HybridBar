@@ -1,5 +1,6 @@
 use crate::{
-    button_widget::ButtonWidget, debug::log, r#loop::update, spacing_widget::SpacingWidget, *,
+    box_widget::BoxWidget, button_widget::ButtonWidget, debug::log, r#loop::update,
+    spacing_widget::SpacingWidget, structures::Align, *,
 };
 use gtk::traits::*;
 use std::{str::FromStr, sync::Mutex};
@@ -10,6 +11,21 @@ lazy_static! {
         let v = Vec::new();
         Mutex::new(v)
     };
+}
+
+/// Adds and aligns the specified widget.
+pub fn add_and_align(
+    widget: &impl IsA<Widget>,
+    align: Align,
+    left: &Box,
+    centered: &Box,
+    right: &Box,
+) {
+    match align {
+        Align::LEFT => left.add(widget),
+        Align::CENTERED => centered.add(widget),
+        Align::RIGHT => right.add(widget),
+    }
 }
 
 /// Builds all of the widgets.
@@ -95,6 +111,13 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             };
 
             spacing.add(alignment, left, centered, right)
+        } else if identifier.contains("box") {
+            let box_widget = BoxWidget {
+                name: widget_name,
+                width: config::try_get(key, "width", false).1,
+            };
+
+            box_widget.add(alignment, left, centered, right)
         } else {
             // You are stupid.
             panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")

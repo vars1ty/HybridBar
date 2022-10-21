@@ -1,4 +1,4 @@
-use crate::{debug::log, structures::Align, widget::HWidget};
+use crate::{debug::log, structures::Align, ui, widget::HWidget};
 use gtk::{traits::*, *};
 
 /// Creates a new button widget.
@@ -21,13 +21,7 @@ impl HWidget for ButtonWidget {
             });
         }
 
-        // Align and add the widget
-        match align {
-            Align::LEFT => left.add(&self.button),
-            Align::CENTERED => centered.add(&self.button),
-            Align::RIGHT => right.add(&self.button),
-        }
-
+        ui::add_and_align(&self.button, align, left, centered, right);
         log(format!("Added a new button widget named '{}'", self.name));
     }
 }

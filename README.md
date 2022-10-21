@@ -12,11 +12,12 @@ It supports:
 - Spacings;
 - Transparency (+ blur if your compositor supports it);
 - Custom CSS;
-- Custom update-frequency for dynamic widgets (ones with a `command` set)
+- Custom update-frequency for dynamic labels (ones with a `command` set) and CSS reloads;
+- `...` and more
 
 In other words, it's a simple Wayland status bar that does one thing: Display the stuff __you__ put onto it. Nothing more, nothing less, no over-engineered dogshit.
 ## I have no config
-If the AUR version for whatever reason didn't give you the example one, copy the example one from `examples/config.json` into `~/.config/HybridBar/`.
+If the AUR version for whatever reason didn't give you the example one, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
 # Config Layout
 I'm assuming you are familiar with JSON. If you aren't, well too bad.
 ## Base
@@ -37,15 +38,11 @@ Here's an example:
 }
 ```
 ## Video Tutorial
-You can watch a video tutorial made by Foren [here](https://www.youtube.com/watch?v=5g7MX3jgv8A)
+You can watch a video tutorial made by Foren [here](https://www.youtube.com/watch?v=5g7MX3jgv8A) - **Outdated but may help some**.
 ## CSS Support
 Starting from `0.1.3`, CSS is now supported and you can make it auto-load on startup by making a `style.css` file next to your `config.json` at the same path.
 
 If you want a sample CSS which has been used up until now, check `examples/style.css`.
-
-Since `0.1.4`, you can now also style separate labels and buttons.
-
-For example: `left-label_username_stuff` can be styled using CSS via `#username_stuff { /* Code */ }`.
 ## Environment Variables
 `HYBRID_LOG` = `0` OR `1` : Logs debug output to stdout.
 
@@ -84,4 +81,4 @@ Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
 - Port over to GTK4 - Not possible right now due to GTK being 0IQ and [screwing shit up](https://github.com/wmww/gtk-layer-shell/issues/37)
 - Refactor parts of the code to make it more readable and easier to maintain - **In progress**
 - Publish a non-git AUR package which uses the latest built binary
-- Potentially more widgets
+- Potentially more widgets - **In progress, feel free to suggest widgets**

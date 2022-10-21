@@ -6,34 +6,32 @@
 >
 > This can be performance intensive, so it's recommended that you set the update-rate to something like `100`.
 ***
+**NOTE**: In order to use a widget, you'll have to specify how it should be aligned. For example: `left-button`, `centered-button` and `right-button`.
+
 Available widgets:
 
-Labels:
-- left-label: Left-aligned label
-- centered-label: Centered label
-- right-label: Right-aligned label
+`label`:
 
 Keys Supported:
 - text: String
 - command: String
 ***
-Buttons:
-- left-button: Left-aligned button
-- centered-button: Centered button
-- right-button: Right-aligned button
+`button`:
 
 Keys Supported:
 - text: String
 - command: String
 ***
-Spacing:
-- left-spacing: Left-focused spacing
-- centered-spacing: Centered-focused spacing
-- right-spacing: Right-focused spacing
+`spacing`:
 
 Keys Supported:
 - spacing_start: i32
 - spacing_end: i32
+***
+`box`:
+
+Keys Supported:
+- width: i32
 ***
 To actually use a widget, here's an example:
 
