@@ -29,16 +29,32 @@ pub fn add_and_align(
 }
 
 /// Builds all of the widgets.
-pub fn build_widgets(window: &gtk::ApplicationWindow) {
+pub fn build_widgets(window: &ApplicationWindow) {
     // Create box widgets, which we'll be using to draw the content onto.
+    let root = Box::new(Orientation::Horizontal, 0);
     let left = Box::new(Orientation::Horizontal, 0);
     let centered = Box::new(Orientation::Horizontal, 0);
     let right = Box::new(Orientation::Horizontal, 0);
 
-    // Add and align all of the box widgets.
-    left.set_center_widget(Some(&centered));
-    left.pack_end(&right, false, true, 0);
-    window.add(&left);
+    // 0.2.5: Root expands across the entire bar, previously "left" would do this but it isn't
+    //   ideal when customizing, since borders would draw on the entire bar rather than just on the
+    //   left portion of the bar.
+    root.set_widget_name("root");
+
+    // 0.2.5: Allow for customizing left, centered and right.
+    left.set_widget_name("left");
+    centered.set_widget_name("centered");
+    right.set_widget_name("right");
+
+    // Add and align both centered and right.
+    root.set_center_widget(Some(&centered));
+    root.pack_end(&right, false, true, 0);
+
+    // Add only left because centered and right are implicitly added above.
+    root.add(&left);
+
+    // Add root to the main canvas before finally adding all the widgets and drawing it.
+    window.add(&root);
 
     // Prepare all of the widgets.
     create_components(&left, &centered, &right);
