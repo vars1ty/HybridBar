@@ -13,7 +13,10 @@ It supports:
 - Transparency (+ blur if your compositor supports it);
 - Custom CSS;
 - Custom update-frequency for dynamic labels (ones with a `command` set) and CSS reloads;
-- `...` and more
+- Hacky Cava implementation;
+- Partial CSS Hot-Reload;
+- Multi-Config;
+- Top and Bottom positioning
 
 In other words, it's a simple Wayland status bar that does one thing: Display the stuff __you__ put onto it. Nothing more, nothing less, no over-engineered dogshit.
 ## I have no config
@@ -30,6 +33,7 @@ Here's an example:
 ```json
 {
     "hybrid": {
+        "update_rate": 100,
         "r": 10,
         "g": 10,
         "b": 10,
