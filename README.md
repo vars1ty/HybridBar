@@ -12,9 +12,8 @@ It supports:
 - Spacings;
 - Transparency (+ blur if your compositor supports it);
 - Custom CSS;
-- Custom update-frequency for dynamic labels (ones with a `command` set) and CSS reloads;
-- Hacky Cava implementation;
-- Partial CSS Hot-Reload;
+- Custom update-frequency for dynamic labels (ones with a `command` set);
+- Beta Cava implementation;
 - Multi-Config;
 - Top and Bottom positioning
 
@@ -46,7 +45,7 @@ You can watch a video tutorial made by Foren [here](https://www.youtube.com/watc
 ## CSS Support
 Starting from `0.1.3`, CSS is now supported and you can make it auto-load on startup by making a `style.css` file next to your `config.json` at the same path.
 
-If you want a sample CSS which has been used up until now, check `examples/style.css`.
+If you want a sample CSS which has been used up until recently and has good defaults, check `examples/style.css`.
 ## Environment Variables
 `HYBRID_LOG` = `0` OR `1` : Logs debug output to stdout.
 
@@ -54,11 +53,13 @@ If you want a sample CSS which has been used up until now, check `examples/style
 
 `HYBRID_CONFIG` = `name.json` : Locates the config inside the HybridBar config path, then uses it for the rest of the bars session.
 ## Background Updates
-Hybrid performs background updates for labels with the key `command` set, and for hot-reloading CSS.
+Hybrid performs background updates for labels with the key `command` set, and for updating Cava labels.
 
-The rate for updating everything is read from `hybrid`, `update_rate` (i32).
+The rate for updating labels is read from `hybrid`, `update_rate` (i32).
 
 It's worth noting that low update-rates may lead to performance decreases, the value specified is in **milliseconds**.
+
+**NOTE**: Cava-widgets does __not__ respect the `update_rate` specified, this is to ensure better precision for the animations.
 # Installation
 Dependencies:
 

@@ -1,38 +1,43 @@
-use crate::{cava, config, debug::log, load_css_from, proc, ui, widget::HWidget};
+use crate::{cava, config, debug::log, proc, ui, widget::HWidget};
 use gtk::traits::*;
-use std::{path::Path, process::Stdio, time::Duration};
+use std::{process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
     task,
 };
 
+lazy_static! {
+    /// Current Cava bars.
+    static ref BARS: RwLock<String> = RwLock::new(String::default());
+}
+
+/// Returns the current Cava bars.
+fn get_bars() -> String {
+    BARS.read().unwrap().to_string()
+}
+
 /// Updates dynamic bar content.
 pub fn update() {
     let mut css_path = config::get_path();
     css_path.push_str("style.css");
-    update_labels(get_update_rate());
+    update_bars();
+    update_labels();
     let tick = move || {
-        update_css(&css_path);
+        //update_css(&css_path);
+        // Loop through all Cava widget instances and sync the text.
+        for widget in ui::CAVA_INSTANCES
+            .lock()
+            .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
+            .iter()
+        {
+            widget.update_label(&get_bars());
+        }
         // Indicates that we want to continue using our timer, false makes it stop.
         glib::Continue(true)
     };
 
-    unsafe {
-        draw_cava();
-    }
-    glib::timeout_add_local(Duration::from_millis(get_update_rate()), tick);
-}
-
-/// Updates the CSS.
-fn update_css(css_path: &String) {
-    // Only watch the file if it actually exists.
-    if !Path::new(&css_path).is_file() {
-        return;
-    }
-
-    let path = Path::new(&css_path);
-    load_css_from(path)
+    glib::timeout_add_local(Duration::from_millis(1), tick);
 }
 
 /// Returns the set update-rate.
@@ -52,12 +57,48 @@ fn get_update_rate() -> u64 {
         .expect("[ERROR] Cannot convert update_rate into u64!\n")
 }
 
-/// Updates all of the labels.
-fn update_labels(update_rate: u64) {
-    // Async looping task in order not to interrupt the UI and cause lag to widgets like button
-    // animations.
+/// Updates the `BARS` value with Cava.
+/// Only call this once as it's a loop.
+fn update_bars() {
     task::spawn(async move {
-        log("created update_labels task");
+        let mut bars;
+        let sed = cava::get_sed();
+        let path = cava::get_temp_config();
+        // Start a process which reads cava's output, then sync the labels content with it.
+        // This **has** to stay inside this specific scope, because calling it from other functions
+        // for w/e reason makes it break.
+        let mut child = Command::new("bash")
+            .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
+            .stdout(Stdio::piped())
+            .kill_on_drop(true)
+            .spawn()
+            .expect("[ERROR] Cannot start cava script!\n");
+
+        let out = child
+            .stdout
+            .take()
+            .expect("[ERROR] Cannot take stdout from child!\n");
+
+        // Drop to free the resources in case something unexpected happens.
+        drop(sed);
+        drop(path);
+        let mut reader = BufReader::new(out).lines();
+        loop {
+            bars = reader
+                .next_line()
+                .await
+                .expect("[ERROR] There are no more lines available!\n")
+                .expect("[ERROR] The string value is None!\n");
+
+            *BARS.write().unwrap() = bars;
+        }
+    });
+}
+
+/// Updates all labels with a `command` set.
+/// Only call this once as it's a loop.
+fn update_labels() {
+    task::spawn(async move {
         loop {
             for widget in ui::VEC
                 .lock()
@@ -78,63 +119,11 @@ fn update_labels(update_rate: u64) {
                         widget.label.text()
                     ));
 
-                    log("redrawing");
                     widget.update_label(&text);
                 }
             }
 
-            // We could even remove this line, but it's staying because there's no need to update
-            // it 24/7.
-            tokio::time::sleep(Duration::from_millis(update_rate)).await;
-        }
-    });
-}
-
-/// Draws Cava for all widgets that implement it.
-unsafe fn draw_cava() {
-    task::spawn(async move {
-        log("created draw_cava task");
-        let mut bars;
-        let sed = cava::get_sed();
-        let path = cava::get_temp_config();
-        // Start a process which reads cava's output, then sync the labels content with it.
-        // This **has** to stay inside this specific scope, because calling it from other functions
-        // for w/e reason makes it break.
-        let mut child = Command::new("bash")
-            .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
-            .stdout(Stdio::piped())
-            .kill_on_drop(true)
-            .spawn()
-            .expect("[ERROR] Cannot start cava script!\n");
-
-        let out = child
-            .stdout
-            .take()
-            .expect("[ERROR] Cannot take stdout from child!\n");
-        let mut reader = BufReader::new(out).lines();
-
-        loop {
-            // Get the next line from stdout.
-            bars = reader
-                .next_line()
-                .await
-                .expect("[ERROR] There are no more lines available!\n")
-                .expect("[ERROR] The string value is None!\n");
-
-            // Loop through all Cava widget instances and sync the text.
-            for widget in ui::CAVA_INSTANCES
-                .lock()
-                .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
-                .iter()
-            {
-                widget.update_label(&bars);
-            }
-
-            // Hack: Because this function is unsafe due to the nature of GTK and
-            // threads/async, we have to slow down by a small margin.
-            // Whenever/if a fix for this has been implemented, the `unsafe` keyword may be removed
-            // from this function.
-            tokio::time::sleep(Duration::from_millis(10)).await;
+            tokio::time::sleep(Duration::from_millis(get_update_rate())).await;
         }
     });
 }
