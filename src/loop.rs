@@ -19,9 +19,6 @@ fn get_bars() -> String {
 
 /// Updates dynamic bar content.
 pub fn update() {
-    let mut css_path = config::get_path();
-    css_path.push_str("style.css");
-    update_bars();
     update_labels();
     let tick = move || {
         //update_css(&css_path);
@@ -59,7 +56,7 @@ fn get_update_rate() -> u64 {
 
 /// Updates the `BARS` value with Cava.
 /// Only call this once as it's a loop.
-fn update_bars() {
+pub fn update_bars() {
     task::spawn(async move {
         let mut bars;
         let sed = cava::get_sed();

@@ -75,6 +75,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
     const ALIGNMENT: char = '-';
     const SEPARATOR: char = '_';
+    let mut has_started_cava = false;
     for (key, _) in config::read_config().entries() {
         if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
             continue;
@@ -146,6 +147,11 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 label: Label::new(None),
             };
 
+            if !has_started_cava {
+                // Ensure it only calls update_bars once.
+                r#loop::update_bars();
+                has_started_cava = true;
+            }
             log("CAVA BETA WIDGET ACTIVE");
             cava.add(alignment, left, centered, right)
         } else {
