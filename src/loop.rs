@@ -132,6 +132,8 @@ unsafe fn draw_cava() {
 
             // Hack: Because this function is unsafe due to the nature of GTK and
             // threads/async, we have to slow down by a small margin.
+            // Whenever/if a fix for this has been implemented, the `unsafe` keyword may be removed
+            // from this function.
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     });

@@ -142,6 +142,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             box_widget.add(alignment, left, centered, right)
         } else if identifier.contains("cava") {
             let cava = CavaWidget {
+                name: widget_name,
                 label: Label::new(None),
             };
 
