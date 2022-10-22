@@ -1,6 +1,6 @@
 use crate::{
-    box_widget::BoxWidget, button_widget::ButtonWidget, debug::log, r#loop::update,
-    spacing_widget::SpacingWidget, structures::Align, *,
+    box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget, debug::log,
+    r#loop::update, spacing_widget::SpacingWidget, structures::Align, *,
 };
 use gtk::traits::*;
 use std::{str::FromStr, sync::Mutex};
@@ -8,6 +8,12 @@ use std::{str::FromStr, sync::Mutex};
 lazy_static! {
     /// Holds all the dynamic label widgets.
     pub static ref VEC: Mutex<Vec<LabelWidget>> = {
+        let v = Vec::new();
+        Mutex::new(v)
+    };
+
+    /// All active cava label instances.
+    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget>> = {
         let v = Vec::new();
         Mutex::new(v)
     };
@@ -134,9 +140,30 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             };
 
             box_widget.add(alignment, left, centered, right)
+        } else if identifier.contains("cava") {
+            let cava = CavaWidget {
+                label: Label::new(None),
+            };
+
+            println!("#### CAVA ####");
+            cava.add(alignment, left, centered, right)
         } else {
             // You are stupid.
             panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }
+
+        /*
+        let mt = Mutex::new(left);
+        task::spawn(async move {
+            let label = Label::new(None);
+            left.add(&label);
+            let b = testing {
+                e: mt,
+                labl: Mutex::new(Label::new(None)),
+            };
+            loop {
+                            }
+        });
+        */
     }
 }

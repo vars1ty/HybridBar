@@ -5,6 +5,10 @@ extern crate lazy_static;
 mod box_widget;
 #[path = "widgets/button_widget.rs"]
 mod button_widget;
+#[path = "utils/cava.rs"]
+mod cava;
+#[path = "widgets/cava_widget.rs"]
+mod cava_widget;
 mod config;
 mod debug;
 mod environment;
@@ -49,7 +53,6 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
 fn activate(application: &Application) {
     // Create a normal GTK window however you like
     let window = ApplicationWindow::new(application);
-
     window.connect_screen_changed(set_visual);
     window.connect_draw(draw);
 

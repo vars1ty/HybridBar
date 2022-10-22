@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::{
     debug::log,
     structures::Align,
@@ -28,5 +30,9 @@ impl HWidget for LabelWidget {
         VEC.lock()
             .expect("[ERROR] Cannot access ui::VEC!\n")
             .push(self);
+    }
+
+    fn update_label(&self, new_content: &(impl Display + Clone)) {
+        self.label.set_text(&new_content.to_string())
     }
 }

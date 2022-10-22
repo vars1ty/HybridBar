@@ -1,7 +1,11 @@
-use crate::{config, debug::log, load_css_from, proc, ui};
+use crate::{cava, config, debug::log, load_css_from, proc, ui, widget::HWidget};
 use gtk::traits::*;
-use std::{path::Path, time::Duration};
-use tokio::task;
+use std::{path::Path, process::Stdio, time::Duration};
+use tokio::{
+    io::{AsyncBufReadExt, BufReader},
+    process::Command,
+    task,
+};
 
 /// Updates dynamic bar content.
 pub fn update() {
@@ -14,7 +18,9 @@ pub fn update() {
         glib::Continue(true)
     };
 
-    // Executes the "tick" closure for every millisecond specified in hybrid:update_rate.
+    unsafe {
+        draw_cava();
+    }
     glib::timeout_add_local(Duration::from_millis(get_update_rate()), tick);
 }
 
@@ -73,13 +79,60 @@ fn update_labels(update_rate: u64) {
                     ));
 
                     log("redrawing");
-                    widget.label.set_text(&text)
+                    widget.update_label(&text);
                 }
             }
 
             // We could even remove this line, but it's staying because there's no need to update
             // it 24/7.
             tokio::time::sleep(Duration::from_millis(update_rate)).await;
+        }
+    });
+}
+
+/// Draws Cava for all widgets that implement it.
+unsafe fn draw_cava() {
+    task::spawn(async move {
+        log("created draw_cava task");
+        let mut bars;
+        let sed = cava::get_sed();
+        let path = cava::get_temp_config();
+        // Start a process which reads cava's output, then sync the labels content with it.
+        // This **has** to stay inside this specific scope, because calling it from other functions
+        // for w/e reason makes it break.
+        let mut child = Command::new("bash")
+            .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
+            .stdout(Stdio::piped())
+            .kill_on_drop(true)
+            .spawn()
+            .expect("[ERROR] Cannot start cava script!\n");
+
+        let out = child
+            .stdout
+            .take()
+            .expect("[ERROR] Cannot take stdout from child!\n");
+        let mut reader = BufReader::new(out).lines();
+
+        loop {
+            // Get the next line from stdout.
+            bars = reader
+                .next_line()
+                .await
+                .expect("[ERROR] There are no more lines available!\n")
+                .expect("[ERROR] The string value is None!\n");
+
+            // Loop through all Cava widget instances and sync the text.
+            for widget in ui::CAVA_INSTANCES
+                .lock()
+                .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
+                .iter()
+            {
+                widget.update_label(&bars);
+            }
+
+            // Hack: Because this function is unsafe due to the nature of GTK and
+            // threads/async, we have to slow down by a small margin.
+            tokio::time::sleep(Duration::from_millis(10)).await;
         }
     });
 }
