@@ -145,25 +145,11 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 label: Label::new(None),
             };
 
-            println!("#### CAVA ####");
+            log("CAVA BETA WIDGET ACTIVE");
             cava.add(alignment, left, centered, right)
         } else {
             // You are stupid.
             panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }
-
-        /*
-        let mt = Mutex::new(left);
-        task::spawn(async move {
-            let label = Label::new(None);
-            left.add(&label);
-            let b = testing {
-                e: mt,
-                labl: Mutex::new(Label::new(None)),
-            };
-            loop {
-                            }
-        });
-        */
     }
 }
