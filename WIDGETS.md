@@ -33,6 +33,11 @@ Keys Supported:
 Keys Supported:
 - width: i32
 ***
+`cava` - **BETA**:
+
+Keys Supported:
+- Shared: `hybrid` -> `cava_sed`: String
+***
 To actually use a widget, here's an example:
 
 ```json
@@ -51,3 +56,13 @@ The `text` and `command` nested JSON keys are simply described as:
 **All** keys are optional, if you skip `text` for example, it'll be using an empty value.
 
 No, the unique name isn't actually displayed anywhere, it's just to be able to differ each component from another.
+## Cava
+Since `0.2.5`, unofficial Cava support has been added, although with limitations such as:
+
+- There are no keys available for each Cava widget, there's only one inside `hybrid` which is called `cava_sed`. If left empty, it'll be using this value: `s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;`.
+- The implementation is **unsafe**, hence why it's in beta. Expect full-on crashes.
+- You can't currently change how many bars you want for Cava in an official way, it may be added in the future though.
+
+*If you compile from source and modify `cava.rs`, then you may modify the configuration.*
+
+Here's an example of how you may setup Cava: `"right-cava_cava_rside": {}`
