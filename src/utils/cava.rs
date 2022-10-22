@@ -23,7 +23,7 @@ pub fn get_temp_config() -> String {
         br#"
 # Cava Configuration for Hybrid
 [general]
-bars = 6
+bars = 7
 [output]
 method = raw
 raw_target = /dev/stdout
