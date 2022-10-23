@@ -32,7 +32,6 @@ use gtk::*;
 use gtk_layer_shell::Edge;
 use json::JsonValue;
 use label_widget::LabelWidget;
-use std::path::Path;
 use widget::HWidget;
 
 /// Gets the anchors.
@@ -86,6 +85,7 @@ pub fn load_css() {
     // 0.2.8: Allow for defining the name of the stylesheet to look up
     let mut css_file = config::try_get("hybrid", "stylesheet", true).0;
     if css_file.is_empty() {
+        log!("No stylesheet was defined, using default 'style.css'");
         css_file = String::from("style.css")
     }
 
