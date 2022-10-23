@@ -27,6 +27,8 @@ macro_rules! execute {
 
         // Remove the last character as its a new line.
         $result.pop();
-        drop(&$result);
+
+        // Could use drop(&$result) but then Clippy would whine.
+        format!("{}", $result)
     };
 }
