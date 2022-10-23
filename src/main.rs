@@ -4,6 +4,9 @@ extern crate lazy_static;
 #[macro_use]
 mod debug;
 
+#[macro_use]
+mod proc;
+
 #[path = "widgets/box_widget.rs"]
 mod box_widget;
 #[path = "widgets/button_widget.rs"]
@@ -19,7 +22,6 @@ mod label_widget;
 mod r#loop;
 #[path = "utils/math.rs"]
 mod math;
-mod proc;
 #[path = "widgets/spacing_widget.rs"]
 mod spacing_widget;
 mod structures;

@@ -1,4 +1,4 @@
-use crate::{cava, config, proc, ui, widget::HWidget};
+use crate::{cava, config, ui, widget::HWidget};
 use gtk::traits::*;
 use std::{process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
@@ -104,7 +104,8 @@ fn update_labels() {
                 let mut text = widget.text.clone();
                 // Append to the cloned text if the command isn't empty.
                 if !widget.command.is_empty() {
-                    text.push_str(&proc::execute(&widget.command))
+                    execute!(&widget.command, result);
+                    text.push_str(&result)
                 }
 
                 // Check: never cause a redraw of the label by setting the text, if the new text is the

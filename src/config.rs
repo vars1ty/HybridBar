@@ -1,13 +1,11 @@
-use crate::{environment, proc};
+use crate::environment;
 use json::JsonValue;
 use std::fs;
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
-    format!(
-        "/home/{}/.config/HybridBar/",
-        proc::execute(&String::from("whoami"))
-    )
+    execute!(&String::from("whoami"), result);
+    format!("/home/{result}/.config/HybridBar/")
 }
 
 /// Parses the config and returns it.

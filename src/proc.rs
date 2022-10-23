@@ -1,24 +1,21 @@
-use std::process::Command;
+#[macro_export]
+/// Executes a bash command and outputs it to `result`.
+macro_rules! execute {
+    ($cmd:expr, $result:ident) => {
+        if $cmd.is_empty() {
+            drop(String::default());
+        }
 
-/// Default process to be launched.
-const DEFAULT_PROC: &str = "bash";
+        let mut $result = String::from_utf8_lossy(
+            &std::process::Command::new("bash")
+                .args(["-c", $cmd])
+                .output()
+                .unwrap()
+                .stdout,
+        )
+        .to_string();
 
-/// Default argument to be passed to the process.
-const DEFAULT_ARG: &str = "-c";
-
-/// Executes a command and returns the output.
-pub fn execute(cmd: &String) -> String {
-    if cmd.is_empty() {
-        return String::default();
-    }
-
-    let output = Command::new(DEFAULT_PROC)
-        .args([DEFAULT_ARG, &cmd])
-        .output()
-        .expect(format!("[ERROR] Failed to execute process '{cmd}'!\n").as_str());
-    let mut result = String::from_utf8_lossy(&output.stdout).to_string();
-
-    // Removes the last character since its an empty line ('\n').
-    result.pop();
-    result
+        $result.pop();
+        drop(&$result);
+    };
 }
