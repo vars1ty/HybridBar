@@ -2,10 +2,7 @@
 extern crate lazy_static;
 
 #[macro_use]
-mod debug;
-
-#[macro_use]
-mod proc;
+mod macros;
 
 #[path = "widgets/box_widget.rs"]
 mod box_widget;

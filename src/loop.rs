@@ -10,6 +10,9 @@ use tokio::{
 lazy_static! {
     /// Current Cava bars.
     static ref BARS: RwLock<String> = RwLock::new(String::default());
+
+    /// Has Cava crashed? If true, don't keep `tick` running.
+    static ref HAS_CAVA_CRASHED: RwLock<bool> = RwLock::new(false);
 }
 
 /// Returns the current Cava bars.
@@ -21,16 +24,17 @@ fn get_bars() -> String {
 pub fn update() {
     update_labels();
     let tick = move || {
+        let bars = &get_bars();
         // Loop through all Cava widget instances and sync the text.
         for widget in ui::CAVA_INSTANCES
             .lock()
             .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
             .iter()
         {
-            widget.update_label(&get_bars());
+            widget.update_label(bars);
         }
-        // Indicates that we want to continue using our timer, false makes it stop.
-        glib::Continue(true)
+
+        glib::Continue(!*HAS_CAVA_CRASHED.read().unwrap())
     };
 
     glib::timeout_add_local(Duration::from_millis(1), tick);
@@ -80,11 +84,28 @@ pub fn update_bars() {
         drop(path);
         let mut reader = BufReader::new(out).lines();
         loop {
-            bars = reader
-                .next_line()
-                .await
-                .expect("[ERROR] There are no more lines available!\n")
-                .expect("[ERROR] The string value is None!\n");
+            bars = {
+                let this = {
+                    let this = reader.next_line().await;
+                    match this {
+                        Ok(t) => t,
+                        Err(_) => {
+                            *HAS_CAVA_CRASHED.write().unwrap() = true;
+                            BARS.write().unwrap().clear();
+                            panic!("[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!\n")
+                        }
+                    }
+                };
+
+                match this {
+                    Some(val) => val,
+                    None => {
+                        *HAS_CAVA_CRASHED.write().unwrap() = true;
+                        BARS.write().unwrap().clear();
+                        panic!("[WARN] Cava: The string value is None, Hybrid will keep on running but Cava will be stopped!\n")
+                    }
+                }
+            };
 
             *BARS.write().unwrap() = bars;
         }
