@@ -90,7 +90,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Grabs the widget alignment.
         let widget_alignment = key
             .split(ALIGNMENT)
-            .nth(0)
+            .next()
             .expect("[ERROR] Invalid widget alignment!\n")
             .to_uppercase();
 
@@ -106,7 +106,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         ));
 
         // Gets every element after the widget identifier, then appends '_' in between.
-        let widget_name = (&identifiers[1..].join("_")).to_string();
+        let widget_name = identifiers[1..].join("_").to_string();
 
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.

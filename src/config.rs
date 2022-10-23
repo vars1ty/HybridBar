@@ -14,9 +14,9 @@ pub fn read_config() -> JsonValue {
     conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", "config.json"));
     json::parse(
         &fs::read_to_string(&conf_path)
-            .expect(format!("[ERROR] Failed reading config file from '{conf_path}'!\n").as_str()),
+            .unwrap_or_else(|_| panic!("[ERROR] Failed reading config file from '{conf_path}'!\n")),
     )
-    .expect(format!("[ERROR] Failed parsing config from '{conf_path}'!\n").as_str())
+    .unwrap_or_else(|_| panic!("[ERROR] Failed parsing config from '{conf_path}'!\n"))
 }
 
 /// If the `key` exists inside `root`, the value of it is returned.
@@ -29,7 +29,7 @@ pub fn try_get(root: &str, key: &str, string_value: bool) -> (String, i32) {
                 String::default(),
                 cfg[key]
                     .as_i32()
-                    .expect(format!("[ERROR] Failed parsing {root}:{key} as i32!\n").as_str()),
+                    .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!\n")),
             );
         }
 

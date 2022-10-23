@@ -119,9 +119,8 @@ async fn main() {
 
 /// Applies custom visuals.
 fn set_visual(window: &ApplicationWindow, screen: Option<&gdk::Screen>) {
-    if screen.is_some() {
-        let u_screen = screen.unwrap();
-        if let Some(ref visual) = u_screen.rgba_visual() {
+    if let Some(screen) = screen {
+        if let Some(ref visual) = screen.rgba_visual() {
             window.set_visual(Some(visual)); // crucial for transparency
         }
     }
@@ -131,11 +130,11 @@ fn set_visual(window: &ApplicationWindow, screen: Option<&gdk::Screen>) {
 fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f64 {
     let mut res = cfg["hybrid"][identifier]
         .as_f64()
-        .expect(format!("[ERROR] Failed converting hybrid:{identifier} to f64!\n").as_str());
+        .unwrap_or_else(|| panic!("[ERROR] Failed converting hybrid:{identifier} to f64!\n"));
 
     // Only divide by 255 if explicitly told to.
     if from_255 {
-        res = res / 255.0;
+        res /= 255.0;
     }
 
     // Return the result.
