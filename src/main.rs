@@ -37,47 +37,47 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let pos = environment::try_get_var("HYBRID_POS", "TOP");
-    if pos != "TOP" && pos != "BOTTOM" {
-        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ]\n")
-    }
+let pos = environment::try_get_var("HYBRID_POS", "TOP");
+if pos != "TOP" && pos != "BOTTOM" {
+    panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ]\n")
+}
 
-    // If the position was valid, return the result.
-    [
-        (Edge::Left, true),
-        (Edge::Right, true),
-        (Edge::Top, pos == "TOP"),
-        (Edge::Bottom, pos == "BOTTOM"),
-    ]
+// If the position was valid, return the result.
+[
+    (Edge::Left, true),
+    (Edge::Right, true),
+    (Edge::Top, pos == "TOP"),
+    (Edge::Bottom, pos == "BOTTOM"),
+]
 }
 
 /// Initializes the status bar.
 fn activate(application: &Application) {
-    // Create a normal GTK window however you like
-    let window = ApplicationWindow::new(application);
-    window.connect_screen_changed(set_visual);
-    window.connect_draw(draw);
+// Create a normal GTK window however you like
+let window = ApplicationWindow::new(application);
+window.connect_screen_changed(set_visual);
+window.connect_draw(draw);
 
-    // Initialize layer shell before the window has been fully initialized.
-    gtk_layer_shell::init_for_window(&window);
+// Initialize layer shell before the window has been fully initialized.
+gtk_layer_shell::init_for_window(&window);
 
-    // Order below normal windows
-    gtk_layer_shell::set_layer(&window, gtk_layer_shell::Layer::Bottom);
+// Order below normal windows
+gtk_layer_shell::set_layer(&window, gtk_layer_shell::Layer::Bottom);
 
-    // Push other windows out of the way
-    // Toggling this off may help some if they are in applications that have weird unicode text, which may mess with the bars scaling.
-    gtk_layer_shell::auto_exclusive_zone_enable(&window);
+// Push other windows out of the way
+// Toggling this off may help some if they are in applications that have weird unicode text, which may mess with the bars scaling.
+gtk_layer_shell::auto_exclusive_zone_enable(&window);
 
-    for (anchor, state) in get_anchors() {
-        gtk_layer_shell::set_anchor(&window, anchor, state);
-    }
+for (anchor, state) in get_anchors() {
+    gtk_layer_shell::set_anchor(&window, anchor, state);
+}
 
-    // For transparency to work.
-    window.set_app_paintable(true);
+// For transparency to work.
+window.set_app_paintable(true);
 
-    // Build all the widgets.
-    ui::build_widgets(&window);
-    log!("Ready!");
+// Build all the widgets.
+ui::build_widgets(&window);
+log!("Ready!");
 }
 
 /// Loads the CSS

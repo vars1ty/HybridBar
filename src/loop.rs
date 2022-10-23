@@ -24,29 +24,31 @@ fn get_bars() -> String {
 pub fn update() {
     update_labels();
     // Only start the tick-loop if there are actually Cava widgets available.
-    if !ui::CAVA_INSTANCES
+    if ui::CAVA_INSTANCES
         .lock()
         .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
         .is_empty()
     {
-        let tick = move || {
-            let bars = &get_bars();
-            // Loop through all Cava widget instances and sync the text.
-            for widget in ui::CAVA_INSTANCES
-                .lock()
-                .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
-                .iter()
-            {
-                widget.update_label(bars);
-            }
-
-            glib::Continue(!*HAS_CAVA_CRASHED.read().unwrap())
-        };
-
-        // Run the tick closure every 1ms.
-        log!("CAVA WIDGET/WIDGETS ACTIVE, RUN LOOP");
-        glib::timeout_add_local(Duration::from_millis(1), tick);
+        return;
     }
+
+    let tick = move || {
+        let bars = &get_bars();
+        // Loop through all Cava widget instances and sync the text.
+        for widget in ui::CAVA_INSTANCES
+            .lock()
+            .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
+            .iter()
+        {
+            widget.update_label(bars);
+        }
+
+        glib::Continue(!*HAS_CAVA_CRASHED.read().unwrap())
+    };
+
+    // Run the tick closure every 1ms.
+    log!("CAVA WIDGET/WIDGETS ACTIVE, RUN LOOP");
+    glib::timeout_add_local(Duration::from_millis(1), tick);
 }
 
 /// Returns the set update-rate.
@@ -58,7 +60,9 @@ fn get_update_rate() -> u64 {
     }
 
     if update_rate < 100 {
-        println!("[CRITICAL WARN] Your update-rate is {update_rate}ms! Expect performance drawbacks")
+        println!(
+            "[CRITICAL WARN] Your update-rate is {update_rate}ms! Expect performance drawbacks"
+        )
     }
 
     update_rate
