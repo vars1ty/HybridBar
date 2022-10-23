@@ -53,6 +53,10 @@ To actually use a widget, here's an example:
 
 Every widget **has** to contain an underscore (`_`) after the type, then you add the unique name for that widget.
 
+If you don't specify a name for the widget after `_`, a random UUID will be generated so that Hybrid can draw and identify it properly.
+
+**NOTE**: Widgets with the same name (regardless of type) aren't officially supported and may suffer from weird behavior.
+
 The `text` and `command` nested JSON keys are simply described as:
 - text: Raw Label Text
 - command: Optional bash command
@@ -77,4 +81,4 @@ On mid/high-end systems this should really not even be noticeable, going from `~
 If you don't want the very small performance impact, simply don't use Cava. Or if your bar is already active and you want to disable Cava; `killall -I cava -9` - This will kill Cava and disable its functionality from Hybrid until you restart the bar.
 
 #### What if Cava crashes unexpectedly? Do I still lose performance?
-No, if Cava crashes unexpectedly then Hybrid will effectively cut off the module entirely and all of its update-loops, making the performance 1:1 to what it would be if you weren't using Cava.
+No, if Cava crashes (or closes) unexpectedly then Hybrid will effectively cut off the module entirely and all of its update-loops, making the performance 1:1 to what it would be if you weren't using Cava.

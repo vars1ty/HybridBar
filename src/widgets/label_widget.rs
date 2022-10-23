@@ -8,7 +8,6 @@ use std::fmt::Display;
 
 /// Creates a new label widget.
 pub struct LabelWidget {
-    pub name: String,
     pub tooltip: String,
     pub text: String,
     pub command: String,
@@ -21,13 +20,13 @@ unsafe impl Sync for LabelWidget {}
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
-    fn add(self, align: Align, left: &Box, centered: &Box, right: &Box) {
-        self.label.set_widget_name(&self.name);
+    fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box) {
+        self.label.set_widget_name(&name);
         // 0.2.7: Support for tooltips
         self.label.set_tooltip_markup(Some(&self.tooltip));
 
         ui::add_and_align(&self.label, align, left, centered, right);
-        log!(format!("Added a new label widget named '{}'", self.name));
+        log!(format!("Added a new label widget named '{}'", name));
         VEC.lock()
             .expect("[ERROR] Cannot access ui::VEC!\n")
             .push(self);

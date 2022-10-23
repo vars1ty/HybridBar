@@ -4,6 +4,7 @@ use crate::{
 };
 use gtk::traits::*;
 use std::{str::FromStr, sync::Mutex};
+use uuid::Uuid;
 
 lazy_static! {
     /// Holds all the dynamic label widgets.
@@ -106,47 +107,47 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         ));
 
         // Gets every element after the widget identifier, then appends '_' in between.
-        let widget_name = identifiers[1..].join("_").to_string();
+        let mut widget_name = identifiers[1..].join("_").to_string();
+
+        if widget_name.is_empty() {
+            log!("Found an empty widget name (probably discarded), replacing with a random UUID");
+            widget_name = Uuid::new_v4().to_string()
+        }
 
         // Check for identifiers.
         // Defo. not clean or pretty, will probably fix it later.
         if identifier.contains("label") {
             let label = LabelWidget {
-                name: widget_name,
                 tooltip,
                 text,
                 command,
                 label: Label::new(None),
             };
 
-            label.add(alignment, left, centered, right)
+            label.add(widget_name, alignment, left, centered, right)
         } else if identifier.contains("button") {
             let button = ButtonWidget {
-                name: widget_name,
                 tooltip,
                 command,
                 button: Button::with_label(&text),
             };
 
-            button.add(alignment, left, centered, right)
+            button.add(widget_name, alignment, left, centered, right)
         } else if identifier.contains("spacing") {
             let spacing = SpacingWidget {
-                name: widget_name,
                 spacing_start: config::try_get(key, "spacing_start", false).1,
                 spacing_end: config::try_get(key, "spacing_end", false).1,
             };
 
-            spacing.add(alignment, left, centered, right)
+            spacing.add(widget_name, alignment, left, centered, right)
         } else if identifier.contains("box") {
             let box_widget = BoxWidget {
-                name: widget_name,
                 width: config::try_get(key, "width", false).1,
             };
 
-            box_widget.add(alignment, left, centered, right)
+            box_widget.add(widget_name, alignment, left, centered, right)
         } else if identifier.contains("cava") {
             let cava = CavaWidget {
-                name: widget_name,
                 label: Label::new(None),
             };
 
@@ -156,7 +157,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 has_started_cava = true;
             }
             log!("CAVA BETA WIDGET ACTIVE");
-            cava.add(alignment, left, centered, right)
+            cava.add(widget_name, alignment, left, centered, right)
         } else {
             // You are stupid.
             panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
