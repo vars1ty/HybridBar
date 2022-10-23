@@ -13,9 +13,12 @@ It supports:
 - Transparency (+ blur if your compositor supports it);
 - Custom CSS;
 - Custom update-frequency for dynamic labels (ones with a `command` set);
-- Beta Cava implementation;
+- Beta Cava implementation (+ customizable cava framerate and bar count);
 - Multi-Config;
-- Top and Bottom positioning
+- Top and Bottom positioning;
+- Label Tooltips;
+- Markup for Tooltips;
+- Markup for Labels without commands
 
 In other words, it's a simple Wayland status bar that does one thing: Display the stuff __you__ put onto it. Nothing more, nothing less, no over-engineered dogshit.
 ## I have no config
