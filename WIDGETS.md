@@ -38,6 +38,8 @@ Keys Supported:
 
 Keys Supported:
 - Shared: `hybrid` -> `cava_sed`: String
+- Shared: `hybrid` -> `cava_bars`: i32
+- Shared: `hybrid` -> `cava_framerate`: i32
 ***
 To actually use a widget, here's an example:
 
