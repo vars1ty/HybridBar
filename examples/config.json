@@ -8,12 +8,15 @@
     },
     "left-label_username": {
         "text": "user: ",
-        "command": "whoami"
+        "command": "whoami",
+        "tooltip": "This is your username from whoami"
     },
     "centered-label_centerdummy": {
         "text": "dummy centered label"
+        "tooltip": "An example of a centered label"
     },
     "right-label_rightdummy": {
-        "text": "dummy right aligned label"
+        "text": "dummy right aligned label",
+        "tooltip": "An example of a right-aligned label"
     }
 }
