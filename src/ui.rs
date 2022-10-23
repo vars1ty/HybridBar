@@ -97,6 +97,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Base keys, text and command being optional.
         let text = config::try_get(key, "text", true).0;
         let command = config::try_get(key, "command", true).0;
+        let tooltip = config::try_get(key, "tooltip", true).0;
         let alignment = structures::Align::from_str(&widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
@@ -112,6 +113,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         if identifier.contains("label") {
             let label = LabelWidget {
                 name: widget_name,
+                tooltip,
                 text,
                 command,
                 label: Label::new(None),

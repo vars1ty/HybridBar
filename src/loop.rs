@@ -21,7 +21,6 @@ fn get_bars() -> String {
 pub fn update() {
     update_labels();
     let tick = move || {
-        //update_css(&css_path);
         // Loop through all Cava widget instances and sync the text.
         for widget in ui::CAVA_INSTANCES
             .lock()

@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use crate::{
     debug::log,
     structures::Align,
@@ -7,10 +5,12 @@ use crate::{
     widget::HWidget,
 };
 use gtk::{traits::*, *};
+use std::fmt::Display;
 
 /// Creates a new label widget.
 pub struct LabelWidget {
     pub name: String,
+    pub tooltip: String,
     pub text: String,
     pub command: String,
     pub label: Label,
@@ -24,6 +24,8 @@ unsafe impl Sync for LabelWidget {}
 impl HWidget for LabelWidget {
     fn add(self, align: Align, left: &Box, centered: &Box, right: &Box) {
         self.label.set_widget_name(&self.name);
+        // 0.2.7: Support for tooltips
+        self.label.set_tooltip_markup(Some(&self.tooltip));
 
         ui::add_and_align(&self.label, align, left, centered, right);
         log(format!("Added a new label widget named '{}'", self.name));
@@ -33,6 +35,13 @@ impl HWidget for LabelWidget {
     }
 
     fn update_label(&self, new_content: &(impl Display + Clone)) {
-        self.label.set_text(&new_content.to_string())
+        // 0.2.7: Support for markup as long as the command is empty.
+        // It doesn't support markup with commands because some strings may cause GTK to mistreat
+        // it, which I may fix in the future.
+        if self.command.is_empty() {
+            self.label.set_markup(&new_content.to_string());
+        } else {
+            self.label.set_text(&new_content.to_string());
+        }
     }
 }

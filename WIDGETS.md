@@ -15,6 +15,7 @@ Available widgets:
 Keys Supported:
 - text: String
 - command: String
+- tooltip: String
 ***
 `button`:
 

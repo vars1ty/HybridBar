@@ -15,6 +15,8 @@ mod environment;
 #[path = "widgets/label_widget.rs"]
 mod label_widget;
 mod r#loop;
+#[path = "utils/math.rs"]
+mod math;
 mod proc;
 #[path = "widgets/spacing_widget.rs"]
 mod spacing_widget;
@@ -79,7 +81,6 @@ fn activate(application: &Application) {
 }
 
 /// Loads the CSS
-#[allow(unused_must_use)]
 pub fn load_css() {
     let provider = CssProvider::new();
     let mut css_path = config::get_path();
@@ -88,25 +89,9 @@ pub fn load_css() {
         log("No style.css file was found, falling back to default GTK settings!")
     }
 
-    provider.load_from_path(&css_path);
-
-    // Add the provider to the default screen
-    StyleContext::add_provider_for_screen(
-        &Screen::default().expect("[ERROR] Couldn't find any valid displays!\n"),
-        &provider,
-        STYLE_PROVIDER_PRIORITY_APPLICATION,
-    );
-}
-
-/// Loads the CSS
-#[allow(unused_must_use)]
-pub fn load_css_from(path: &Path) {
-    if !path.is_file() {
-        return;
-    }
-
-    let provider = CssProvider::new();
-    provider.load_from_path(path.to_str().unwrap());
+    provider
+        .load_from_path(&css_path)
+        .expect("[ERROR] Failed loading CSS!\n");
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(
