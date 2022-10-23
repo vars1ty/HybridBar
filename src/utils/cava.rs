@@ -34,7 +34,6 @@ pub fn get_temp_config() -> String {
     // 0.2.7: Support for dynamically configuring the temporary config to an extent.
     let bars = get_bars();
     let framerate = get_framerate();
-    // TODO: Make bars configurable from hybrid:cava_bars?
     file.write_all(
         format!(
             r#"
