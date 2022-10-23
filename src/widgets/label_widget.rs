@@ -1,5 +1,4 @@
 use crate::{
-    debug::log,
     structures::Align,
     ui::{self, VEC},
     widget::HWidget,
@@ -28,7 +27,7 @@ impl HWidget for LabelWidget {
         self.label.set_tooltip_markup(Some(&self.tooltip));
 
         ui::add_and_align(&self.label, align, left, centered, right);
-        log(format!("Added a new label widget named '{}'", self.name));
+        log!(format!("Added a new label widget named '{}'", self.name));
         VEC.lock()
             .expect("[ERROR] Cannot access ui::VEC!\n")
             .push(self);

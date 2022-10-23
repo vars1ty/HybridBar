@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate lazy_static;
 
+#[macro_use]
+mod debug;
+
 #[path = "widgets/box_widget.rs"]
 mod box_widget;
 #[path = "widgets/button_widget.rs"]
@@ -10,7 +13,6 @@ mod cava;
 #[path = "widgets/cava_widget.rs"]
 mod cava_widget;
 mod config;
-mod debug;
 mod environment;
 #[path = "widgets/label_widget.rs"]
 mod label_widget;
@@ -24,7 +26,6 @@ mod structures;
 mod ui;
 mod widget;
 
-use debug::log;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;
 use gtk::prelude::*;
@@ -77,7 +78,7 @@ fn activate(application: &Application) {
 
     // Build all the widgets.
     ui::build_widgets(&window);
-    log("Ready!");
+    log!("Ready!");
 }
 
 /// Loads the CSS
@@ -86,7 +87,7 @@ pub fn load_css() {
     let mut css_path = config::get_path();
     css_path.push_str("style.css");
     if !Path::new(&css_path).is_file() {
-        log("No style.css file was found, falling back to default GTK settings!")
+        log!("No style.css file was found, falling back to default GTK settings!")
     }
 
     provider
@@ -104,11 +105,11 @@ pub fn load_css() {
 /// Called upon application startup.
 #[tokio::main]
 async fn main() {
-    log("Building application...");
+    log!("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
-    log("Loading CSS...");
+    log!("Loading CSS...");
     application.connect_startup(|_| load_css());
-    log("Creating viewport...");
+    log!("Creating viewport...");
     // Activate the layer shell.
     application.connect_activate(|app| {
         activate(app);

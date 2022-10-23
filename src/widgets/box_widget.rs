@@ -1,4 +1,4 @@
-use crate::{debug::log, structures::Align, ui, widget::HWidget};
+use crate::{structures::Align, ui, widget::HWidget};
 use gtk::{traits::*, *};
 
 /// Creates a new basic box widget.
@@ -15,6 +15,6 @@ impl HWidget for BoxWidget {
         widget.set_width_request(self.width);
 
         ui::add_and_align(&widget, align, left, centered, right);
-        log("Added a new box widget");
+        log!("Added a new box widget");
     }
 }

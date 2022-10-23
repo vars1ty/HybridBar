@@ -1,4 +1,4 @@
-use crate::{debug::log, structures::Align, ui, widget::HWidget};
+use crate::{structures::Align, ui, widget::HWidget};
 use gtk::{traits::*, *};
 
 /// Creates a new basic spacing widget.
@@ -18,6 +18,6 @@ impl HWidget for SpacingWidget {
         widget.set_margin_end(self.spacing_end);
 
         ui::add_and_align(&widget, align, left, centered, right);
-        log("Added a new spacing widget");
+        log!("Added a new spacing widget");
     }
 }

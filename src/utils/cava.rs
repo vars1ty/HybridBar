@@ -1,6 +1,5 @@
-use std::{fs::File, io::Write};
-
 use crate::{config, math};
+use std::{fs::File, io::Write};
 
 /// Gets the sed to use for Cava.
 pub fn get_sed() -> String {
@@ -20,7 +19,11 @@ fn get_bars() -> i32 {
 
 /// Returns the desired framerate to use for Cava updates.
 fn get_framerate() -> i32 {
-    math::clamp_i32(config::try_get("hybrid", "cava_framerate", false).1, 60, 200)
+    math::clamp_i32(
+        config::try_get("hybrid", "cava_framerate", false).1,
+        60,
+        200,
+    )
 }
 
 /// Builds the temporary Cava configuration and then returns the path to it,

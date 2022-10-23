@@ -1,4 +1,4 @@
-use crate::{debug::log, structures::Align, ui, widget::HWidget};
+use crate::{structures::Align, ui, widget::HWidget};
 use gtk::{traits::*, *};
 
 /// Creates a new button widget.
@@ -17,11 +17,11 @@ impl HWidget for ButtonWidget {
         if !self.command.is_empty() {
             let name_clone = self.name.clone();
             self.button.connect_clicked(move |_| {
-                log(format!("Button '{name_clone}' -> Clicked"));
+                log!(format!("Button '{name_clone}' -> Clicked"));
             });
         }
 
         ui::add_and_align(&self.button, align, left, centered, right);
-        log(format!("Added a new button widget named '{}'", self.name));
+        log!(format!("Added a new button widget named '{}'", self.name));
     }
 }

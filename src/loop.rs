@@ -1,4 +1,4 @@
-use crate::{cava, config, debug::log, proc, ui, widget::HWidget};
+use crate::{cava, config, proc, ui, widget::HWidget};
 use gtk::traits::*;
 use std::{process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
@@ -110,7 +110,7 @@ fn update_labels() {
                 // Check: never cause a redraw of the label by setting the text, if the new text is the
                 // exact same as the current one.
                 if text != widget.label.text() {
-                    log(format!(
+                    log!(format!(
                         "Label update received (from => \"{}\", to => \"{text}\")",
                         widget.label.text()
                     ));

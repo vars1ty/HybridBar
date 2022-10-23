@@ -1,6 +1,6 @@
 use crate::{
-    box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget, debug::log,
-    r#loop::update, spacing_widget::SpacingWidget, structures::Align, *,
+    box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget, r#loop::update,
+    spacing_widget::SpacingWidget, structures::Align, *,
 };
 use gtk::traits::*;
 use std::{str::FromStr, sync::Mutex};
@@ -101,7 +101,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let alignment = structures::Align::from_str(&widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
-        log(format!(
+        log!(format!(
             "Adding widget '{identifier}' with alignment '{widget_alignment}'",
         ));
 
@@ -154,7 +154,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 r#loop::update_bars();
                 has_started_cava = true;
             }
-            log("CAVA BETA WIDGET ACTIVE");
+            log!("CAVA BETA WIDGET ACTIVE");
             cava.add(alignment, left, centered, right)
         } else {
             // You are stupid.
