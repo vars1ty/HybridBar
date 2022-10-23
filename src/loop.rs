@@ -134,8 +134,7 @@ fn update_labels() {
                 let mut text = widget.text.clone();
                 // Append to the cloned text if the command isn't empty.
                 if !widget.command.is_empty() {
-                    execute!(&widget.command, result);
-                    text.push_str(&result)
+                    text.push_str(&execute!(&widget.command))
                 }
 
                 // Check: never cause a redraw of the label by setting the text, if the new text is the

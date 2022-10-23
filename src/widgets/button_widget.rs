@@ -21,7 +21,7 @@ impl HWidget for ButtonWidget {
             let name_clone = self.name.clone();
             self.button.connect_clicked(move |_| {
                 log!(format!("Button '{name_clone}' -> Clicked"));
-                execute!(&self.command, discarded);
+                execute!(&self.command);
             });
         }
 

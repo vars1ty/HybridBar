@@ -4,8 +4,10 @@ use std::fs;
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
-    execute!(&String::from("whoami"), result);
-    format!("/home/{result}/.config/HybridBar/")
+    format!(
+        "/home/{}/.config/HybridBar/",
+        execute!(&String::from("whoami"))
+    )
 }
 
 /// Parses the config and returns it.
