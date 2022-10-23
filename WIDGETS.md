@@ -22,6 +22,7 @@ Keys Supported:
 Keys Supported:
 - text: String
 - command: String
+- tooltip: String
 ***
 `spacing`:
 
@@ -60,12 +61,20 @@ The `text` and `command` nested JSON keys are simply described as:
 
 No, the unique name isn't actually displayed anywhere, it's just to be able to differ each component from another.
 ## Cava
-Since `0.2.5`, unofficial Cava support has been added, although with limitations such as:
+Since `0.2.5`, unofficial Cava support has been added.
 
-- There are no keys available for each Cava widget, there's only one inside `hybrid` which is called `cava_sed`. If left empty, it'll be using this value: `s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;`.
-- The implementation is **unsafe**, hence why it's in beta. Expect full-on crashes.
-- You can't currently change how many bars you want for Cava in an official way, it may be added in the future though.
+Here's an example of how you may setup Cava: `"right-cava_cava_rside": {}`.
 
-*If you compile from source and modify `cava.rs`, then you may modify the configuration.*
+You may also change how all Cava widgets are displayed on the bar through these keys in `hybrid`:
+- `cava_sed`: String - The sed for Cava. If left empty, `s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;` is being used;
+- `cava_framerate`: i32 (min 60, max 200) - How fast Cava should check for audio levels and output it to `stdout` for Hybrid to then sync to the viewport;
+- `cava_bars`: i32 (min 2, max 16) - How many bars that should be rendered for each Cava widget
+### Performance
+Because the implementation isn't perfect and uses what I'd like to call for "hacks" to work, the performance may fluctuate.
 
-Here's an example of how you may setup Cava: `"right-cava_cava_rside": {}`
+On mid/high-end systems this should really not even be noticeable, going from `~0.0%` CPU-Usage without Cava, to `~0.4%` with Cava.
+
+If you don't want the very small performance impact, simply don't use Cava. Or if your bar is already active and you want to disable Cava; `killall -I cava -9` - This will kill Cava and disable its functionality from Hybrid until you restart the bar.
+
+#### What if Cava crashes unexpectedly? Do I still lose performance?
+No, if Cava crashes unexpectedly then Hybrid will effectively cut off the module entirely and all of its update-loops, making the performance 1:1 to what it would be if you weren't using Cava.

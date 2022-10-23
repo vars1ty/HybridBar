@@ -123,6 +123,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         } else if identifier.contains("button") {
             let button = ButtonWidget {
                 name: widget_name,
+                tooltip,
                 command,
                 button: Button::with_label(&text),
             };

@@ -1,4 +1,4 @@
-use crate::{cava, config, ui, widget::HWidget};
+use crate::{cava, config, math, ui, widget::HWidget};
 use gtk::traits::*;
 use std::{process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
@@ -53,11 +53,7 @@ pub fn update() {
 
 /// Returns the set update-rate.
 fn get_update_rate() -> u64 {
-    let mut update_rate = config::try_get("hybrid", "update_rate", false).1;
-    // Clamp the value to a minimum of 5.
-    if update_rate < 5 {
-        update_rate = 5;
-    }
+    let update_rate = math::clamp_i32(config::try_get("hybrid", "update_rate", false).1, 5, 10_000);
 
     if update_rate < 100 {
         println!(

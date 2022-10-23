@@ -4,6 +4,7 @@ use gtk::{traits::*, *};
 /// Creates a new button widget.
 pub struct ButtonWidget {
     pub name: String,
+    pub tooltip: String,
     pub command: String,
     pub button: Button,
 }
@@ -12,6 +13,8 @@ pub struct ButtonWidget {
 impl HWidget for ButtonWidget {
     fn add(self, align: Align, left: &Box, centered: &Box, right: &Box) {
         self.button.set_widget_name(&self.name);
+        // 0.2.8: Support tooltips for buttons
+        self.button.set_tooltip_markup(Some(&self.tooltip));
 
         // If the command isn't empty, subscribe to click events.
         if !self.command.is_empty() {

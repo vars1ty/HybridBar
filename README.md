@@ -10,19 +10,24 @@ It supports:
 - Labels (static and inherit text from a command);
 - Buttons with `on click` actions via a bash command;
 - Spacings;
-- Transparency (+ blur if your compositor supports it);
+- Transparency (+ blur if your compositor supports it for layer-shells);
 - Custom CSS;
 - Custom update-frequency for dynamic labels (ones with a `command` set);
-- Beta Cava implementation (+ customizable cava framerate and bar count);
-- Multi-Config;
+- Cava implementation (+ customizable cava framerate, bar count and sed);
+- Dual-Config (+ Dual-CSS);
 - Top and Bottom positioning;
-- Label Tooltips;
+- Label and Button Tooltips;
 - Markup for Tooltips;
-- Markup for Labels without commands
+- Markup for Labels without commands;
+- and more to come
 
-In other words, it's a simple Wayland status bar that does one thing: Display the stuff __you__ put onto it. Nothing more, nothing less, no over-engineered dogshit.
+It also receives updates constantly, if you want proof of it then check the commits section.
+
+In other words, it's a simple Wayland status bar that does what it's supposed to be doing, and a bit more to stand out from the rest.
 ## I have no config
 If the AUR version for whatever reason didn't give you the example one, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
+## Does it only work on wlroots Compositors?
+Nope, it's been tested on KDE as well and it worked just fine. GNOME should be the same story.
 # Config Layout
 I'm assuming you are familiar with JSON. If you aren't, well too bad.
 ## Base
