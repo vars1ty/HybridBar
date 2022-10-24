@@ -37,3 +37,10 @@
 
 - The config is too hard for me to understand
   - Then you either lack a functional brain, or you are the definition of lazy.
+
+- Can I make the bar not take up my entire top/bottom part of the screen?
+  - In 0.2.9+ you can make it not expand by setting the value of `expand` from `hybrid` to `false`.
+
+- Is there support for distros other than Arch?
+  - Hybrid should work on every distro, only difference being that I won't officially ship it to anything but the AUR Repo and on GitHub Releases.
+  - If you however decide to package it and want to ship it yourself, go ahead and submit an issue which holds the URL to the package, if it's git or not, etc.

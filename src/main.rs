@@ -36,17 +36,18 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let pos = environment::try_get_var("HYBRID_POS", "TOP");
-    if pos != "TOP" && pos != "BOTTOM" {
-        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ]\n")
+    let expand = config::try_get("hybrid", "expand", true).0; // Default is false (0).
+    let pos = config::try_get("hybrid", "position", true).0;
+    if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
+        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.\n")
     }
 
     // If the position was valid, return the result.
     [
-        (Edge::Left, true),
-        (Edge::Right, true),
-        (Edge::Top, pos == "TOP"),
-        (Edge::Bottom, pos == "BOTTOM"),
+        (Edge::Left, expand == "true" || expand.is_empty()),
+        (Edge::Right, expand == "true" || expand.is_empty()),
+        (Edge::Top, pos.eq_ignore_ascii_case("Top") || pos.is_empty()),
+        (Edge::Bottom, pos.eq_ignore_ascii_case("Bottom")),
     ]
 }
 
@@ -60,8 +61,10 @@ fn activate(application: &Application) {
     // Initialize layer shell before the window has been fully initialized.
     gtk_layer_shell::init_for_window(&window);
 
-    // Order below normal windows
-    gtk_layer_shell::set_layer(&window, gtk_layer_shell::Layer::Bottom);
+    // Order above normal windows
+    // Prior to 0.2.9, this was set to Bottom but it caused issues with tooltips being shown below
+    // windows.
+    gtk_layer_shell::set_layer(&window, gtk_layer_shell::Layer::Top);
 
     // Push other windows out of the way
     // Toggling this off may help some if they are in applications that have weird unicode text, which may mess with the bars scaling.
@@ -73,6 +76,8 @@ fn activate(application: &Application) {
 
     // For transparency to work.
     window.set_app_paintable(true);
+
+    window.set_widget_name("window");
 
     // Build all the widgets.
     ui::build_widgets(&window);
@@ -107,6 +112,10 @@ pub fn load_css() {
 /// Called upon application startup.
 #[tokio::main]
 async fn main() {
+    if std::env::var("HYBRID_POS").is_ok() {
+        panic!("HYBRID_POS is obsolete, read the `DUAL-CONFIG.md` file for how to re-position your bar.");
+    }
+
     log!("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
     log!("Loading CSS...");
