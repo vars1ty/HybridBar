@@ -7,9 +7,9 @@ description = "A simple status bar made for wlroots compositors."
 license = "MIT"
 
 [dependencies]
+uuid = { version = "1.2.1", features = ["v4", "fast-rng"] }
 strum = { version = "0.24", features = ["derive"] }
 tokio = { version = "1.21.2", features = ["full"] }
-uuid = { version = "1.2.1", features = ["v4", "fast-rng"] }
 gtk-layer-shell = "0.4.1"
 lazy_static = "1.4.0"
 strum_macros = "0.24"
