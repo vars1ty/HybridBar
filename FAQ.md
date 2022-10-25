@@ -27,7 +27,8 @@
   - Not possible for now, what you can do instead as a workaround is to read the `hot-reload` part and implement that when you add new widgets through some script or whatever.
 
 - I'm tired of repeating long commands in the JSON, can variables be added?
-  - I might look into it sometime in the future, but for now either deal with it or setup a shell-script which is called from Hybrid.
+  - ~~I might look into it sometime in the future, but for now either deal with it or setup a shell-script which is called from Hybrid.~~
+  - Added in 0.2.9, read `VARIABLES.md`.
 
 - Does Hybrid work outside Sway and Hyprland?
   - Yes, it's been proven to work on KDE and will most definitely work on GNOME.

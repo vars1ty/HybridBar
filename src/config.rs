@@ -40,3 +40,24 @@ pub fn try_get(root: &str, key: &str, string_value: bool) -> (String, i32) {
         (String::default(), 0)
     }
 }
+
+/// Gets all the custom variables.
+pub fn get_custom_variables() -> Vec<(String, String)> {
+    let cfg = &read_config()["variables"];
+    let mut vector: Vec<(String, String)> = Vec::new();
+    for entry in cfg.entries() {
+        vector.push((entry.0.to_string(), entry.1.to_string()))
+    }
+
+    vector
+}
+
+/// Replaces any variable-matching patterns in the `String` with the variables value.
+pub fn with_variables(input: String) -> String {
+    let mut result = input;
+    for variable in get_custom_variables() {
+        result = result.replace(&variable.0, &variable.1);
+    }
+
+    result
+}
