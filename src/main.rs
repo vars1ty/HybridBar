@@ -126,7 +126,6 @@ async fn main() {
         activate(app);
     });
 
-    std::process::exit(0);
     application.run();
 }
 

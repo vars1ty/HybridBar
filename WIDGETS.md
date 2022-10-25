@@ -35,7 +35,7 @@ Keys Supported:
 Keys Supported:
 - width: i32
 ***
-`cava` - **BETA**:
+`cava`:
 
 Keys Supported:
 - Shared: `hybrid` -> `cava_sed`: String
@@ -46,9 +46,9 @@ To actually use a widget, here's an example:
 
 ```json
 "left-label_UNIQUE_NAME": {
-        "text": "whomai stdout ",
-        "command": "whoami"
-    }
+    "text": "whomai stdout ",
+    "command": "whoami"
+}
 ```
 
 Every widget **has** to contain an underscore (`_`) after the type, then you add the unique name for that widget.
