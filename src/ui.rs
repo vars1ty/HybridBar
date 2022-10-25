@@ -9,14 +9,12 @@ use uuid::Uuid;
 lazy_static! {
     /// Holds all the dynamic label widgets.
     pub static ref VEC: Mutex<Vec<LabelWidget>> = {
-        let v = Vec::new();
-        Mutex::new(v)
+        Mutex::new(Vec::new())
     };
 
     /// All active cava label instances.
     pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget>> = {
-        let v = Vec::new();
-        Mutex::new(v)
+        Mutex::new(Vec::new())
     };
 }
 
@@ -153,10 +151,10 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 
             if !has_started_cava {
                 // Ensure it only calls update_bars once.
-                r#loop::update_bars();
+                cava::update_bars();
                 has_started_cava = true;
             }
-            log!("CAVA BETA WIDGET ACTIVE");
+
             cava.add(widget_name, alignment, left, centered, right)
         } else {
             // You are stupid.

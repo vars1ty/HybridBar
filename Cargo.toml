@@ -17,9 +17,8 @@ glib = "0.15.12"
 json = "0.12.4"
 gtk = "0.15.5"
 
-# Optimizes for size
 [profile.release]
-opt-level = "z"
+opt-level = 3
 panic = "abort"
 strip = true
-lto = true
+lto = "fat"

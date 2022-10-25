@@ -1,24 +1,7 @@
-use crate::{cava, config, math, ui, widget::HWidget};
+use crate::{config, math, ui, widget::HWidget, cava::{get_current_bars, HAS_CAVA_CRASHED}};
 use gtk::traits::*;
-use std::{process::Stdio, sync::RwLock, time::Duration};
-use tokio::{
-    io::{AsyncBufReadExt, BufReader},
-    process::Command,
-    task,
-};
-
-lazy_static! {
-    /// Current Cava bars.
-    static ref BARS: RwLock<String> = RwLock::new(String::default());
-
-    /// Has Cava crashed? If true, don't keep `tick` running.
-    static ref HAS_CAVA_CRASHED: RwLock<bool> = RwLock::new(false);
-}
-
-/// Returns the current Cava bars.
-fn get_bars() -> String {
-    BARS.read().unwrap().to_string()
-}
+use std::time::Duration;
+use tokio::task;
 
 /// Updates dynamic bar content.
 pub fn update() {
@@ -33,7 +16,7 @@ pub fn update() {
     }
 
     let tick = move || {
-        let bars = &get_bars();
+        let bars = &get_current_bars();
         // Loop through all Cava widget instances and sync the text.
         for widget in ui::CAVA_INSTANCES
             .lock()
@@ -64,61 +47,6 @@ fn get_update_rate() -> u64 {
     update_rate
         .try_into()
         .expect("[ERROR] Cannot convert update_rate into u64!\n")
-}
-
-/// Updates the `BARS` value with Cava.
-/// Only call this once as it's a loop.
-pub fn update_bars() {
-    task::spawn(async move {
-        let mut bars;
-        let sed = cava::get_sed();
-        let path = cava::get_temp_config();
-        // Start a process which reads cava's output, then sync the labels content with it.
-        // This **has** to stay inside this specific scope, because calling it from other functions
-        // for w/e reason makes it break.
-        let mut child = Command::new("bash")
-            .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
-            .stdout(Stdio::piped())
-            .kill_on_drop(true)
-            .spawn()
-            .expect("[ERROR] Cannot start cava script!\n");
-
-        let out = child
-            .stdout
-            .take()
-            .expect("[ERROR] Cannot take stdout from child!\n");
-
-        // Drop to free the resources in case something unexpected happens.
-        drop(sed);
-        drop(path);
-        let mut reader = BufReader::new(out).lines();
-        loop {
-            bars = {
-                let this = {
-                    let this = reader.next_line().await;
-                    match this {
-                        Ok(t) => t,
-                        Err(_) => {
-                            *HAS_CAVA_CRASHED.write().unwrap() = true;
-                            BARS.write().unwrap().clear();
-                            panic!("[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!\n")
-                        }
-                    }
-                };
-
-                match this {
-                    Some(val) => val,
-                    None => {
-                        *HAS_CAVA_CRASHED.write().unwrap() = true;
-                        BARS.write().unwrap().clear();
-                        panic!("[WARN] Cava: The string value is None, Hybrid will keep on running but Cava will be stopped!\n")
-                    }
-                }
-            };
-
-            *BARS.write().unwrap() = bars;
-        }
-    });
 }
 
 /// Updates all labels with a `command` set.
