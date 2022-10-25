@@ -3,7 +3,9 @@ A status bar focused on wlroots Wayland compositors
 
 ## Preview
 With blur through Hyprland.
-![image](https://user-images.githubusercontent.com/54314240/185250795-b5c1b948-ef69-4293-bd1b-4deedbbaa82d.png)
+![image](https://user-images.githubusercontent.com/54314240/197680577-2bc0cff4-2438-4c8d-8428-11499d0519c6.png)
+
+The bottom bar is also made with Hybrid.
 
 ## What does it support?
 It supports:
