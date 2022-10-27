@@ -1,4 +1,8 @@
-use crate::{config, math, ui, widget::HWidget, cava::{get_current_bars, HAS_CAVA_CRASHED}};
+use crate::{
+    cava::{get_current_bars, HAS_CAVA_CRASHED},
+    config, math, ui,
+    widget::HWidget,
+};
 use gtk::traits::*;
 use std::time::Duration;
 use tokio::task;
@@ -67,7 +71,7 @@ fn update_labels() {
 
                 // Check: never cause a redraw of the label by setting the text, if the new text is the
                 // exact same as the current one.
-                if text != widget.label.text() {
+                if !text.eq(&widget.label.text()) {
                     log!(format!(
                         "Label update received (from => \"{}\", to => \"{text}\")",
                         widget.label.text()

@@ -22,6 +22,10 @@ impl HWidget for CavaWidget {
     }
 
     fn update_label(&self, new_content: &(impl Display + Clone)) {
-        self.label.set_text(&new_content.to_string())
+        let final_content = &new_content.to_string();
+        // Only redraw if the text wasn't the exact same as final_content.
+        if !self.label.text().eq(final_content) {
+            self.label.set_text(&new_content.to_string())
+        }
     }
 }
