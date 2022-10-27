@@ -12,7 +12,7 @@
         "tooltip": "This is your username from whoami"
     },
     "centered-label_centerdummy": {
-        "text": "dummy centered label"
+        "text": "dummy centered label",
         "tooltip": "An example of a centered label"
     },
     "right-label_rightdummy": {
