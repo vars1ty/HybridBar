@@ -12,7 +12,7 @@ It supports:
 - Easy Configuration;
   - Your grandma could probably get it setup too
 - Split Configuration;
-  - Setup dedicated configurations/stylesheets for each individual Hybrid session. Read more `DUAL-CONFIG.md`!
+  - Setup dedicated configurations/stylesheets for each individual Hybrid session. Read more at `DUAL-CONFIG.md`!
 - Labels;
   - Both `static` and `dynamic`. Static being cheaper and Dynamic executing and outputting a bash-command of your choice
 - Spacings;
