@@ -9,23 +9,42 @@ The bottom bar is also made with Hybrid.
 
 ## What does it support?
 It supports:
-- Labels (static and inherit text from a command);
-- Buttons with `on click` actions via a bash command;
+- Easy Configuration;
+  - Your grandma could probably get it setup too
+- Split Configuration;
+  - Setup dedicated configurations/stylesheets for each individual Hybrid session. Read more `DUAL-CONFIG.md`!
+- Labels;
+  - Both `static` and `dynamic`. Static being cheaper and Dynamic executing and outputting a bash-command of your choice
 - Spacings;
-- Transparency (+ blur if your compositor supports it for layer-shells);
-- Custom CSS;
-- Custom update-frequency for dynamic labels (ones with a `command` set);
-- Cava implementation (+ customizable cava framerate, bar count and sed);
-- Dual-Config (+ Dual-CSS);
-- Top and Bottom positioning;
-- Label and Button Tooltips;
-- Markup for Tooltips;
-- Markup for Labels without commands;
-- and more to come
+  - Which may also act as "Separators" if you customize them
+- Boxes;
+  - Draw a horizontal box and style it, or just treat it as an invisible cousin of Spacings (which is basically the default behavior)
+- Custom update-rate for dynamic labels;
+  - On lower-end computers this may save some processing power
+- Cava embedded on your bar;
+  - Yes, that Cava from unixporn
+  - You may also customize the back-end framerate, bar-count and sed to be used
+  - As an added bonus: If Cava unexpectedly closes/crashes, the back-end loops for updating it will be cancelled, leading to a happier CPU
+- Buttons;
+  - Before you ask: yes, they can execute bash-commands
+- Tooltips;
+  - Supported for Buttons and Labels
+  - No, they aren't shy and won't hide behind your windows
+- Markup;
+  - Supported for Buttons and the `text` property on Labels
+- Not only attached to the top;
+  - You can choose between 2 places for where Hybrid should be placed; Top or Bottom
+- Expand or Compact;
+  - Expand stretches across your whole screen, whereas setting it to `false` only stretches around the visible content
+- Transparency;
+  - Plus Blur if your compositor allows for blurring layer-shells
+- Efficient;
+  - If there isn't a need for redrawing the bar; it just won't happen, simple as that
+- Does what it's supposed to;
+  - While also being easy to use, beginner-friendly and straight-forward.
+- Always updated;
+  - You can check the commits to see proof of this
 
-It also receives updates constantly, if you want proof of it then check the commits section.
-
-In other words, it's a simple Wayland status bar that does what it's supposed to be doing, and a bit more to stand out from the rest.
 ## I have no config
 If the AUR version for whatever reason didn't give you the example one, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
 ## Does it only work on wlroots Compositors?
@@ -35,7 +54,7 @@ I'm assuming you are familiar with JSON. If you aren't, well too bad.
 ## Base
 Before you can use the bar, you have to adjust the color and alpha.
 
-RGB Colors are 0-255 as an integer, Alpha is 0.0-1.0 as a float.
+RGB Colors are 0-255 as a 32-bit integer, Alpha is 0.0-1.0 as a 32-bit float.
 
 Here's an example:
 
@@ -50,8 +69,6 @@ Here's an example:
     }
 }
 ```
-## Video Tutorial
-You can watch a video tutorial made by Foren [here](https://www.youtube.com/watch?v=5g7MX3jgv8A) - **Outdated but may help some**.
 ## CSS Support
 Starting from `0.1.3`, CSS is now supported and you can make it auto-load on startup by making a `style.css` file next to your `config.json` at the same path.
 
@@ -73,15 +90,16 @@ It's worth noting that low update-rates may lead to performance decreases, the v
 # Installation
 Dependencies:
 
-1. gtk-layer-shell
-2. gtk3
-3. bash
-4. a brain
+1. rust
+2. gtk-layer-shell
+3. gtk3
+4. bash
+5. a brain
 
 ## Arch Linux
-AUR: `paru -S hybrid-bar-git`
+Git Version: `paru -S hybrid-bar-git`
 
-**NOTE**: This builds the bar, so you'll need Rust installed.
+Latest Binary: `paru -S hybrid-bar`
 ## Building
 1. `git clone https://github.com/vars1ty/HybridBar`
 2. `cd HybridBar`
@@ -94,6 +112,5 @@ Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
 - ~~Make the code for widgets cleaner and more portable~~ - **Done**
 - ~~Quit blocking the UI Thread when executing bash-commands and retrieving the output~~ - **Done**
 - Port over to GTK4 - Not possible right now due to GTK being 0IQ and [screwing shit up](https://github.com/wmww/gtk-layer-shell/issues/37)
-- Publish a non-git AUR package which uses the latest built binary
+- ~~Publish a non-git AUR package which uses the latest built binary~~ - **Done**
 - Potentially more widgets - **In progress, feel free to suggest widgets**
-- 
