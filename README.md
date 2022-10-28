@@ -76,8 +76,6 @@ If you want a sample CSS which has been used up until recently and has good defa
 ## Environment Variables
 `HYBRID_LOG` = `0` OR `1` : Logs debug output to stdout.
 
-`HYBRID_POS` = `TOP` OR `BOTTOM` : Tells the bar where to position itself, TOP or BOTTOM.
-
 `HYBRID_CONFIG` = `name.json` : Locates the config inside the HybridBar config path, then uses it for the rest of the bars session.
 ## Background Updates
 Hybrid performs background updates for labels with the key `command` set, and for updating Cava labels.
