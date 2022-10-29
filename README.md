@@ -15,6 +15,7 @@ It supports:
   - Setup dedicated configurations/stylesheets for each individual Hybrid session. Read more at `DUAL-CONFIG.md`!
 - Labels;
   - Both `static` and `dynamic`. Static being cheaper and Dynamic executing and outputting a bash-command of your choice
+  - **NOTE**: You may only have `1024` Labels active per Hybrid session
 - Spacings;
   - Which may also act as "Separators" if you customize them
 - Boxes;
@@ -25,6 +26,7 @@ It supports:
   - Yes, that Cava from unixporn
   - You may also customize the back-end framerate, bar-count and sed to be used
   - As an added bonus: If Cava unexpectedly closes/crashes, the back-end loops for updating it will be cancelled, leading to a happier CPU
+  - **NOTE**: You may only have `8` Cava widgets active per Hybrid session
 - Buttons;
   - Before you ask: yes, they can execute bash-commands
 - Tooltips;

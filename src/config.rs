@@ -1,4 +1,5 @@
 use crate::environment;
+use heapless::Vec;
 use json::JsonValue;
 use std::fs;
 
@@ -6,7 +7,7 @@ use std::fs;
 pub fn get_path() -> String {
     format!(
         "/home/{}/.config/HybridBar/",
-        execute!(&String::from("whoami"))
+        execute!(&heapless::String::<6>::from("whoami"))
     )
 }
 
@@ -42,11 +43,14 @@ pub fn try_get(root: &str, key: &str, string_value: bool) -> (String, i32) {
 }
 
 /// Gets all the custom variables.
-pub fn get_custom_variables() -> Vec<(String, String)> {
+pub fn get_custom_variables() -> Vec<(String, String), 64> {
     let cfg = &read_config()["variables"];
-    let mut vector: Vec<(String, String)> = Vec::new();
+    // 0.3.0: Only allow for 64 variables.
+    let mut vector: Vec<(String, String), 64> = Vec::new();
     for entry in cfg.entries() {
-        vector.push((entry.0.to_string(), entry.1.to_string()))
+        vector
+            .push((entry.0.to_string(), entry.1.to_string()))
+            .expect("[ERROR] You cannot have more than `64` variables!\n");
     }
 
     vector
@@ -56,7 +60,10 @@ pub fn get_custom_variables() -> Vec<(String, String)> {
 pub fn with_variables(input: String) -> String {
     let mut result = input;
     for variable in get_custom_variables() {
-        result = result.replace(&variable.0, &variable.1);
+        // Only replace if `result` actually contains the defined variable.
+        if result.contains(&variable.0) {
+            result = result.replace(&variable.0, &variable.1);
+        }
     }
 
     result

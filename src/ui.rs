@@ -3,17 +3,18 @@ use crate::{
     spacing_widget::SpacingWidget, structures::Align, *,
 };
 use gtk::traits::*;
+use heapless::Vec;
 use std::{str::FromStr, sync::Mutex};
 use uuid::Uuid;
 
 lazy_static! {
     /// Holds all the dynamic label widgets.
-    pub static ref VEC: Mutex<Vec<LabelWidget>> = {
+    pub static ref VEC: Mutex<Vec<LabelWidget, 1024>> = {
         Mutex::new(Vec::new())
     };
 
     /// All active cava label instances.
-    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget>> = {
+    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget, 8>> = {
         Mutex::new(Vec::new())
     };
 }
@@ -81,7 +82,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         }
 
         // Gets the widget identifiers.
-        let identifiers = key.split(SEPARATOR).collect::<Vec<&str>>();
+        let identifiers = key.split(SEPARATOR).collect::<Vec<&str, 8>>();
 
         // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
         let identifier = identifiers[0];

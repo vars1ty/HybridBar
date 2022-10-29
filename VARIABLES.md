@@ -25,3 +25,5 @@ Then the text will automatically be replaced with the value from `cool_message`.
 - `text`
 - `command`
 - `tooltip`
+## Limitations
+There's only one limitation with variables: You can only specify up to `64` for now.

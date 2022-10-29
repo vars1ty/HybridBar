@@ -77,8 +77,6 @@ fn activate(application: &Application) {
     // For transparency to work.
     window.set_app_paintable(true);
 
-    window.set_widget_name("window");
-
     // Build all the widgets.
     ui::build_widgets(&window);
     log!("Ready!");

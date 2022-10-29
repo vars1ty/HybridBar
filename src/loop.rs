@@ -3,7 +3,6 @@ use crate::{
     config, math, ui,
     widget::HWidget,
 };
-use gtk::traits::*;
 use std::time::Duration;
 use tokio::task;
 
@@ -66,19 +65,10 @@ fn update_labels() {
                 let mut text = widget.text.clone();
                 // Append to the cloned text if the command isn't empty.
                 if !widget.command.is_empty() {
-                    text.push_str(&execute!(&widget.command))
+                    text.push_str(&execute!(&widget.command));
                 }
 
-                // Check: never cause a redraw of the label by setting the text, if the new text is the
-                // exact same as the current one.
-                if !text.eq(&widget.label.text()) {
-                    log!(format!(
-                        "Label update received (from => \"{}\", to => \"{text}\")",
-                        widget.label.text()
-                    ));
-
-                    widget.update_label(&text);
-                }
+                widget.update_label(&text);
             }
 
             tokio::time::sleep(Duration::from_millis(get_update_rate())).await;

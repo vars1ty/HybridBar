@@ -3,6 +3,7 @@ use gtk::{traits::*, *};
 use std::fmt::Display;
 
 /// Creates a new label widget.
+#[derive(Debug)]
 pub struct CavaWidget {
     pub label: Label,
 }
@@ -19,6 +20,7 @@ impl HWidget for CavaWidget {
             .lock()
             .expect("[ERROR] Couldn't access ui::CAVA_INSTANCES!\n")
             .push(self)
+            .expect("[ERROR] You cannot have more than `8` Cava widgets!\n");
     }
 
     fn update_label(&self, new_content: &(impl Display + Clone)) {

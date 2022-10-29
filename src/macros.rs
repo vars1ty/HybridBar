@@ -16,7 +16,8 @@ macro_rules! execute {
             let mut result;
             $(
             if $cmd.is_empty() {
-                drop(String::default());
+                // Return a stack-allocated string containing no content.
+                drop(heapless::String::<0>::default());
             }
 
             result = String::from_utf8_lossy(
