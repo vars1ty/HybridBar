@@ -87,12 +87,12 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
         let identifier = identifiers[0];
 
-        // Grabs the widget alignment.
-        let widget_alignment = key
-            .split(ALIGNMENT)
-            .next()
-            .expect("[ERROR] Invalid widget alignment!\n")
-            .to_uppercase();
+        // Grabs widget alignment and widget type from the identifier separated by '-̈́'.
+        let (widget_alignment, widget_type) = identifier.split_once(ALIGNMENT)
+            .expect("[ERROR] Widget should be named as [alignment]-[widget_type]_[name]");
+
+        // Formats the widget alignment.
+        let widget_alignment = widget_alignment.to_uppercase();
 
         // Base keys, text and command being optional.
         let text = config::with_variables(config::try_get(key, "text", true).0);
@@ -114,52 +114,58 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         }
 
         // Check for identifiers.
-        // Defo. not clean or pretty, will probably fix it later.
-        if identifier.contains("label") {
-            let label = LabelWidget {
-                tooltip,
-                text,
-                command,
-                label: Label::new(None),
-            };
+        match widget_type {
+            "label" => {
+                let label = LabelWidget {
+                    tooltip,
+                    text,
+                    command,
+                    label: Label::new(None),
+                };
 
-            label.add(widget_name, alignment, left, centered, right)
-        } else if identifier.contains("button") {
-            let button = ButtonWidget {
-                tooltip,
-                command,
-                button: Button::with_label(&text),
-            };
+                label.add(widget_name, alignment, left, centered, right)
+            },
+            "button" => {
+                let button = ButtonWidget {
+                    tooltip,
+                    command,
+                    button: Button::with_label(&text),
+                };
 
-            button.add(widget_name, alignment, left, centered, right)
-        } else if identifier.contains("spacing") {
-            let spacing = SpacingWidget {
-                spacing_start: config::try_get(key, "spacing_start", false).1,
-                spacing_end: config::try_get(key, "spacing_end", false).1,
-            };
+                button.add(widget_name, alignment, left, centered, right)
+            },
+            "spacing" => {
+                let spacing = SpacingWidget {
+                    spacing_start: config::try_get(key, "spacing_start", false).1,
+                    spacing_end: config::try_get(key, "spacing_end", false).1,
+                };
 
-            spacing.add(widget_name, alignment, left, centered, right)
-        } else if identifier.contains("box") {
-            let box_widget = BoxWidget {
-                width: config::try_get(key, "width", false).1,
-            };
+                spacing.add(widget_name, alignment, left, centered, right)
+            },
+            "box" => {
+                let box_widget = BoxWidget {
+                    width: config::try_get(key, "width", false).1,
+                };
 
-            box_widget.add(widget_name, alignment, left, centered, right)
-        } else if identifier.contains("cava") {
-            let cava = CavaWidget {
-                label: Label::new(None),
-            };
+                box_widget.add(widget_name, alignment, left, centered, right)
+            },
+            "cava" => {
+                let cava = CavaWidget {
+                    label: Label::new(None),
+                };
 
-            if !has_started_cava {
-                // Ensure it only calls update_bars once.
-                cava::update_bars();
-                has_started_cava = true;
+                if !has_started_cava {
+                    // Ensure it only calls update_bars once.
+                    cava::update_bars();
+                    has_started_cava = true;
+                }
+
+                cava.add(widget_name, alignment, left, centered, right)
+            },
+            _ => {
+                // You are stupid.
+                panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
             }
-
-            cava.add(widget_name, alignment, left, centered, right)
-        } else {
-            // You are stupid.
-            panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }
     }
 }
