@@ -87,22 +87,22 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
         let identifier = identifiers[0];
 
-        // Grabs widget alignment and widget type from the identifier separated by '-̈́'.
+        // Grabs widget alignment and widget type from the identifier separated by '-'.
         let (widget_alignment, widget_type) = identifier.split_once(ALIGNMENT)
             .expect("[ERROR] Widget should be named as [alignment]-[widget_type]_[name]");
 
         // Formats the widget alignment.
-        let widget_alignment = widget_alignment.to_uppercase();
+        let f_widget_alignment = widget_alignment.to_uppercase();
 
         // Base keys, text and command being optional.
         let text = config::with_variables(config::try_get(key, "text", true).0);
         let command = config::with_variables(config::try_get(key, "command", true).0);
         let tooltip = config::with_variables(config::try_get(key, "tooltip", true).0);
-        let alignment = structures::Align::from_str(&widget_alignment)
+        let alignment = structures::Align::from_str(&f_widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
         log!(format!(
-            "Adding widget '{identifier}' with alignment '{widget_alignment}'",
+            "Adding widget '{identifier}' with alignment '{f_widget_alignment}'",
         ));
 
         // Gets every element after the widget identifier, then appends '_' in between.
@@ -163,7 +163,6 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 cava.add(widget_name, alignment, left, centered, right)
             },
             _ => {
-                // You are stupid.
                 panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
             }
         }
