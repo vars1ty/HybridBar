@@ -41,8 +41,6 @@ impl HWidget for LabelWidget {
             return;
         }
 
-        // Check: never cause a redraw of the label by setting the text, if the new text is the
-        // exact same as the current one.
         log!(format!(
             "Label update received (from => \"{}\", to => \"{}\")",
             self.label.text(),
