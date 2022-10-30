@@ -83,9 +83,13 @@ fn activate(application: &Application) {
     
     let display = gdk::Display::default().expect("[ERROR] Could not get default display.");
 
+    // Loads the monitor variable from config, default is 0.
     let config_monitor = config::try_get("hybrid", "monitor", false);
-    let monitor = display.monitor(config_monitor.1).expect("[ERROR] Could not find monitor.");
 
+    // Gets the actual gdk::Monitor from configured number.
+    let monitor = display.monitor(config_monitor.1).expect("[ERROR] Could not find monitor.");
+    
+    // Sets which monitor should be used for the bar.
     gtk_layer_shell::set_monitor(&window, &monitor);
 
     // For transparency to work.
