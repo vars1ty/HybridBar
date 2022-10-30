@@ -80,6 +80,13 @@ fn activate(application: &Application) {
     if config::try_get("hybrid", "allow_keyboard", true).0 == "true" {
         gtk_layer_shell::set_keyboard_interactivity(&window, true);
     }
+    
+    let display = gdk::Display::default().expect("[ERROR] Could not get default display.");
+
+    let config_monitor = config::try_get("hybrid", "monitor", false);
+    let monitor = display.monitor(config_monitor.1).expect("[ERROR] Could not find monitor.");
+
+    gtk_layer_shell::set_monitor(&window, &monitor);
 
     // For transparency to work.
     window.set_app_paintable(true);
