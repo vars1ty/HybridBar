@@ -81,6 +81,7 @@ fn activate(application: &Application) {
         gtk_layer_shell::set_keyboard_interactivity(&window, true);
     }
     
+    // Initialize gdk::Display by default value, which is decided by the compositor.
     let display = gdk::Display::default().expect("[ERROR] Could not get default display.");
 
     // Loads the monitor variable from config, default is 0.
