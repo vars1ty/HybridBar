@@ -27,7 +27,7 @@ impl HWidget for CavaWidget {
         let final_content = &new_content.to_string();
         // Only redraw if the text wasn't the exact same as final_content.
         if !self.label.text().eq(final_content) {
-            self.label.set_text(&new_content.to_string())
+            self.label.set_text(final_content)
         }
     }
 }
