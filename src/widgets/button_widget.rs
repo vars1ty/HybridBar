@@ -24,6 +24,6 @@ impl HWidget for ButtonWidget {
         }
 
         ui::add_and_align(&self.button, align, left, centered, right);
-        log!(format!("Added a new button widget"));
+        log!("Added a new button widget");
     }
 }
