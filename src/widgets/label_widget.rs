@@ -27,11 +27,12 @@ impl HWidget for LabelWidget {
         self.label.set_tooltip_markup(Some(&self.tooltip));
 
         ui::add_and_align(&self.label, align, left, centered, right);
-        log!(format!("Added a new label widget named '{}'", name));
         VEC.lock()
             .expect("[ERROR] Cannot access ui::VEC!\n")
             .push(self)
             .expect("[ERROR] You cannot have more than `1024` Labels!\n");
+
+        log!(format!("Added a new label widget named '{}'", name));
     }
 
     fn update_label(&self, new_content: &(impl Display + Clone)) {
@@ -42,7 +43,8 @@ impl HWidget for LabelWidget {
         }
 
         log!(format!(
-            "Label update received (from => \"{}\", to => \"{}\")",
+            "[{}] -> Label update received (from => \"{}\", to => \"{}\")",
+            self.label.widget_name(),
             self.label.text(),
             ts
         ));

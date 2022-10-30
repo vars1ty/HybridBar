@@ -1,7 +1,10 @@
-use tokio::{task, process::Command, io::{BufReader, AsyncBufReadExt}};
-
 use crate::{config, math};
 use std::{fs::File, io::Write, process::Stdio, sync::RwLock};
+use tokio::{
+    io::{AsyncBufReadExt, BufReader},
+    process::Command,
+    task,
+};
 
 lazy_static! {
     /// Current Cava bars.

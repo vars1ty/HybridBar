@@ -74,7 +74,7 @@ pub fn build_widgets(window: &ApplicationWindow) {
 fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
     const ALIGNMENT: char = '-';
-    const SEPARATOR: char = '_';
+    const SEPARATOR: &str = "_";
     let mut has_started_cava = false;
     for (key, _) in config::read_config().entries() {
         if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
@@ -88,7 +88,8 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let identifier = identifiers[0];
 
         // Grabs widget alignment and widget type from the identifier separated by '-'.
-        let (widget_alignment, widget_type) = identifier.split_once(ALIGNMENT)
+        let (widget_alignment, widget_type) = identifier
+            .split_once(ALIGNMENT)
             .expect("[ERROR] Widget should be named as [alignment]-[widget_type]_[name]");
 
         // Formats the widget alignment.
@@ -106,7 +107,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         ));
 
         // Gets every element after the widget identifier, then appends '_' in between.
-        let mut widget_name = identifiers[1..].join("_").to_string();
+        let mut widget_name = identifiers[1..].join(SEPARATOR).to_string();
 
         if widget_name.is_empty() {
             log!("Found an empty widget name (probably discarded), replacing with a random UUID");
@@ -124,7 +125,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 };
 
                 label.add(widget_name, alignment, left, centered, right)
-            },
+            }
             "button" => {
                 let button = ButtonWidget {
                     tooltip,
@@ -133,7 +134,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 };
 
                 button.add(widget_name, alignment, left, centered, right)
-            },
+            }
             "spacing" => {
                 let spacing = SpacingWidget {
                     spacing_start: config::try_get(key, "spacing_start", false).1,
@@ -141,14 +142,14 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 };
 
                 spacing.add(widget_name, alignment, left, centered, right)
-            },
+            }
             "box" => {
                 let box_widget = BoxWidget {
                     width: config::try_get(key, "width", false).1,
                 };
 
                 box_widget.add(widget_name, alignment, left, centered, right)
-            },
+            }
             "cava" => {
                 let cava = CavaWidget {
                     label: Label::new(None),
@@ -161,7 +162,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 }
 
                 cava.add(widget_name, alignment, left, centered, right)
-            },
+            }
             _ => {
                 panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
             }
