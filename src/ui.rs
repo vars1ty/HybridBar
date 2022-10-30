@@ -1,6 +1,6 @@
 use crate::{
-    box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget, r#loop::update,
-    spacing_widget::SpacingWidget, structures::Align, *,
+    box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget,
+    cmd_widget::CmdWidget, r#loop::update, spacing_widget::SpacingWidget, structures::Align, *,
 };
 use gtk::traits::*;
 use heapless::Vec;
@@ -9,14 +9,11 @@ use uuid::Uuid;
 
 lazy_static! {
     /// Holds all the dynamic label widgets.
-    pub static ref VEC: Mutex<Vec<LabelWidget, 1024>> = {
-        Mutex::new(Vec::new())
-    };
+    pub static ref VEC: Mutex<Vec<LabelWidget, 1024>> = Mutex::new(Vec::new());
 
     /// All active cava label instances.
-    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget, 8>> = {
-        Mutex::new(Vec::new())
-    };
+    // This will be moved to `cava.rs` soon.
+    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget, 8>> = Mutex::new(Vec::new());
 }
 
 /// Adds and aligns the specified widget.
@@ -162,6 +159,11 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 }
 
                 cava.add(widget_name, alignment, left, centered, right)
+            }
+            "cmd" => {
+                let cmd = CmdWidget {};
+
+                cmd.add(widget_name, alignment, left, centered, right)
             }
             _ => {
                 panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")

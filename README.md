@@ -32,6 +32,9 @@ It supports:
 - Tooltips;
   - Supported for Buttons and Labels
   - No, they aren't shy and won't hide behind your windows
+- Command Fields;
+  - Write in your favorite command, hit `ENTER` and it'll spawn for you
+  - **NOTE**: You have to enable `hybrid` -> `allow_keyboard` (`bool`) to focus command fields
 - Markup;
   - Supported for Buttons and the `text` property on Labels
 - Not only attached to the top;

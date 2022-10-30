@@ -12,6 +12,8 @@ mod button_widget;
 mod cava;
 #[path = "widgets/cava_widget.rs"]
 mod cava_widget;
+#[path = "widgets/cmd_widget.rs"]
+mod cmd_widget;
 mod config;
 mod environment;
 #[path = "widgets/label_widget.rs"]
@@ -72,6 +74,11 @@ fn activate(application: &Application) {
 
     for (anchor, state) in get_anchors() {
         gtk_layer_shell::set_anchor(&window, anchor, state);
+    }
+
+    // Allows for writing in input fields if the value is true.
+    if config::try_get("hybrid", "allow_keyboard", true).0 == "true" {
+        gtk_layer_shell::set_keyboard_interactivity(&window, true);
     }
 
     // For transparency to work.

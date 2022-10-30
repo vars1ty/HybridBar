@@ -42,6 +42,11 @@ Keys Supported:
 - Shared: `hybrid` -> `cava_bars`: i32
 - Shared: `hybrid` -> `cava_framerate`: i32
 ***
+`cmd`:
+
+Keys Supported:
+- None
+***
 To actually use a widget, here's an example:
 
 ```json
