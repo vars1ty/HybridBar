@@ -48,3 +48,6 @@
 
 - I can't focus my command field(s)!
   - Set `hybrid` -> `allow_keyboard` (`bool`) to `true`, restart Hybrid and it should work
+
+- I want to move Hybrid to a different monitor
+  - 0.3.2 adds support for this, specify your monitor in `hybrid` -> `monitor` (`i32`) and start Hybrid

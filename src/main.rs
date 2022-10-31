@@ -1,5 +1,3 @@
-#![deny(elided_lifetimes_in_paths)]
-
 #[macro_use]
 extern crate lazy_static;
 
@@ -23,8 +21,6 @@ mod label_widget;
 mod r#loop;
 #[path = "utils/math.rs"]
 mod math;
-#[path = "utils/proc.rs"]
-mod proc;
 #[path = "widgets/spacing_widget.rs"]
 mod spacing_widget;
 mod structures;
@@ -84,16 +80,18 @@ fn activate(application: &Application) {
     if config::try_get("hybrid", "allow_keyboard", true).0 == "true" {
         gtk_layer_shell::set_keyboard_interactivity(&window, true);
     }
-    
+
     // Initialize gdk::Display by default value, which is decided by the compositor.
-    let display = gdk::Display::default().expect("[ERROR] Could not get default display.");
+    let display = Display::default().expect("[ERROR] Could not get default display.\n");
 
     // Loads the monitor variable from config, default is 0.
     let config_monitor = config::try_get("hybrid", "monitor", false);
 
     // Gets the actual gdk::Monitor from configured number.
-    let monitor = display.monitor(config_monitor.1).expect("[ERROR] Could not find monitor.");
-    
+    let monitor = display
+        .monitor(config_monitor.1)
+        .expect("[ERROR] Could not find monitor.\n");
+
     // Sets which monitor should be used for the bar.
     gtk_layer_shell::set_monitor(&window, &monitor);
 
