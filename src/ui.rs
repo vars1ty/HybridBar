@@ -67,6 +67,15 @@ pub fn build_widgets(window: &ApplicationWindow) {
     update();
 }
 
+/// Gets the values for `text`, `command` and `tooltip`.
+/// If one is left unspecified, the value is `"", 0`, a.k.a default.
+fn get_base_keys(root: &str) -> (String, String, String) {
+    let text = config::get_or_default(root, "text", true, true).0;
+    let command = config::get_or_default(root, "command", true, true).0;
+    let tooltip = config::get_or_default(root, "tooltip", true, true).0;
+    (text, command, tooltip)
+}
+
 /// Creates all of the widgets.
 fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
@@ -92,10 +101,11 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Formats the widget alignment.
         let f_widget_alignment = widget_alignment.to_uppercase();
 
-        // Base keys, text and command being optional.
-        let text = config::with_variables(config::try_get(key, "text", true).0);
-        let command = config::with_variables(config::try_get(key, "command", true).0);
-        let tooltip = config::with_variables(config::try_get(key, "tooltip", true).0);
+        // Base keys, all being optional.
+        let base_keys = get_base_keys(key);
+        let text = base_keys.0;
+        let command = base_keys.1;
+        let tooltip = base_keys.2;
         let alignment = structures::Align::from_str(&f_widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
@@ -111,64 +121,101 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             widget_name = Uuid::new_v4().to_string()
         }
 
-        // Check for identifiers.
-        match widget_type {
-            "label" => {
-                let label = LabelWidget {
-                    tooltip,
-                    text,
-                    command,
-                    label: Label::new(None),
-                    listen: config::try_get(key, "listen", true).0 == "true",
-                };
+        // Add all of the widgets.
+        add_widgets(
+            key,
+            (widget_type, widget_name),
+            (text, command, tooltip),
+            alignment,
+            (left, centered, right),
+            identifier,
+            &mut has_started_cava,
+        )
+    }
+}
 
-                label.add(widget_name, alignment, left, centered, right)
-            }
-            "button" => {
-                let button = ButtonWidget {
-                    tooltip,
-                    command,
-                    button: Button::with_label(&text),
-                };
+/// Adds all of the widgets.
+// This uses tuples for several parameters to get around the "max parameters" limitation.
+// Plus, it looks nicer.
+fn add_widgets(
+    key: &str,
+    widget_pkg: (&str, String),
+    text_command_tooltip: (String, String, String),
+    alignment: Align,
+    left_centered_right: (&Box, &Box, &Box),
+    identifier: &str,
+    has_started_cava: &mut bool,
+) {
+    // Extract name and type.
+    let widget_type = widget_pkg.0;
+    let widget_name = widget_pkg.1;
 
-                button.add(widget_name, alignment, left, centered, right)
-            }
-            "spacing" => {
-                let spacing = SpacingWidget {
-                    spacing_start: config::try_get(key, "spacing_start", false).1,
-                    spacing_end: config::try_get(key, "spacing_end", false).1,
-                };
+    // Extract text, command and tooltip.
+    let text = text_command_tooltip.0;
+    let command = text_command_tooltip.1;
+    let tooltip = text_command_tooltip.2;
 
-                spacing.add(widget_name, alignment, left, centered, right)
-            }
-            "box" => {
-                let box_widget = BoxWidget {
-                    width: config::try_get(key, "width", false).1,
-                };
+    // Extract left, centered and right.
+    let left = left_centered_right.0;
+    let centered = left_centered_right.1;
+    let right = left_centered_right.2;
 
-                box_widget.add(widget_name, alignment, left, centered, right)
-            }
-            "cava" => {
-                let cava = CavaWidget {
-                    label: Label::new(None),
-                };
+    match widget_type {
+        "label" => {
+            let label = LabelWidget {
+                tooltip,
+                text,
+                command,
+                label: Label::new(None),
+                listen: config::get_or_default(key, "listen", true, false).0 == "true",
+            };
 
-                if !has_started_cava {
-                    // Ensure it only calls update_bars once.
-                    cava::update_bars();
-                    has_started_cava = true;
-                }
+            label.add(widget_name, alignment, left, centered, right)
+        }
+        "button" => {
+            let button = ButtonWidget {
+                tooltip,
+                command,
+                button: Button::with_label(&text),
+            };
 
-                cava.add(widget_name, alignment, left, centered, right)
-            }
-            "cmd" => {
-                let cmd = CmdWidget {};
+            button.add(widget_name, alignment, left, centered, right)
+        }
+        "spacing" => {
+            let spacing = SpacingWidget {
+                spacing_start: config::get_or_default(key, "spacing_start", false, false).1,
+                spacing_end: config::get_or_default(key, "spacing_end", false, false).1,
+            };
 
-                cmd.add(widget_name, alignment, left, centered, right)
+            spacing.add(widget_name, alignment, left, centered, right)
+        }
+        "box" => {
+            let box_widget = BoxWidget {
+                width: config::get_or_default(key, "width", false, false).1,
+            };
+
+            box_widget.add(widget_name, alignment, left, centered, right)
+        }
+        "cava" => {
+            let cava = CavaWidget {
+                label: Label::new(None),
+            };
+
+            if !*has_started_cava {
+                cava::update_bars();
+                // Ensure it only calls update_bars once.
+                *has_started_cava = true;
             }
-            _ => {
-                panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
-            }
+
+            cava.add(widget_name, alignment, left, centered, right)
+        }
+        "cmd" => {
+            let cmd = CmdWidget {};
+
+            cmd.add(widget_name, alignment, left, centered, right)
+        }
+        _ => {
+            panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }
     }
 }

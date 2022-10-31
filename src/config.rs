@@ -1,7 +1,7 @@
 use crate::environment;
 use heapless::Vec;
 use json::JsonValue;
-use std::fs;
+use std::{fs, i32};
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
@@ -22,30 +22,58 @@ pub fn read_config() -> JsonValue {
     .unwrap_or_else(|_| panic!("[ERROR] Failed parsing config from '{conf_path}'!\n"))
 }
 
-/// If the `key` exists inside `root`, the value of it is returned.
-/// If not, a default value is instead returned.
-/// TODO: Rework this function and stop parsing the config for every call.
-/// Issue: #13, PR Mentions: #12
-pub fn try_get(root: &str, key: &str, string_value: bool) -> (String, i32) {
-    let cfg = &read_config()[root];
-    if cfg.has_key(key) {
-        if !string_value {
-            return (
-                String::default(),
-                cfg[key]
+/// Tries to fetch a value from the config. Supported types are `String` and `i32`.
+/// Panics if `is_string` is `true` and the `as_i32` function fails.
+/// If the specified root/key wasn't found, a `None` value is returned.
+pub fn try_get(
+    root: &str,
+    key: &str,
+    is_string: bool,
+    with_custom_variables: bool,
+) -> Option<(String, i32)> {
+    // TODO: Make this read the cached config so we don't have to re-parse it.
+    let config = &read_config()[root];
+    let default_string = String::default();
+    if config.has_key(key) {
+        let grabbed_key = &config[key];
+
+        // If the desired value isn't a string, try and get it as a 32-bit integer.
+        if !is_string {
+            return Some((
+                default_string,
+                grabbed_key
                     .as_i32()
                     .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!\n")),
-            );
+            ));
         }
 
-        (cfg[key].to_string(), 0)
+        // Convert it to a string-value.
+        if with_custom_variables {
+            Some((with_variables(grabbed_key.to_string()), 0))
+        } else {
+            Some((grabbed_key.to_string(), 0))
+        }
     } else {
-        (String::default(), 0)
+        // The key wasn't found, so just return None.
+        None
     }
 }
 
+/// Same as `try_get`, but if the value is `None` then the return-value becomes `"", 0` (default).
+/// NOTE: This function should NOT act as a replacement for `try_get`, but rather as one where you
+/// can actually use default values and want to avoid explicitly `.unwrap_or_else()` or other long
+/// code.
+pub fn get_or_default(
+    root: &str,
+    key: &str,
+    is_string: bool,
+    with_custom_variables: bool,
+) -> (String, i32) {
+    try_get(root, key, is_string, with_custom_variables).unwrap_or_else(|| (String::default(), 0))
+}
+
 /// Gets all the custom variables.
-pub fn get_custom_variables() -> Vec<(String, String), 64> {
+fn get_custom_variables() -> Vec<(String, String), 64> {
     let cfg = &read_config()["variables"];
     // 0.3.0: Only allow for 64 variables.
     let mut vector: Vec<(String, String), 64> = Vec::new();
@@ -59,7 +87,7 @@ pub fn get_custom_variables() -> Vec<(String, String), 64> {
 }
 
 /// Replaces any variable-matching patterns in the `String` with the variables value.
-pub fn with_variables(input: String) -> String {
+fn with_variables(input: String) -> String {
     let mut result = input;
     for variable in get_custom_variables() {
         // Only replace if `result` actually contains the defined variable.

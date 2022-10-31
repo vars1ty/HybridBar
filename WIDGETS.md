@@ -73,11 +73,11 @@ No, the unique name isn't actually displayed anywhere, it's just to be able to d
 ## Cava
 Since `0.2.5`, unofficial Cava support has been added.
 
-Here's an example of how you may setup Cava: `"right-cava_cava_rside": {}`.
+Here's an example of how you may setup Cava: `"right-cava_": {}`.
 
 You may also change how all Cava widgets are displayed on the bar through these keys in `hybrid`:
 - `cava_sed`: String - The sed for Cava. If left empty, `s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;` is being used;
-- `cava_framerate`: i32 (min 60, max 200) - How fast Cava should check for audio levels and output it to `stdout` for Hybrid to then sync to the viewport;
+- `cava_framerate`: i32 (min 60, max 360) - How fast Cava should check for audio levels and output it to `stdout` for Hybrid to then sync to the viewport;
 - `cava_bars`: i32 (min 2, max 16) - How many bars that should be rendered for each Cava widget
 ### Performance
 Because the implementation isn't perfect and uses what I'd like to call for "hacks" to work, the performance may fluctuate.

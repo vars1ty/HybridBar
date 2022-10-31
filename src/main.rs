@@ -38,16 +38,26 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let expand = config::try_get("hybrid", "expand", true).0; // Default is false (0).
-    let pos = config::try_get("hybrid", "position", true).0;
+    let mut expand = true; // Default is false (0).
+    let mut pos = String::from("Top");
+
+    // Check if there's any user-defined values for expand/pos, if there are then sync them.
+    if let Some(c_expand) = config::try_get("hybrid", "expand", true, false) {
+        expand = c_expand.0 == "true";
+    }
+
+    if let Some(c_pos) = config::try_get("hybrid", "position", true, false) {
+        pos = c_pos.0;
+    }
+
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
         panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.\n")
     }
 
     // If the position was valid, return the result.
     [
-        (Edge::Left, expand == "true" || expand.is_empty()),
-        (Edge::Right, expand == "true" || expand.is_empty()),
+        (Edge::Left, expand),
+        (Edge::Right, expand),
         (Edge::Top, pos.eq_ignore_ascii_case("Top") || pos.is_empty()),
         (Edge::Bottom, pos.eq_ignore_ascii_case("Bottom")),
     ]
@@ -77,15 +87,16 @@ fn activate(application: &Application) {
     }
 
     // Allows for writing in input fields if the value is true.
-    if config::try_get("hybrid", "allow_keyboard", true).0 == "true" {
-        gtk_layer_shell::set_keyboard_interactivity(&window, true);
+    if let Some(c_allow_keyboard) = config::try_get("hybrid", "allow_keyboard", true, false) {
+        gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard.0 == "true");
     }
 
     // Initialize gdk::Display by default value, which is decided by the compositor.
     let display = Display::default().expect("[ERROR] Could not get default display.\n");
 
     // Loads the monitor variable from config, default is 0.
-    let config_monitor = config::try_get("hybrid", "monitor", false);
+    let config_monitor =
+        config::try_get("hybrid", "monitor", false, false).unwrap_or_else(|| (String::default(), 0));
 
     // Gets the actual gdk::Monitor from configured number.
     let monitor = display
@@ -107,10 +118,9 @@ fn activate(application: &Application) {
 pub fn load_css() {
     let provider = CssProvider::new();
     // 0.2.8: Allow for defining the name of the stylesheet to look up
-    let mut css_file = config::try_get("hybrid", "stylesheet", true).0;
-    if css_file.is_empty() {
-        log!("No stylesheet was defined, using default 'style.css'");
-        css_file = String::from("style.css")
+    let mut css_file = String::from("style.css");
+    if let Some(c_css_file) = config::try_get("hybrid", "stylesheet", true, false) {
+        css_file = c_css_file.0
     }
 
     let mut css_path = config::get_path();
@@ -131,10 +141,6 @@ pub fn load_css() {
 /// Called upon application startup.
 #[tokio::main]
 async fn main() {
-    if std::env::var("HYBRID_POS").is_ok() {
-        panic!("HYBRID_POS is obsolete, read the `DUAL-CONFIG.md` file for how to re-position your bar.");
-    }
-
     log!("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
     log!("Loading CSS...");

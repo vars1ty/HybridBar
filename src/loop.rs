@@ -39,7 +39,10 @@ pub fn update() {
 
 /// Returns the set update-rate.
 fn get_update_rate() -> u64 {
-    let update_rate = math::clamp_i32(config::try_get("hybrid", "update_rate", false).1, 5, 10_000);
+    let mut update_rate = 100;
+    if let Some(c_update_rate) = config::try_get("hybrid", "update_rate", false, false) {
+        update_rate = math::clamp_i32(c_update_rate.1, 5, 10_000)
+    }
 
     update_rate
         .try_into()
