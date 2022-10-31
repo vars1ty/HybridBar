@@ -26,26 +26,20 @@ pub fn update() {
             .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
             .iter()
         {
-            widget.update_label(bars);
+            widget.update_label_reg(bars);
         }
 
+        // If unwrap fails here, then I have lost all faith in computers.
         glib::Continue(!*HAS_CAVA_CRASHED.read().unwrap())
     };
 
     // Run the tick closure every 1ms.
-    log!("CAVA WIDGET/WIDGETS ACTIVE, RUN LOOP");
     glib::timeout_add_local(Duration::from_millis(1), tick);
 }
 
 /// Returns the set update-rate.
 fn get_update_rate() -> u64 {
     let update_rate = math::clamp_i32(config::try_get("hybrid", "update_rate", false).1, 5, 10_000);
-
-    if update_rate < 100 {
-        println!(
-            "[CRITICAL WARN] Your update-rate is {update_rate}ms! Expect performance drawbacks"
-        )
-    }
 
     update_rate
         .try_into()
@@ -62,13 +56,14 @@ fn update_labels() {
                 .expect("[ERROR] Cannot access ui::VEC!\n")
                 .iter()
             {
-                let mut text = widget.text.clone();
-                // Append to the cloned text if the command isn't empty.
-                if !widget.command.is_empty() {
+                // If listen is set, don't execute a one-shot command.
+                if !widget.listen {
+                    let mut text = widget.text.clone();
                     text.push_str(&execute!(&widget.command));
+                    widget.update_label_reg(&text)
+                } else {
+                    widget.update_label_internal()
                 }
-
-                widget.update_label(&text);
             }
 
             tokio::time::sleep(Duration::from_millis(get_update_rate())).await;

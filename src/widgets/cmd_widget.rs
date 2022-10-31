@@ -1,7 +1,6 @@
-use std::process::Command;
-
 use crate::{structures::Align, ui, widget::HWidget};
 use gtk::{traits::*, *};
+use std::process::Command;
 
 /// Creates a new cmd (`Entry`) widget.
 pub struct CmdWidget {}

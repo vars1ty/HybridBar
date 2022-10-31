@@ -14,8 +14,13 @@ It supports:
 - Split Configuration;
   - Setup dedicated configurations/stylesheets for each individual Hybrid session. Read more at `DUAL-CONFIG.md`!
 - Labels;
-  - Both `static` and `dynamic`. Static being cheaper and Dynamic executing and outputting a bash-command of your choice
-  - **NOTE**: You may only have `1024` Labels active per Hybrid session
+  - `static`, `dynamic` and `dynamic listen`
+     - Static being without a command set, cheapest one available and doesn't push redraws on its own
+     - Dynamic firing specified bash-command every few milliseconds (from `hybrid` -> `update_rate`), gets the output and syncs it with a redraw
+     - Dynamic Listen listens to a commands output (for example, `ping`), then syncs it at the same interval as Dynamic.
+       - **WARNING**: Dynamic Listen if fed a slow command, may cause low performance
+       - Cava Widgets use this very specific type, but with minor changes to make it update faster
+  - **NOTE**: You may only have `1024` non-static labels active per Hybrid session
 - Spacings;
   - Which may also act as "Separators" if you customize them
 - Boxes;

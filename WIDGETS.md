@@ -16,6 +16,7 @@ Keys Supported:
 - text: String
 - command: String
 - tooltip: String
+- listen: bool
 ***
 `button`:
 

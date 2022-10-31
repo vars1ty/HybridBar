@@ -7,6 +7,9 @@ pub trait HWidget {
     /// Invoked when the widget should be added.
     fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box);
 
-    /// If the widget is a label of some sort, tell it to update its content.
-    fn update_label(&self, _new_content: &(impl Display + Clone)) {}
+    /// Label Widget: Tells the label to update content to the specified new content.
+    fn update_label_reg(&self, _new_content: &(impl Display + Clone)) {}
+
+    // Label Widget: Tells the label to update with custom-defined behavior, for example from a local buffer.
+    fn update_label_internal(&self) {}
 }

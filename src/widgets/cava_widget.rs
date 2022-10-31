@@ -23,7 +23,7 @@ impl HWidget for CavaWidget {
             .expect("[ERROR] You cannot have more than `8` Cava widgets!\n");
     }
 
-    fn update_label(&self, new_content: &(impl Display + Clone)) {
+    fn update_label_reg(&self, new_content: &(impl Display + Clone)) {
         let final_content = &new_content.to_string();
         // Only redraw if the text wasn't the exact same as final_content.
         if !self.label.text().eq(final_content) {

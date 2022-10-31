@@ -24,6 +24,8 @@ pub fn read_config() -> JsonValue {
 
 /// If the `key` exists inside `root`, the value of it is returned.
 /// If not, a default value is instead returned.
+/// TODO: Rework this function and stop parsing the config for every call.
+/// Issue: #13, PR Mentions: #12
 pub fn try_get(root: &str, key: &str, string_value: bool) -> (String, i32) {
     let cfg = &read_config()[root];
     if cfg.has_key(key) {

@@ -87,7 +87,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Grabs widget alignment and widget type from the identifier separated by '-'.
         let (widget_alignment, widget_type) = identifier
             .split_once(ALIGNMENT)
-            .expect("[ERROR] Widget should be named as [alignment]-[widget_type]_[name]");
+            .expect("[ERROR] Widget should be named as [alignment]-[widget_type]_[name]\n");
 
         // Formats the widget alignment.
         let f_widget_alignment = widget_alignment.to_uppercase();
@@ -119,6 +119,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                     text,
                     command,
                     label: Label::new(None),
+                    listen: config::try_get(key, "listen", true).0 == "true",
                 };
 
                 label.add(widget_name, alignment, left, centered, right)

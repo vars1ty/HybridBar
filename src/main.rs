@@ -1,3 +1,5 @@
+#![deny(elided_lifetimes_in_paths)]
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -21,6 +23,8 @@ mod label_widget;
 mod r#loop;
 #[path = "utils/math.rs"]
 mod math;
+#[path = "utils/proc.rs"]
+mod proc;
 #[path = "widgets/spacing_widget.rs"]
 mod spacing_widget;
 mod structures;
