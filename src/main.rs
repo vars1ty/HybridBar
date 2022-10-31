@@ -84,6 +84,18 @@ fn activate(application: &Application) {
     if config::try_get("hybrid", "allow_keyboard", true).0 == "true" {
         gtk_layer_shell::set_keyboard_interactivity(&window, true);
     }
+    
+    // Initialize gdk::Display by default value, which is decided by the compositor.
+    let display = gdk::Display::default().expect("[ERROR] Could not get default display.");
+
+    // Loads the monitor variable from config, default is 0.
+    let config_monitor = config::try_get("hybrid", "monitor", false);
+
+    // Gets the actual gdk::Monitor from configured number.
+    let monitor = display.monitor(config_monitor.1).expect("[ERROR] Could not find monitor.");
+    
+    // Sets which monitor should be used for the bar.
+    gtk_layer_shell::set_monitor(&window, &monitor);
 
     // For transparency to work.
     window.set_app_paintable(true);
