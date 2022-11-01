@@ -1,7 +1,14 @@
 use crate::environment;
 use heapless::Vec;
 use json::JsonValue;
-use std::{fs, i32};
+use std::{fs, i32, sync::RwLock};
+
+lazy_static! {
+    /// Caches the config.
+    // "Why not Mutex" : https://onesignal.com/blog/thread-safety-rust/#:~:text=They%20have%20one%20important%20difference,exclusive%20access%20for%20write%20locks.
+    // TODO: Make read_config_cached() - if possible.
+    pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
+}
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
@@ -11,8 +18,14 @@ pub fn get_path() -> String {
     )
 }
 
-/// Parses the config and returns it.
-pub fn read_config() -> JsonValue {
+/// Caches the config so we don't have to re-parse it every time.
+/// Works as a fix for issue #13
+pub fn cache() {
+    *CONFIG.write().unwrap() = read_config_raw();
+}
+
+/// Parses and returns the config.
+fn read_config_raw() -> JsonValue {
     let mut conf_path = get_path();
     conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", "config.json"));
     json::parse(
@@ -32,7 +45,7 @@ pub fn try_get(
     with_custom_variables: bool,
 ) -> Option<(String, i32)> {
     // TODO: Make this read the cached config so we don't have to re-parse it.
-    let config = &read_config()[root];
+    let config = &CONFIG.read().unwrap()[root];
     let default_string = String::default();
     if config.has_key(key) {
         let grabbed_key = &config[key];
@@ -74,7 +87,7 @@ pub fn get_or_default(
 
 /// Gets all the custom variables.
 fn get_custom_variables() -> Vec<(String, String), 64> {
-    let cfg = &read_config()["variables"];
+    let cfg = &CONFIG.read().unwrap()["variables"];
     // 0.3.0: Only allow for 64 variables.
     let mut vector: Vec<(String, String), 64> = Vec::new();
     for entry in cfg.entries() {

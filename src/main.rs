@@ -95,8 +95,8 @@ fn activate(application: &Application) {
     let display = Display::default().expect("[ERROR] Could not get default display.\n");
 
     // Loads the monitor variable from config, default is 0.
-    let config_monitor =
-        config::try_get("hybrid", "monitor", false, false).unwrap_or_else(|| (String::default(), 0));
+    let config_monitor = config::try_get("hybrid", "monitor", false, false)
+        .unwrap_or_else(|| (String::default(), 0));
 
     // Gets the actual gdk::Monitor from configured number.
     let monitor = display
@@ -141,6 +141,8 @@ pub fn load_css() {
 /// Called upon application startup.
 #[tokio::main]
 async fn main() {
+    log!("Caching config...");
+    config::cache();
     log!("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
     log!("Loading CSS...");
@@ -180,7 +182,7 @@ fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f6
 
 /// Draws the window using a custom color and opacity.
 fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
-    let cfg = config::read_config();
+    let cfg = config::CONFIG.read().unwrap();
     // Fetch config for the values.
     let r = get_background_float(&cfg, "r", true);
     let g = get_background_float(&cfg, "g", true);

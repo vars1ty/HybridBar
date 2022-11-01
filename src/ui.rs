@@ -82,7 +82,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
     const ALIGNMENT: char = '-';
     const SEPARATOR: &str = "_";
     let mut has_started_cava = false;
-    for (key, _) in config::read_config().entries() {
+    for (key, _) in config::CONFIG.read().unwrap().entries() {
         if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
             continue;
         }
