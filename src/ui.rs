@@ -122,7 +122,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         }
 
         // Add all of the widgets.
-        add_widgets(
+        add_widget(
             key,
             (widget_type, widget_name),
             (text, command, tooltip),
@@ -134,10 +134,10 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
     }
 }
 
-/// Adds all of the widgets.
+/// Add a new widget of specified identifier.
 // This uses tuples for several parameters to get around the "max parameters" limitation.
 // Plus, it looks nicer.
-fn add_widgets(
+fn add_widget(
     key: &str,
     widget_pkg: (&str, String),
     text_command_tooltip: (String, String, String),
