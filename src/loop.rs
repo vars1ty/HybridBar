@@ -38,7 +38,7 @@ pub fn update() {
 }
 
 /// Returns the set update-rate.
-fn get_update_rate() -> u64 {
+pub fn get_update_rate() -> u64 {
     let mut update_rate = 100;
     if let Some(c_update_rate) = config::try_get("hybrid", "update_rate", false, false) {
         update_rate = math::clamp_i32(c_update_rate.1, 5, 10_000)
@@ -53,6 +53,7 @@ fn get_update_rate() -> u64 {
 /// Only call this once as it's a loop.
 fn update_labels() {
     task::spawn(async move {
+        let update_rate = get_update_rate();
         loop {
             for widget in ui::VEC
                 .lock()
@@ -69,7 +70,7 @@ fn update_labels() {
                 }
             }
 
-            tokio::time::sleep(Duration::from_millis(get_update_rate())).await;
+            tokio::time::sleep(Duration::from_millis(update_rate)).await;
         }
     });
 }

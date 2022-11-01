@@ -1,10 +1,10 @@
 use crate::{
     structures::Align,
     ui::{self, VEC},
-    widget::HWidget,
+    widget::HWidget, r#loop::get_update_rate,
 };
 use gtk::{traits::*, *};
-use std::{fmt::Display, process::Stdio, sync::RwLock};
+use std::{fmt::Display, process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -47,12 +47,15 @@ fn begin_listen(cmd: String) {
             .expect("[ERROR] Cannot take stdout from child!\n");
 
         let mut reader = BufReader::new(out).lines();
+        let update_rate = get_update_rate();
         loop {
             *BUFFER.write().unwrap() = reader
                 .next_line()
                 .await
                 .expect("[ERROR] There are no more lines available!\n")
                 .expect("[ERROR] The string value is None!\n");
+
+            tokio::time::sleep(Duration::from_millis(update_rate)).await;
         }
     });
 }
