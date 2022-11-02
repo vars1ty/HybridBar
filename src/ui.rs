@@ -121,7 +121,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             widget_name = Uuid::new_v4().to_string()
         }
 
-        // Add all of the widgets.
+        // Add the widget.
         add_widget(
             key,
             (widget_type, widget_name),

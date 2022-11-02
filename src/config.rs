@@ -1,4 +1,4 @@
-use crate::environment;
+use crate::{environment, math};
 use heapless::Vec;
 use json::JsonValue;
 use std::{fs, i32, sync::RwLock};
@@ -16,6 +16,18 @@ pub fn get_path() -> String {
         "/home/{}/.config/HybridBar/",
         execute!(&heapless::String::<6>::from("whoami"))
     )
+}
+
+/// Returns the set update-rate.
+pub fn get_update_rate() -> u64 {
+    let mut update_rate = 100;
+    if let Some(c_update_rate) = try_get("hybrid", "update_rate", false, false) {
+        update_rate = math::clamp_i32(c_update_rate.1, 5, 10_000)
+    }
+
+    update_rate
+        .try_into()
+        .expect("[ERROR] Cannot convert update_rate into u64!\n")
 }
 
 /// Caches the config so we don't have to re-parse it every time.
@@ -44,7 +56,6 @@ pub fn try_get(
     is_string: bool,
     with_custom_variables: bool,
 ) -> Option<(String, i32)> {
-    // TODO: Make this read the cached config so we don't have to re-parse it.
     let config = &CONFIG.read().unwrap()[root];
     let default_string = String::default();
     if config.has_key(key) {

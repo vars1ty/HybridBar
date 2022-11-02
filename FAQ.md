@@ -9,10 +9,13 @@
   - No you can't create full-on custom types.
 
 - How do I move widgets up and down?
-  - You can't currently.
+  - You can't move them up/down through the actual config, although you can somewhat do it via CSS.
 
 - Can I split the bar into sections, like with Waybar and/or eww?
-  - Not right now, no.
+  - 0.3.4+ allows you to specify where the bar should be located at.
+  - Use `hybrid` -> `expand_left` / `expand_right` (`bool`) and mess around with them until you find what you like.
+  - Default values are `true` for both; a.k.a stretched across your monitor.
+  - **NOTE**: Aligning your bar to one side only may result in weird bugs, such as it not allocating a region of free space below it.
 
 - Does this only act as a status bar?
   - It's intended purpose is to be a status bar, but you can turn it into a smaller application shortcut launcher through scripts and buttons.
@@ -40,7 +43,7 @@
   - Then you either lack a functional brain, or you are the definition of lazy.
 
 - Can I make the bar not take up my entire top/bottom part of the screen?
-  - In 0.2.9+ you can make it not expand by setting the value of `expand` from `hybrid` to `false`.
+  - Yes, read `Can I split the bar into sections, like with Waybar and/or eww?`.
 
 - Is there support for distros other than Arch?
   - Hybrid should work on every distro, only difference being that I won't officially ship it to anything but the AUR Repo and on GitHub Releases.

@@ -1,7 +1,8 @@
 use crate::{
+    config,
     structures::Align,
     ui::{self, VEC},
-    widget::HWidget, r#loop::get_update_rate,
+    widget::HWidget,
 };
 use gtk::{traits::*, *};
 use std::{fmt::Display, process::Stdio, sync::RwLock, time::Duration};
@@ -47,7 +48,7 @@ fn begin_listen(cmd: String) {
             .expect("[ERROR] Cannot take stdout from child!\n");
 
         let mut reader = BufReader::new(out).lines();
-        let update_rate = get_update_rate();
+        let update_rate = config::get_update_rate();
         loop {
             *BUFFER.write().unwrap() = reader
                 .next_line()

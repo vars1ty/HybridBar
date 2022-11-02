@@ -10,7 +10,7 @@ lazy_static! {
     /// Current Cava bars.
     static ref BARS: RwLock<String> = RwLock::new(String::default());
 
-    /// Has Cava crashed? If true, don't keep `tick` running.
+    /// Has Cava crashed? If true, don't keep `update_cava` running.
     pub static ref HAS_CAVA_CRASHED: RwLock<bool> = RwLock::new(false);
 }
 

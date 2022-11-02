@@ -38,12 +38,17 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let mut expand = true; // Default is false (0).
+    let mut expand_right = true;
+    let mut expand_left = true;
     let mut pos = String::from("Top");
 
-    // Check if there's any user-defined values for expand/pos, if there are then sync them.
-    if let Some(c_expand) = config::try_get("hybrid", "expand", true, false) {
-        expand = c_expand.0 == "true";
+    // Check if there's any user-defined values for expand l-r/pos, if there are then sync them.
+    if let Some(c_expand_right) = config::try_get("hybrid", "expand_right", true, false) {
+        expand_right = c_expand_right.0 == "true";
+    }
+
+    if let Some(c_expand_left) = config::try_get("hybrid", "expand_left", true, false) {
+        expand_left = c_expand_left.0 == "true";
     }
 
     if let Some(c_pos) = config::try_get("hybrid", "position", true, false) {
@@ -56,8 +61,8 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
 
     // If the position was valid, return the result.
     [
-        (Edge::Left, expand),
-        (Edge::Right, expand),
+        (Edge::Left, expand_left),
+        (Edge::Right, expand_right),
         (Edge::Top, pos.eq_ignore_ascii_case("Top") || pos.is_empty()),
         (Edge::Bottom, pos.eq_ignore_ascii_case("Bottom")),
     ]

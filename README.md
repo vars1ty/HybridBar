@@ -44,8 +44,8 @@ It supports:
   - Supported for Buttons and the `text` property on Labels
 - Not only attached to the top;
   - You can choose between 2 places for where Hybrid should be placed; Top or Bottom
-- Expand or Compact;
-  - Expand stretches across your whole screen, whereas setting it to `false` only stretches around the visible content
+- Sizing;
+  - Customize how the bar should expand, read more in `FAQ` -> `Can I split the bar into sections, like with Waybar and/or eww?`
 - Transparency;
   - Plus Blur if your compositor allows for blurring layer-shells
 - Efficient;
@@ -54,6 +54,8 @@ It supports:
   - While also being easy to use, beginner-friendly and straight-forward.
 - Always updated;
   - You can check the commits to see proof of this
+- Compatible with different monitors;
+  - Specify the monitor to be used for each Hybrid config, read more in `FAQ`
 
 ## I have no config
 If the AUR version for whatever reason didn't give you the example one, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
@@ -122,3 +124,4 @@ Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
 - Port over to GTK4 - Not possible right now due to GTK being 0IQ and [screwing shit up](https://github.com/wmww/gtk-layer-shell/issues/37)
 - ~~Publish a non-git AUR package which uses the latest built binary~~ - **Done**
 - Potentially more widgets - **In progress, feel free to suggest widgets**
+- System Tray - **Considering**
