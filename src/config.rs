@@ -59,13 +59,13 @@ pub fn try_get(
     let config = &CONFIG.read().unwrap()[root];
     let default_string = String::default();
     if config.has_key(key) {
-        let grabbed_key = &config[key];
+        let grabbed_value = &config[key];
 
         // If the desired value isn't a string, try and get it as a 32-bit integer.
         if !is_string {
             return Some((
                 default_string,
-                grabbed_key
+                grabbed_value
                     .as_i32()
                     .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!\n")),
             ));
@@ -73,9 +73,9 @@ pub fn try_get(
 
         // Convert it to a string-value.
         if with_custom_variables {
-            Some((with_variables(grabbed_key.to_string()), 0))
+            Some((with_variables(grabbed_value.to_string()), 0))
         } else {
-            Some((grabbed_key.to_string(), 0))
+            Some((grabbed_value.to_string(), 0))
         }
     } else {
         // The key wasn't found, so just return None.
