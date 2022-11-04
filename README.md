@@ -127,4 +127,4 @@ Latest Binary: `paru -S hybrid-bar`
 - ~~Publish a non-git AUR package which uses the latest built binary~~ - **Done**
 - Potentially more widgets - **In progress, feel free to suggest widgets**
 - System Tray - **Considering**
-- Placing widgets into user-defined `box` widgets, allow for further customization - **Considering**
+- Placing widgets into user-defined `box` widgets, allowing for further customization - **Considering**
