@@ -38,20 +38,21 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
+    const ROOT: &str = "hybrid";
     let mut expand_right = true;
     let mut expand_left = true;
     let mut pos = String::from("Top");
 
     // Check if there's any user-defined values for expand l-r/pos, if there are then sync them.
-    if let Some(c_expand_right) = config::try_get("hybrid", "expand_right", true, false) {
+    if let Some(c_expand_right) = config::try_get(ROOT, "expand_right", true, false) {
         expand_right = c_expand_right.0 == "true";
     }
 
-    if let Some(c_expand_left) = config::try_get("hybrid", "expand_left", true, false) {
+    if let Some(c_expand_left) = config::try_get(ROOT, "expand_left", true, false) {
         expand_left = c_expand_left.0 == "true";
     }
 
-    if let Some(c_pos) = config::try_get("hybrid", "position", true, false) {
+    if let Some(c_pos) = config::try_get(ROOT, "position", true, false) {
         pos = c_pos.0;
     }
 
@@ -92,12 +93,14 @@ fn activate(application: &Application) {
     }
 
     // Allows for writing in input fields if the value is true.
+    // This is false by default since it's stealing focus until you focus a different application,
+    // which may trigger some users.
     if let Some(c_allow_keyboard) = config::try_get("hybrid", "allow_keyboard", true, false) {
         gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard.0 == "true");
     }
 
     // Initialize gdk::Display by default value, which is decided by the compositor.
-    let display = Display::default().expect("[ERROR] Could not get default display.\n");
+    let display = Display::default().expect("[ERROR] Could not get default display, is your compositor doing okay?\n");
 
     // Loads the monitor variable from config, default is 0.
     let config_monitor = config::try_get("hybrid", "monitor", false, false)
@@ -188,11 +191,13 @@ fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f6
 /// Draws the window using a custom color and opacity.
 fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     let cfg = config::CONFIG.read().unwrap();
+
     // Fetch config for the values.
     let r = get_background_float(&cfg, "r", true);
     let g = get_background_float(&cfg, "g", true);
     let b = get_background_float(&cfg, "b", true);
     let a = get_background_float(&cfg, "a", false);
+
     // Apply
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);

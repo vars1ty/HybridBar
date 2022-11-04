@@ -20,7 +20,6 @@ It supports:
      - Dynamic Listen listens to a commands output (for example, `ping`), then syncs it at the same interval as Dynamic.
        - **WARNING**: Dynamic Listen if fed a slow command, may cause low performance
        - Cava Widgets use this very specific type, but with minor changes to make it update faster
-  - **NOTE**: You may only have `1024` non-static labels active per Hybrid session
 - Spacings;
   - Which may also act as "Separators" if you customize them
 - Boxes;
@@ -54,6 +53,7 @@ It supports:
   - While also being easy to use, beginner-friendly and straight-forward.
 - Always updated;
   - You can check the commits to see proof of this
+  - If there hasn't been any commits for over 2 weeks, then I have either died from caffeine or I ran out of ideas
 - Compatible with different monitors;
   - Specify the monitor to be used for each Hybrid config, read more in `FAQ`
 
@@ -84,7 +84,7 @@ Here's an example:
 ## CSS Support
 Starting from `0.1.3`, CSS is now supported and you can make it auto-load on startup by making a `style.css` file next to your `config.json` at the same path.
 
-If you want a sample CSS which has been used up until recently and has good defaults, check `examples/style.css`.
+If you want a sample CSS which has good defaults, check `examples/style.css`.
 ## Environment Variables
 `HYBRID_LOG` = `0` OR `1` : Logs debug output to stdout.
 
@@ -109,6 +109,8 @@ Dependencies:
 ## Arch Linux
 Git Version: `paru -S hybrid-bar-git`
 
+**NOTE**: Git may include changes that are experimental. It's heavily advised that you use the package listed below if you care about stability.
+
 Latest Binary: `paru -S hybrid-bar`
 ## Building
 1. `git clone https://github.com/vars1ty/HybridBar`
@@ -117,7 +119,7 @@ Latest Binary: `paru -S hybrid-bar`
 4. `cd target/release`
 5. Done, the executable is called `hybrid-bar`.
 
-Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
+**TIP**: `chmod +x hybrid-bar` - So you can run the executable directly.
 # Roadmap
 - ~~Make the code for widgets cleaner and more portable~~ - **Done**
 - ~~Quit blocking the UI Thread when executing bash-commands and retrieving the output~~ - **Done**
@@ -125,3 +127,4 @@ Tip: `chmod +x hybrid-bar` - So you can run the executable directly.
 - ~~Publish a non-git AUR package which uses the latest built binary~~ - **Done**
 - Potentially more widgets - **In progress, feel free to suggest widgets**
 - System Tray - **Considering**
+- Placing widgets into user-defined `box` widgets, allow for further customization - **Considering**

@@ -80,7 +80,7 @@ You may also change how all Cava widgets are displayed on the bar through these 
 - `cava_framerate`: i32 (min 60, max 360) - How fast Cava should check for audio levels and output it to `stdout` for Hybrid to then sync to the viewport;
 - `cava_bars`: i32 (min 2, max 16) - How many bars that should be rendered for each Cava widget
 ### Performance
-Because the implementation isn't perfect and uses what I'd like to call for "hacks" to work, the performance may fluctuate.
+Because the implementation isn't perfect and relies on listening to a raw Cava stdout, the performance may fluctuate.
 
 On mid/high-end systems this should really not even be noticeable, going from `~0.0%` CPU-Usage without Cava, to `~0.4%` with Cava.
 
