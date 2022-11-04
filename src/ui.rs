@@ -2,11 +2,9 @@ use crate::{
     box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget,
     cmd_widget::CmdWidget, r#loop::update, spacing_widget::SpacingWidget, structures::Align, *,
 };
-use glib::uuid_string_random;
 use gtk::traits::*;
 use heapless::Vec;
 use std::{str::FromStr, sync::Mutex};
-use uuid::Uuid;
 
 lazy_static! {
     /// Holds all the dynamic label widgets.
