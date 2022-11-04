@@ -2,6 +2,7 @@ use crate::{
     box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget,
     cmd_widget::CmdWidget, r#loop::update, spacing_widget::SpacingWidget, structures::Align, *,
 };
+use glib::uuid_string_random;
 use gtk::traits::*;
 use heapless::Vec;
 use std::{str::FromStr, sync::Mutex};
@@ -109,17 +110,19 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let alignment = structures::Align::from_str(&f_widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
+        // Gets every element after the widget identifier, then appends '_' in between.
+        let widget_name = identifiers[1..].join(SEPARATOR).to_string();
+
+        if widget_name.is_empty() {
+            // JSON doesn't play nicely with duplicate keys, will probably end up making a custom
+            // format + parser later on.
+            // Closes issue #14.
+            panic!("[ERROR] Found an empty widget name, this is not currently supported!\n")
+        }
+
         log!(format!(
             "Adding widget '{identifier}' with alignment '{f_widget_alignment}'",
         ));
-
-        // Gets every element after the widget identifier, then appends '_' in between.
-        let mut widget_name = identifiers[1..].join(SEPARATOR).to_string();
-
-        if widget_name.is_empty() {
-            log!("Found an empty widget name (probably discarded), replacing with a random UUID");
-            widget_name = Uuid::new_v4().to_string()
-        }
 
         // Add the widget.
         add_widget(
