@@ -16,24 +16,18 @@ lazy_static! {
 
 /// Gets the sed to use for Cava.
 pub fn get_sed() -> String {
-    let mut sed =
-        String::from("s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;");
-
-    if let Some(c_sed) = config::try_get("hybrid", "cava_sed", true, false) {
-        sed = c_sed.0
-    }
-
-    sed
+    config::try_get("hybrid", "cava_sed", true, false)
+        .string
+        .unwrap_or_else(|| {
+            String::from("s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;")
+        })
 }
 
 /// Returns the amount of bars that should be present.
 fn get_bars() -> i32 {
-    let mut bars = 5;
-
-    if let Some(c_bars) = config::try_get("hybrid", "cava_bars", false, false) {
-        bars = c_bars.1
-    }
-
+    let bars = config::try_get("hybrid", "cava_bars", false, false)
+        .number
+        .unwrap_or(5);
     math::clamp_i32(bars, 2, 16)
 }
 
@@ -44,12 +38,9 @@ pub fn get_current_bars() -> String {
 
 /// Returns the desired framerate to use for Cava updates.
 fn get_framerate() -> i32 {
-    let mut framerate = 60;
-
-    if let Some(c_framerate) = config::try_get("hybrid", "cava_framerate", false, false) {
-        framerate = c_framerate.1
-    }
-
+    let framerate = config::try_get("hybrid", "cava_framerate", false, false)
+        .number
+        .unwrap_or(60);
     math::clamp_i32(framerate, 60, 360)
 }
 

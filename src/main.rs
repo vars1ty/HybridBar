@@ -44,16 +44,16 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
     let mut pos = String::from("Top");
 
     // Check if there's any user-defined values for expand l-r/pos, if there are then sync them.
-    if let Some(c_expand_right) = config::try_get(ROOT, "expand_right", true, false) {
-        expand_right = c_expand_right.0 == "true";
+    if let Some(c_expand_right) = config::try_get(ROOT, "expand_right", true, false).string {
+        expand_right = c_expand_right == "true";
     }
 
-    if let Some(c_expand_left) = config::try_get(ROOT, "expand_left", true, false) {
-        expand_left = c_expand_left.0 == "true";
+    if let Some(c_expand_left) = config::try_get(ROOT, "expand_left", true, false).string {
+        expand_left = c_expand_left == "true";
     }
 
-    if let Some(c_pos) = config::try_get(ROOT, "position", true, false) {
-        pos = c_pos.0;
+    if let Some(c_pos) = config::try_get(ROOT, "position", true, false).string {
+        pos = c_pos;
     }
 
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
@@ -95,20 +95,23 @@ fn activate(application: &Application) {
     // Allows for writing in input fields if the value is true.
     // This is false by default since it's stealing focus until you focus a different application,
     // which may trigger some users.
-    if let Some(c_allow_keyboard) = config::try_get("hybrid", "allow_keyboard", true, false) {
-        gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard.0 == "true");
+    if let Some(c_allow_keyboard) = config::try_get("hybrid", "allow_keyboard", true, false).string
+    {
+        gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard == "true");
     }
 
     // Initialize gdk::Display by default value, which is decided by the compositor.
-    let display = Display::default().expect("[ERROR] Could not get default display, is your compositor doing okay?\n");
+    let display = Display::default()
+        .expect("[ERROR] Could not get default display, is your compositor doing okay?\n");
 
     // Loads the monitor variable from config, default is 0.
     let config_monitor = config::try_get("hybrid", "monitor", false, false)
-        .unwrap_or_else(|| (String::default(), 0));
+        .number
+        .unwrap_or_default();
 
     // Gets the actual gdk::Monitor from configured number.
     let monitor = display
-        .monitor(config_monitor.1)
+        .monitor(config_monitor)
         .expect("[ERROR] Could not find monitor.\n");
 
     // Sets which monitor should be used for the bar.
@@ -127,8 +130,8 @@ pub fn load_css() {
     let provider = CssProvider::new();
     // 0.2.8: Allow for defining the name of the stylesheet to look up
     let mut css_file = String::from("style.css");
-    if let Some(c_css_file) = config::try_get("hybrid", "stylesheet", true, false) {
-        css_file = c_css_file.0
+    if let Some(c_css_file) = config::try_get("hybrid", "stylesheet", true, false).string {
+        css_file = c_css_file
     }
 
     let mut css_path = config::get_path();

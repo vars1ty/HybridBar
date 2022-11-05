@@ -69,9 +69,15 @@ pub fn build_widgets(window: &ApplicationWindow) {
 /// Gets the values for `text`, `command` and `tooltip`.
 /// If one is left unspecified, the value is `"", 0`, a.k.a default.
 fn get_base_keys(root: &str) -> (String, String, String) {
-    let text = config::get_or_default(root, "text", true, true).0;
-    let command = config::get_or_default(root, "command", true, true).0;
-    let tooltip = config::get_or_default(root, "tooltip", true, true).0;
+    let text = config::try_get(root, "text", true, true)
+        .string
+        .unwrap_or_default();
+    let command = config::try_get(root, "command", true, true)
+        .string
+        .unwrap_or_default();
+    let tooltip = config::try_get(root, "tooltip", true, true)
+        .string
+        .unwrap_or_default();
     (text, command, tooltip)
 }
 
@@ -168,7 +174,10 @@ fn add_widget(
                 text,
                 command,
                 label: Label::new(None),
-                listen: config::get_or_default(key, "listen", true, false).0 == "true",
+                listen: config::try_get(key, "listen", true, false)
+                    .string
+                    .unwrap_or_default()
+                    == "true",
             };
 
             label.add(widget_name, alignment, left, centered, right)
@@ -184,15 +193,19 @@ fn add_widget(
         }
         "spacing" => {
             let spacing = SpacingWidget {
-                spacing_start: config::get_or_default(key, "spacing_start", false, false).1,
-                spacing_end: config::get_or_default(key, "spacing_end", false, false).1,
+                spacing_start: config::try_get(key, "spacing_start", false, false)
+                    .number
+                    .unwrap_or_default(),
+                spacing_end: config::try_get(key, "spacing_end", false, false)
+                    .number
+                    .unwrap_or_default(),
             };
 
             spacing.add(widget_name, alignment, left, centered, right)
         }
         "box" => {
             let box_widget = BoxWidget {
-                width: config::get_or_default(key, "width", false, false).1,
+                width: config::try_get(key, "width", false, false).number.unwrap_or_default(),
             };
 
             box_widget.add(widget_name, alignment, left, centered, right)

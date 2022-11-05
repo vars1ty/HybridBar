@@ -1,12 +1,11 @@
-use crate::{environment, math};
+use crate::{environment, math, structures::ConfigData};
 use heapless::Vec;
 use json::JsonValue;
-use std::{fs, i32, sync::RwLock};
+use std::{fs, sync::RwLock};
 
 lazy_static! {
     /// Caches the config.
-    // "Why not Mutex" : https://onesignal.com/blog/thread-safety-rust/#:~:text=They%20have%20one%20important%20difference,exclusive%20access%20for%20write%20locks.
-    // TODO: Make read_config_cached() - if possible.
+    // TODO: Switch to Mutex sometime in the future.
     pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
 }
 
@@ -21,8 +20,8 @@ pub fn get_path() -> String {
 /// Returns the set update-rate.
 pub fn get_update_rate() -> u64 {
     let mut update_rate = 100;
-    if let Some(c_update_rate) = try_get("hybrid", "update_rate", false, false) {
-        update_rate = math::clamp_i32(c_update_rate.1, 5, 10_000)
+    if let Some(c_update_rate) = try_get("hybrid", "update_rate", false, false).number {
+        update_rate = math::clamp_i32(c_update_rate, 5, 10_000)
     }
 
     update_rate
@@ -48,52 +47,39 @@ fn read_config_raw() -> JsonValue {
 }
 
 /// Tries to fetch a value from the config. Supported types are `String` and `i32`.
-/// Panics if `is_string` is `true` and the `as_i32` function fails.
-/// If the specified root/key wasn't found, a `None` value is returned.
-pub fn try_get(
-    root: &str,
-    key: &str,
-    is_string: bool,
-    with_custom_variables: bool,
-) -> Option<(String, i32)> {
+pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bool) -> ConfigData {
     let config = &CONFIG.read().unwrap()[root];
-    let default_string = String::default();
     if config.has_key(key) {
         let grabbed_value = &config[key];
 
         // If the desired value isn't a string, try and get it as a 32-bit integer.
         if !is_string {
-            return Some((
-                default_string,
-                grabbed_value
-                    .as_i32()
-                    .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!\n")),
-            ));
+            return ConfigData {
+                string: None,
+                number: Some(
+                    grabbed_value
+                        .as_i32()
+                        .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!\n")),
+                ),
+            };
         }
 
         // Convert it to a string-value.
         if with_custom_variables {
-            Some((with_variables(grabbed_value.to_string()), 0))
+            ConfigData {
+                string: Some(with_variables(grabbed_value.to_string())),
+                number: None,
+            }
         } else {
-            Some((grabbed_value.to_string(), 0))
+            ConfigData {
+                string: Some(grabbed_value.to_string()),
+                number: None,
+            }
         }
     } else {
         // The key wasn't found, so just return None.
-        None
+        ConfigData::default()
     }
-}
-
-/// Same as `try_get`, but if the value is `None` then the return-value becomes `"", 0` (default).
-/// NOTE: This function should NOT act as a replacement for `try_get`, but rather as one where you
-/// can actually use default values and want to avoid explicitly `.unwrap_or_else()` or other long
-/// code.
-pub fn get_or_default(
-    root: &str,
-    key: &str,
-    is_string: bool,
-    with_custom_variables: bool,
-) -> (String, i32) {
-    try_get(root, key, is_string, with_custom_variables).unwrap_or_else(|| (String::default(), 0))
 }
 
 /// Gets all the custom variables.
