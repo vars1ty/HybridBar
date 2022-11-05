@@ -54,30 +54,24 @@ pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bo
 
         // If the desired value isn't a string, try and get it as a 32-bit integer.
         if !is_string {
-            return ConfigData {
-                string: None,
-                number: Some(
+            return ConfigData::new(
+                None,
+                Some(
                     grabbed_value
                         .as_i32()
                         .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!\n")),
                 ),
-            };
+            );
         }
 
         // Convert it to a string-value.
         if with_custom_variables {
-            ConfigData {
-                string: Some(with_variables(grabbed_value.to_string())),
-                number: None,
-            }
+            ConfigData::new(Some(with_variables(grabbed_value.to_string())), None)
         } else {
-            ConfigData {
-                string: Some(grabbed_value.to_string()),
-                number: None,
-            }
+            ConfigData::new(Some(grabbed_value.to_string()), None)
         }
     } else {
-        // The key wasn't found, so just return None.
+        // The key wasn't found, so just return None on all values.
         ConfigData::default()
     }
 }
