@@ -59,7 +59,7 @@ To actually use a widget, here's an example:
 
 Every widget **has** to contain an underscore (`_`) after the type, then you add the unique name for that widget.
 
-If you don't specify a name for the widget after `_`, the bar **will crash** and say that discarded names aren't currently supported.
+If you don't specify a name for the widget after `_`, the bar **will crash** and say that discarded names aren't supported.
 
 **NOTE**: Widgets with the same name (regardless of type) aren't officially supported and may suffer from weird behavior.
 
