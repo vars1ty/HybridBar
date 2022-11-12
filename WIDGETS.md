@@ -1,11 +1,4 @@
 # Widgets
-> **Warning**:
-> Widgets with a command set are updated every few milliseconds from the value at `hybrid` -> `update_rate`.
->
-> An unspecified value (or one below `5`) will default to `5`, meaning it calls bash-commands every 5 milliseconds.
->
-> This can be performance intensive, so it's recommended that you set the update-rate to something like `100`.
-***
 **NOTE**: In order to use a widget, you'll have to specify how it should be aligned. For example: `left-button`, `centered-button` and `right-button`.
 
 Available widgets:
@@ -16,6 +9,7 @@ Keys Supported:
 - text: String
 - command: String
 - tooltip: String
+- tooltip_command: String
 - listen: bool
 ***
 `button`:
@@ -24,6 +18,7 @@ Keys Supported:
 - text: String
 - command: String
 - tooltip: String
+- tooltip_command: String
 ***
 `spacing`:
 

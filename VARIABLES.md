@@ -26,4 +26,6 @@ Then the text will automatically be replaced with the value from `cool_message`.
 - `command`
 - `tooltip`
 ## Limitations
-There's only one limitation with variables: You can only specify up to `64`, although I don't expect you to exceed this limit for one single Hybrid session.
+There's only two limitations with variables:
+1. You can only specify up to `64`, although I don't expect you to exceed this limit for one single Hybrid session.
+2. Tooltip commands do not currently support variables, although I might add support for this in 0.3.7.

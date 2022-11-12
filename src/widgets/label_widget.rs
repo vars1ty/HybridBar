@@ -4,6 +4,7 @@ use crate::{
     ui::{self, VEC},
     widget::HWidget,
 };
+use glib::GString;
 use gtk::{traits::*, *};
 use std::{fmt::Display, process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
@@ -21,6 +22,7 @@ lazy_static! {
 #[derive(Debug)]
 pub struct LabelWidget {
     pub tooltip: String,
+    pub tooltip_command: String,
     pub text: String,
     pub command: String,
     pub label: Label,
@@ -72,6 +74,11 @@ impl HWidget for LabelWidget {
 
         if self.listen {
             begin_listen(self.command.clone());
+        }
+
+        // 0.3.6: Support for commands on tooltips.
+        if !self.tooltip_command.is_empty() {
+            self.start_loop();
         }
 
         // 0.3.2: Don't add widgets that don't have a command set to the vector, as it won't be
@@ -126,5 +133,31 @@ impl HWidget for LabelWidget {
             // Not the same; set content and redraw.
             self.label.set_text(&new_content);
         }
+    }
+
+    fn start_loop(&self) {
+        let label_clone = self.label.clone();
+        let tooltip_clone = self.tooltip.clone();
+        let tooltip_command_clone = self.tooltip_command.clone();
+        let tick = move || {
+            let mut new_tooltip = String::default();
+            new_tooltip.push_str(&tooltip_clone);
+            new_tooltip.push_str(execute!(&tooltip_command_clone).as_str());
+
+            let tooltip_markup = label_clone
+                .tooltip_markup()
+                .unwrap_or_else(|| GString::from(""));
+
+            if !tooltip_markup.eq(&new_tooltip) {
+                // Markup support here, the user therefore has to deal with any upcoming issues due to
+                // the command output, on their own.
+                label_clone.set_tooltip_markup(Some(&new_tooltip));
+            }
+
+            glib::Continue(true)
+        };
+
+        // NOTE: This does NOT respect update_rate, since it's not meant to update super fast.
+        glib::timeout_add_local(Duration::from_millis(1000), tick);
     }
 }

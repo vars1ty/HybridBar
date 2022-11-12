@@ -66,9 +66,9 @@ pub fn build_widgets(window: &ApplicationWindow) {
     update();
 }
 
-/// Gets the values for `text`, `command` and `tooltip`.
+/// Gets the values for `text`, `command`, `tooltip` and `tooltip_command`.
 /// If one is left unspecified, the value is `"", 0`, a.k.a default.
-fn get_base_keys(root: &str) -> (String, String, String) {
+fn get_base_keys(root: &str) -> (String, String, String, String) {
     let text = config::try_get(root, "text", true, true)
         .string
         .unwrap_or_default();
@@ -78,7 +78,10 @@ fn get_base_keys(root: &str) -> (String, String, String) {
     let tooltip = config::try_get(root, "tooltip", true, true)
         .string
         .unwrap_or_default();
-    (text, command, tooltip)
+    let tooltip_command = config::try_get(root, "tooltip_command", true, true)
+        .string
+        .unwrap_or_default();
+    (text, command, tooltip, tooltip_command)
 }
 
 /// Creates all of the widgets.
@@ -111,6 +114,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let text = base_keys.0;
         let command = base_keys.1;
         let tooltip = base_keys.2;
+        let tooltip_command = base_keys.3;
         let alignment = structures::Align::from_str(&f_widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
@@ -132,7 +136,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         add_widget(
             key,
             (widget_type, widget_name),
-            (text, command, tooltip),
+            (text, command, tooltip, tooltip_command),
             alignment,
             (left, centered, right),
             identifier,
@@ -147,7 +151,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 fn add_widget(
     key: &str,
     widget_pkg: (&str, String),
-    text_command_tooltip: (String, String, String),
+    base_keys: (String, String, String, String),
     alignment: Align,
     left_centered_right: (&Box, &Box, &Box),
     identifier: &str,
@@ -157,10 +161,11 @@ fn add_widget(
     let widget_type = widget_pkg.0;
     let widget_name = widget_pkg.1;
 
-    // Extract text, command and tooltip.
-    let text = text_command_tooltip.0;
-    let command = text_command_tooltip.1;
-    let tooltip = text_command_tooltip.2;
+    // Extract text, command, tooltip and tooltip_command.
+    let text = base_keys.0;
+    let command = base_keys.1;
+    let tooltip = base_keys.2;
+    let tooltip_command = base_keys.3;
 
     // Extract left, centered and right.
     let left = left_centered_right.0;
@@ -171,6 +176,7 @@ fn add_widget(
         "label" => {
             let label = LabelWidget {
                 tooltip,
+                tooltip_command,
                 text,
                 command,
                 label: Label::new(None),
@@ -185,6 +191,7 @@ fn add_widget(
         "button" => {
             let button = ButtonWidget {
                 tooltip,
+                tooltip_command,
                 command,
                 button: Button::with_label(&text),
             };
@@ -205,7 +212,9 @@ fn add_widget(
         }
         "box" => {
             let box_widget = BoxWidget {
-                width: config::try_get(key, "width", false, false).number.unwrap_or_default(),
+                width: config::try_get(key, "width", false, false)
+                    .number
+                    .unwrap_or_default(),
             };
 
             box_widget.add(widget_name, alignment, left, centered, right)

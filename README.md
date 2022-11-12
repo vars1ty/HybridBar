@@ -36,6 +36,8 @@ It supports:
 - Tooltips;
   - Supported for Buttons and Labels
   - No, they aren't shy and won't hide behind your windows
+  - And they also support commands attached to them through `tooltip_command`, starting from version `0.3.6` and higher!
+  - **NOTE**: `tooltip_command` uses a fixed update-rate of `1s`, this value cannot be changed by the user.
 - Command Fields;
   - Write in your favorite command, hit `ENTER` and it'll spawn for you
   - **NOTE**: You have to enable `hybrid` -> `allow_keyboard` (`bool`) to focus command fields

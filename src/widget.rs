@@ -10,6 +10,9 @@ pub trait HWidget {
     /// Label Widget: Tells the label to update content to the specified new content.
     fn update_label_reg(&self, _new_content: &(impl Display + Clone)) {}
 
-    // Label Widget: Tells the label to update with custom-defined behavior, for example from a local buffer.
+    /// Label Widget: Tells the label to update with custom-defined behavior, for example from a local buffer.
     fn update_label_internal(&self) {}
+
+    /// Function dedicated to starting optional loops.
+    fn start_loop(&self) {}
 }
