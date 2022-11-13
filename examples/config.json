@@ -9,7 +9,8 @@
     "left-label_username": {
         "text": "user: ",
         "command": "whoami",
-        "tooltip": "This is your username from whoami"
+        "tooltip": "And here's your kernel: ",
+        "tooltip_command": "uname -r"
     },
     "centered-label_centerdummy": {
         "text": "dummy centered label",
