@@ -76,17 +76,6 @@ fn activate(application: &Application) {
     window.connect_screen_changed(set_visual);
     window.connect_draw(draw);
 
-    // 0.3.7: Experimental support for Inhibit (#20)
-    if let Some(c_inhibit) = config::try_get("hybrid", "inhibit", true, false).string {
-        if c_inhibit == "true" {
-            log!("## EXPERIMENTAL FEATURE ACTIVE ##");
-            log!("## INHIBIT IS EXPERIMENTAL, YOU HAVE BEEN WARNED! ##");
-            // gtk-rs BUG: Setting the reason to `None` throws internal GTK exceptions, but an
-            // empty string works.
-            application.inhibit(Some(&window), ApplicationInhibitFlags::IDLE, Some(""));
-        }
-    }
-
     // Initialize layer shell before the window has been fully initialized.
     gtk_layer_shell::init_for_window(&window);
 

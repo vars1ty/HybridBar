@@ -16,7 +16,7 @@ It supports:
 - Labels;
   - `static`, `dynamic` and `dynamic listen`
      - Static being without a command set, cheapest one available and doesn't push redraws on its own
-     - Dynamic firing specified bash-command every few milliseconds (from `hybrid` -> `update_rate`), gets the output and syncs it with a redraw
+     - Dynamic firing specified bash-command every few milliseconds specified in `update_rate` (`u64`), gets the output and syncs it with a redraw
      - Dynamic Listen listens to a commands output (for example, `ping`), then syncs it at the same interval as Dynamic.
        - **WARNING**: Dynamic Listen if fed a slow command, may cause low performance
        - Cava Widgets use this very specific type, but with minor changes to make it update faster
@@ -75,7 +75,6 @@ Here's an example:
 ```json
 {
     "hybrid": {
-        "update_rate": 100,
         "r": 10,
         "g": 10,
         "b": 10,

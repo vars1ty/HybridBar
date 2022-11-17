@@ -8,6 +8,7 @@ Available widgets:
 Keys Supported:
 - text: String
 - command: String
+- update_rate: u64
 - tooltip: String
 - tooltip_command: String
 - listen: bool
@@ -48,7 +49,8 @@ To actually use a widget, here's an example:
 ```json
 "left-label_UNIQUE_NAME": {
     "text": "whomai stdout ",
-    "command": "whoami"
+    "command": "whoami",
+    "update_rate": 1000
 }
 ```
 

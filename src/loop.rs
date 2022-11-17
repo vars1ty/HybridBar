@@ -1,15 +1,13 @@
 use crate::{
     cava::{get_current_bars, HAS_CAVA_CRASHED},
-    config, ui,
+    ui,
     widget::HWidget,
 };
 use glib::Continue;
 use std::time::Duration;
-use tokio::task;
 
 /// Updates dynamic bar content.
 pub fn update() {
-    update_labels();
     // Only start the tick-loop if there are actually Cava widgets available.
     if ui::CAVA_INSTANCES
         .lock()
@@ -37,30 +35,4 @@ fn update_cava() -> Continue {
 
     // If unwrap fails here, then I have lost all faith in computers.
     glib::Continue(!*HAS_CAVA_CRASHED.read().unwrap())
-}
-
-/// Updates all labels with a `command` set.
-/// Only call this once as it's a loop.
-fn update_labels() {
-    task::spawn(async move {
-        let update_rate = config::get_update_rate();
-        loop {
-            for widget in ui::VEC
-                .lock()
-                .expect("[ERROR] Cannot access ui::VEC!\n")
-                .iter()
-            {
-                // If listen is set, don't execute a one-shot command.
-                if !widget.listen {
-                    let mut text = widget.text.clone();
-                    text.push_str(&execute!(&widget.command));
-                    widget.update_label_reg(&text);
-                } else {
-                    widget.update_label_internal()
-                }
-            }
-
-            tokio::time::sleep(Duration::from_millis(update_rate)).await;
-        }
-    });
 }

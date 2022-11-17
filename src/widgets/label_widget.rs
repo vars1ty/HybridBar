@@ -1,12 +1,7 @@
-use crate::{
-    config,
-    structures::Align,
-    ui::{self, VEC},
-    widget::HWidget,
-};
+use crate::{config, structures::Align, ui, widget::HWidget};
 use glib::GString;
 use gtk::{traits::*, *};
-use std::{fmt::Display, process::Stdio, sync::RwLock, time::Duration};
+use std::{process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -19,12 +14,13 @@ lazy_static! {
 }
 
 /// Creates a new label widget.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LabelWidget {
     pub tooltip: String,
     pub tooltip_command: String,
     pub text: String,
     pub command: String,
+    pub update_rate: u64,
     pub label: Label,
     pub listen: bool,
 }
@@ -33,7 +29,7 @@ pub struct LabelWidget {
 unsafe impl Send for LabelWidget {}
 unsafe impl Sync for LabelWidget {}
 
-/// 0.3.2: If `listen` is `true`, call this function and then externally set the label text-value
+/// 0.3.2: If `listen` is `true`, call this function and then set the label text-value
 ///   to that of `BUFFER`.
 fn begin_listen(cmd: String) {
     task::spawn(async move {
@@ -63,12 +59,81 @@ fn begin_listen(cmd: String) {
     });
 }
 
+/// Starts updating the dynamic tooltip, if any.
+fn start_tooltip_loop(label_ref: &LabelWidget) {
+    let label = label_ref.label.clone();
+    let tooltip = label_ref.tooltip.clone();
+    let tooltip_command = label_ref.tooltip_command.clone();
+    if tooltip_command.is_empty() {
+        // Not eligible, cancel.
+        return;
+    }
+
+    let tick = move || {
+        let mut new_tooltip = String::default();
+        new_tooltip.push_str(&tooltip);
+        new_tooltip.push_str(execute!(&tooltip_command).as_str());
+
+        let tooltip_markup = label.tooltip_markup().unwrap_or_else(|| GString::from(""));
+
+        if !tooltip_markup.eq(&new_tooltip) {
+            // Markup support here, the user therefore has to deal with any upcoming issues due to
+            // the command output, on their own.
+            label.set_tooltip_markup(Some(&new_tooltip));
+        }
+
+        glib::Continue(true)
+    };
+
+    glib::timeout_add_local(Duration::from_millis(1000), tick);
+}
+
+/// Starts updating the dynamic label content.
+fn start_label_loop(label: Label, text: String, command: String, update_rate: u64, listen: bool) {
+    if command.is_empty() || update_rate == 0 {
+        // Not eligible, cancel.
+        return;
+    }
+
+    let tick = move || {
+        if !listen {
+            let mut new_text = String::default();
+            new_text.push_str(&text);
+            new_text.push_str(execute!(&command).as_str());
+
+            if !label.text().eq(&new_text) {
+                // Not the same as new_text; redraw.
+                label.set_text(&new_text);
+            }
+        } else {
+            update_from_buffer(&label);
+        }
+
+        glib::Continue(true)
+    };
+
+    glib::timeout_add_local(Duration::from_millis(update_rate), tick);
+}
+
+/// Updates the labels content with the string from `BUFFER`.
+fn update_from_buffer(label: &Label) {
+    let new_content = BUFFER
+        .read()
+        .expect("[ERROR] Failed retrieving content from BUFFER!\n");
+    let old_content = label.text();
+    // eq-check the new content for old_content. Doing the opposite requires a .to_string()
+    // call.
+    if !new_content.eq(&old_content) {
+        // Not the same; set content and redraw.
+        label.set_text(&new_content);
+    }
+}
+
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
     fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box) {
-        let is_static = self.command.is_empty();
+        let is_static = self.command.is_empty() || self.update_rate == 0;
         self.label.set_widget_name(&name);
-        // 0.2.7: Support for tooltips
         self.label.set_tooltip_markup(Some(&self.tooltip));
         ui::add_and_align(&self.label, align, left, centered, right);
 
@@ -76,19 +141,9 @@ impl HWidget for LabelWidget {
             begin_listen(self.command.clone());
         }
 
-        // 0.3.6: Support for commands on tooltips.
-        if !self.tooltip_command.is_empty() {
-            self.start_loop();
-        }
+        self.start_loop();
 
-        // 0.3.2: Don't add widgets that don't have a command set to the vector, as it won't be
-        //   updated due to being static.
-        if !is_static {
-            VEC.lock()
-                .expect("[ERROR] Cannot access ui::VEC!\n")
-                .push(self)
-                .expect("[ERROR] You cannot have more than `1024` Labels!\n");
-        } else {
+        if is_static {
             self.label.set_markup(&self.text);
         }
 
@@ -98,66 +153,16 @@ impl HWidget for LabelWidget {
         ));
     }
 
-    fn update_label_reg(&self, new_content: &(impl Display + Clone)) {
-        let ts = new_content.to_string();
-        if self.label.text().eq(&ts) {
-            // Exact same content, return and don't cause a redraw.
-            return;
-        }
-
-        log!(format!(
-            "[{}] -> Label update received (from => \"{}\", to => \"{}\")",
-            self.label.widget_name(),
-            self.label.text(),
-            ts
-        ));
-
-        // 0.2.7: Support for markup as long as the command is empty.
-        // It doesn't support markup with commands because some strings may cause GTK to mistreat
-        // it, which I may fix in the future.
-        if self.command.is_empty() {
-            self.label.set_markup(&ts);
-        } else {
-            self.label.set_text(&ts);
-        }
-    }
-
-    fn update_label_internal(&self) {
-        let new_content = BUFFER
-            .read()
-            .expect("[ERROR] Failed retrieving content from BUFFER!\n");
-        let old_content = self.label.text();
-        // eq-check the new content for old_content. Doing the opposite requires a .to_string()
-        // call.
-        if !new_content.eq(&old_content) {
-            // Not the same; set content and redraw.
-            self.label.set_text(&new_content);
-        }
-    }
-
     fn start_loop(&self) {
-        let label_clone = self.label.clone();
-        let tooltip_clone = self.tooltip.clone();
-        let tooltip_command_clone = self.tooltip_command.clone();
-        let tick = move || {
-            let mut new_tooltip = String::default();
-            new_tooltip.push_str(&tooltip_clone);
-            new_tooltip.push_str(execute!(&tooltip_command_clone).as_str());
+        // Start loops.
+        start_tooltip_loop(self);
 
-            let tooltip_markup = label_clone
-                .tooltip_markup()
-                .unwrap_or_else(|| GString::from(""));
-
-            if !tooltip_markup.eq(&new_tooltip) {
-                // Markup support here, the user therefore has to deal with any upcoming issues due to
-                // the command output, on their own.
-                label_clone.set_tooltip_markup(Some(&new_tooltip));
-            }
-
-            glib::Continue(true)
-        };
-
-        // NOTE: This does NOT respect update_rate, since it's not meant to update super fast.
-        glib::timeout_add_local(Duration::from_millis(1000), tick);
+        start_label_loop(
+            self.label.clone(),
+            self.text.clone(),
+            self.command.clone(),
+            self.update_rate,
+            self.listen,
+        );
     }
 }

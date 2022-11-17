@@ -92,13 +92,13 @@ fn get_custom_variables() -> Vec<(String, String), 64> {
 
 /// Replaces any variable-matching patterns in the `String` with the variables value.
 fn with_variables(input: String) -> String {
-    let mut result = input;
+    let mut input = input;
     for variable in get_custom_variables() {
         // Only replace if `result` actually contains the defined variable.
-        if result.contains(&variable.0) {
-            result = result.replace(&variable.0, &variable.1);
+        if input.contains(&variable.0) {
+            input = input.replace(&variable.0, &variable.1);
         }
     }
 
-    result
+    input
 }

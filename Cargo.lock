@@ -520,7 +520,7 @@ dependencies = [
 
 [[package]]
 name = "hybrid-bar"
-version = "0.3.7"
+version = "0.3.8"
 dependencies = [
  "glib",
  "gtk",

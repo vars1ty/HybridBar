@@ -7,9 +7,6 @@ use heapless::Vec;
 use std::{str::FromStr, sync::Mutex};
 
 lazy_static! {
-    /// Holds all the dynamic label widgets.
-    pub static ref VEC: Mutex<Vec<LabelWidget, 1024>> = Mutex::new(Vec::new());
-
     /// All active cava label instances.
     // This will be moved to `cava.rs` soon.
     pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget, 8>> = Mutex::new(Vec::new());
@@ -66,22 +63,28 @@ pub fn build_widgets(window: &ApplicationWindow) {
     update();
 }
 
-/// Gets the values for `text`, `command`, `tooltip` and `tooltip_command`.
-/// If one is left unspecified, the value is `"", 0`, a.k.a default.
-fn get_base_keys(root: &str) -> (String, String, String, String) {
+/// Gets the base key values.
+fn get_base_keys(root: &str) -> (String, String, u64, String, String) {
     let text = config::try_get(root, "text", true, true)
         .string
         .unwrap_or_default();
     let command = config::try_get(root, "command", true, true)
         .string
         .unwrap_or_default();
+    let update_rate: u64 = config::try_get(root, "update_rate", false, false)
+        .number
+        .unwrap_or(100)
+        .try_into()
+        .unwrap_or_else(|_| {
+            panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}\n")
+        });
     let tooltip = config::try_get(root, "tooltip", true, true)
         .string
         .unwrap_or_default();
     let tooltip_command = config::try_get(root, "tooltip_command", true, true)
         .string
         .unwrap_or_default();
-    (text, command, tooltip, tooltip_command)
+    (text, command, update_rate, tooltip, tooltip_command)
 }
 
 /// Creates all of the widgets.
@@ -113,8 +116,9 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let base_keys = get_base_keys(key);
         let text = base_keys.0;
         let command = base_keys.1;
-        let tooltip = base_keys.2;
-        let tooltip_command = base_keys.3;
+        let update_rate = base_keys.2;
+        let tooltip = base_keys.3;
+        let tooltip_command = base_keys.4;
         let alignment = structures::Align::from_str(&f_widget_alignment)
             .expect("[ERROR] Invalid widget alignment!\n");
 
@@ -133,10 +137,11 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         ));
 
         // Add the widget.
+        // TODO: Redo this through a structure or similar.
         add_widget(
             key,
             (widget_type, widget_name),
-            (text, command, tooltip, tooltip_command),
+            (text, command, update_rate, tooltip, tooltip_command),
             alignment,
             (left, centered, right),
             identifier,
@@ -151,7 +156,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 fn add_widget(
     key: &str,
     widget_pkg: (&str, String),
-    base_keys: (String, String, String, String),
+    base_keys: (String, String, u64, String, String),
     alignment: Align,
     left_centered_right: (&Box, &Box, &Box),
     identifier: &str,
@@ -164,8 +169,9 @@ fn add_widget(
     // Extract text, command, tooltip and tooltip_command.
     let text = base_keys.0;
     let command = base_keys.1;
-    let tooltip = base_keys.2;
-    let tooltip_command = base_keys.3;
+    let update_rate = base_keys.2;
+    let tooltip = base_keys.3;
+    let tooltip_command = base_keys.4;
 
     // Extract left, centered and right.
     let left = left_centered_right.0;
@@ -175,6 +181,7 @@ fn add_widget(
     match widget_type {
         "label" => {
             let label = LabelWidget {
+                update_rate,
                 tooltip,
                 tooltip_command,
                 text,

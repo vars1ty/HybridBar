@@ -20,7 +20,7 @@ If you are just accessing a value once or twice upon startup and **it's not heav
 On the other hand, if it's heavy (an example of this could be seen at issue #13) - Try and cache what you are accessing and go from there.
 
 ## Widgets
-When adding widgets, make sure you follow the relative simple widget structure that already exists.
+When adding widgets, make sure you follow the relatively simple widget structure that already exists.
 
 Also make sure you document your widgets behavior, keys (if any), etc.
 
