@@ -14,7 +14,7 @@ lazy_static! {
 }
 
 /// Creates a new label widget.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct LabelWidget {
     pub tooltip: String,
     pub tooltip_command: String,
@@ -85,6 +85,7 @@ fn start_tooltip_loop(label_ref: &LabelWidget) {
         glib::Continue(true)
     };
 
+    tick();
     glib::timeout_add_local(Duration::from_millis(1000), tick);
 }
 
@@ -112,6 +113,7 @@ fn start_label_loop(label: Label, text: String, command: String, update_rate: u6
         glib::Continue(true)
     };
 
+    tick();
     glib::timeout_add_local(Duration::from_millis(update_rate), tick);
 }
 

@@ -15,6 +15,16 @@ impl ConfigData {
     }
 }
 
+/// Base keys.
+pub struct BaseKeys {
+    pub text: String,
+    pub command: String,
+    pub update_rate: u64,
+    pub tooltip: String,
+    pub tooltip_command: String,
+    pub alignment: Align,
+}
+
 /// Widget alignment.
 // Allow for uppercase enum namings here.
 // TODO: Move this, or rename the file because this is no struct.

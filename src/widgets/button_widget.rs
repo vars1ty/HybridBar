@@ -1,8 +1,7 @@
-use std::time::Duration;
-
 use crate::{structures::Align, ui, widget::HWidget};
 use glib::GString;
 use gtk::{traits::*, *};
+use std::time::Duration;
 
 /// Creates a new button widget.
 pub struct ButtonWidget {
@@ -40,6 +39,7 @@ impl HWidget for ButtonWidget {
         let button_clone = self.button.clone();
         let tooltip_clone = self.tooltip.clone();
         let tooltip_command_clone = self.tooltip_command.clone();
+        const EMPTY: &str = "";
         let tick = move || {
             let mut new_tooltip = String::default();
             new_tooltip.push_str(&tooltip_clone);
@@ -47,7 +47,7 @@ impl HWidget for ButtonWidget {
 
             let tooltip_markup = button_clone
                 .tooltip_markup()
-                .unwrap_or_else(|| GString::from(""));
+                .unwrap_or_else(|| GString::from(EMPTY));
 
             if !tooltip_markup.eq(&new_tooltip) {
                 // Markup support here, the user therefore has to deal with any upcoming issues due to
@@ -58,6 +58,7 @@ impl HWidget for ButtonWidget {
             glib::Continue(true)
         };
 
+        tick();
         // NOTE: This does NOT respect update_rate, since it's not meant to update super fast.
         glib::timeout_add_local(Duration::from_millis(1000), tick);
     }

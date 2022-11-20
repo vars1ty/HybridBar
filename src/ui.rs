@@ -1,6 +1,12 @@
 use crate::{
-    box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget,
-    cmd_widget::CmdWidget, r#loop::update, spacing_widget::SpacingWidget, structures::Align, *,
+    box_widget::BoxWidget,
+    button_widget::ButtonWidget,
+    cava_widget::CavaWidget,
+    cmd_widget::CmdWidget,
+    r#loop::update,
+    spacing_widget::SpacingWidget,
+    structures::{Align, BaseKeys},
+    *,
 };
 use gtk::traits::*;
 use heapless::Vec;
@@ -113,14 +119,16 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let f_widget_alignment = widget_alignment.to_uppercase();
 
         // Base keys, all being optional.
-        let base_keys = get_base_keys(key);
-        let text = base_keys.0;
-        let command = base_keys.1;
-        let update_rate = base_keys.2;
-        let tooltip = base_keys.3;
-        let tooltip_command = base_keys.4;
-        let alignment = structures::Align::from_str(&f_widget_alignment)
-            .expect("[ERROR] Invalid widget alignment!\n");
+        let collected_base_keys = get_base_keys(key);
+        let base_keys = BaseKeys {
+            text: collected_base_keys.0,
+            command: collected_base_keys.1,
+            update_rate: collected_base_keys.2,
+            tooltip: collected_base_keys.3,
+            tooltip_command: collected_base_keys.4,
+            alignment: structures::Align::from_str(&f_widget_alignment)
+                .expect("[ERROR] Invalid widget alignment!\n"),
+        };
 
         // Gets every element after the widget identifier, then appends '_' in between.
         let widget_name = identifiers[1..].join(SEPARATOR).to_string();
@@ -137,12 +145,10 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         ));
 
         // Add the widget.
-        // TODO: Redo this through a structure or similar.
         add_widget(
             key,
             (widget_type, widget_name),
-            (text, command, update_rate, tooltip, tooltip_command),
-            alignment,
+            base_keys,
             (left, centered, right),
             identifier,
             &mut has_started_cava,
@@ -156,8 +162,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 fn add_widget(
     key: &str,
     widget_pkg: (&str, String),
-    base_keys: (String, String, u64, String, String),
-    alignment: Align,
+    base_keys: BaseKeys,
     left_centered_right: (&Box, &Box, &Box),
     identifier: &str,
     has_started_cava: &mut bool,
@@ -166,12 +171,13 @@ fn add_widget(
     let widget_type = widget_pkg.0;
     let widget_name = widget_pkg.1;
 
-    // Extract text, command, tooltip and tooltip_command.
-    let text = base_keys.0;
-    let command = base_keys.1;
-    let update_rate = base_keys.2;
-    let tooltip = base_keys.3;
-    let tooltip_command = base_keys.4;
+    // Extract data from the base keys.
+    let text = base_keys.text;
+    let command = base_keys.command;
+    let update_rate = base_keys.update_rate;
+    let tooltip = base_keys.tooltip;
+    let tooltip_command = base_keys.tooltip_command;
+    let alignment = base_keys.alignment;
 
     // Extract left, centered and right.
     let left = left_centered_right.0;
@@ -239,11 +245,7 @@ fn add_widget(
 
             cava.add(widget_name, alignment, left, centered, right)
         }
-        "cmd" => {
-            let cmd = CmdWidget {};
-
-            cmd.add(widget_name, alignment, left, centered, right)
-        }
+        "cmd" => CmdWidget {}.add(widget_name, alignment, left, centered, right),
         _ => {
             panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }
