@@ -100,6 +100,15 @@ fn activate(application: &Application) {
         gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard == "true");
     }
 
+    // Allows for specifing the namespace of the layer.
+    // The default is "gtk-layer-shell" to not break existing configs.
+    let mut namespace = String::from("gtk-layer-shell");
+    if let Some(c_namespace) = config::try_get("hybrid", "namespace", true, false).string
+    {
+        namespace = c_namespace;
+    }
+    gtk_layer_shell::set_namespace(&window, &namespace);
+
     // Initialize gdk::Display by default value, which is decided by the compositor.
     let display = Display::default()
         .expect("[ERROR] Could not get default display, is your compositor doing okay?\n");
