@@ -1,6 +1,10 @@
 # Hybrid Bar
 A status bar focused on wlroots Wayland compositors
-
+## Notice
+> **Warning**:
+> I'm taking a break from most of my projects (closed and open) for a bit.
+>
+> Unless there's some critical issue that also affects me with Hybrid, it'll be put on hold. Same with feature requests.
 ## Preview
 With blur through Hyprland.
 ![image](https://user-images.githubusercontent.com/54314240/197680577-2bc0cff4-2438-4c8d-8428-11499d0519c6.png)
