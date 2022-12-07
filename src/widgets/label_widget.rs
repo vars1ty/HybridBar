@@ -61,9 +61,9 @@ fn begin_listen(cmd: String) {
 
 /// Starts updating the dynamic tooltip, if any.
 fn start_tooltip_loop(label_ref: &LabelWidget) {
-    let label = label_ref.label.clone();
-    let tooltip = label_ref.tooltip.clone();
-    let tooltip_command = label_ref.tooltip_command.clone();
+    let label = label_ref.label.to_owned();
+    let tooltip = label_ref.tooltip.to_owned();
+    let tooltip_command = label_ref.tooltip_command.to_owned();
     if tooltip_command.is_empty() {
         // Not eligible, cancel.
         return;
@@ -141,7 +141,7 @@ impl HWidget for LabelWidget {
         ui::add_and_align(&self.label, align, left, centered, right);
 
         if self.listen {
-            begin_listen(self.command.clone());
+            begin_listen(self.command.to_owned());
         }
 
         self.start_loop();
@@ -160,9 +160,9 @@ impl HWidget for LabelWidget {
         // Start loops.
         start_tooltip_loop(self);
         start_label_loop(
-            self.label.clone(),
-            self.text.clone(),
-            self.command.clone(),
+            self.label.to_owned(),
+            self.text.to_owned(),
+            self.command.to_owned(),
             self.update_rate,
             self.listen,
         );

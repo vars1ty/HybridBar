@@ -1,5 +1,5 @@
 use crate::{config, math};
-use std::{fs::File, io::Write, process::Stdio, sync::RwLock};
+use std::{fs::File, io::Write, process::Stdio, sync::{RwLock, Mutex}};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -8,7 +8,7 @@ use tokio::{
 
 lazy_static! {
     /// Current Cava bars.
-    static ref BARS: RwLock<String> = RwLock::new(String::default());
+    static ref BARS: Mutex<String> = Mutex::new(String::default());
 
     /// Has Cava crashed? If true, don't keep `update_cava` running.
     pub static ref HAS_CAVA_CRASHED: RwLock<bool> = RwLock::new(false);
@@ -33,7 +33,7 @@ fn get_bars() -> i32 {
 
 /// Returns the current Cava bars.
 pub fn get_current_bars() -> String {
-    BARS.read().unwrap().to_string()
+    BARS.lock().unwrap().to_string()
 }
 
 /// Returns the desired framerate to use for Cava updates.
@@ -79,9 +79,6 @@ pub fn update_bars() {
         let mut bars;
         let sed = get_sed();
         let path = get_temp_config();
-        // Start a process which reads cava's output, then sync the labels content with it.
-        // This **has** to stay inside this specific scope, because calling it from other functions
-        // for w/e reason makes it break.
         let mut child = Command::new("bash")
             .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
             .stdout(Stdio::piped())
@@ -106,7 +103,7 @@ pub fn update_bars() {
                         Ok(t) => t,
                         Err(_) => {
                             *HAS_CAVA_CRASHED.write().unwrap() = true;
-                            BARS.write().unwrap().clear();
+                            BARS.lock().unwrap().clear();
                             panic!("[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!\n")
                         }
                     }
@@ -116,13 +113,13 @@ pub fn update_bars() {
                     Some(val) => val,
                     None => {
                         *HAS_CAVA_CRASHED.write().unwrap() = true;
-                        BARS.write().unwrap().clear();
+                        BARS.lock().unwrap().clear();
                         panic!("[WARN] Cava: The string value is None, Hybrid will keep on running but Cava will be stopped!\n")
                     }
                 }
             };
 
-            *BARS.write().unwrap() = bars;
+            *BARS.lock().unwrap() = bars;
         }
     });
 }
