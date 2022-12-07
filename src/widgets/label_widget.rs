@@ -69,12 +69,13 @@ fn start_tooltip_loop(label_ref: &LabelWidget) {
         return;
     }
 
+    const EMPTY: &str = "";
     let tick = move || {
         let mut new_tooltip = String::default();
         new_tooltip.push_str(&tooltip);
-        new_tooltip.push_str(execute!(&tooltip_command).as_str());
+        new_tooltip.push_str(&execute!(&tooltip_command));
 
-        let tooltip_markup = label.tooltip_markup().unwrap_or_else(|| GString::from(""));
+        let tooltip_markup = label.tooltip_markup().unwrap_or_else(|| GString::from(EMPTY));
 
         if !tooltip_markup.eq(&new_tooltip) {
             // Markup support here, the user therefore has to deal with any upcoming issues due to
@@ -100,7 +101,7 @@ fn start_label_loop(label: Label, text: String, command: String, update_rate: u6
         if !listen {
             let mut new_text = String::default();
             new_text.push_str(&text);
-            new_text.push_str(execute!(&command).as_str());
+            new_text.push_str(&execute!(&command));
 
             if !label.text().eq(&new_text) {
                 // Not the same as new_text; redraw.
@@ -158,7 +159,6 @@ impl HWidget for LabelWidget {
     fn start_loop(&self) {
         // Start loops.
         start_tooltip_loop(self);
-
         start_label_loop(
             self.label.clone(),
             self.text.clone(),

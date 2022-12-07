@@ -43,7 +43,7 @@ impl HWidget for ButtonWidget {
         let tick = move || {
             let mut new_tooltip = String::default();
             new_tooltip.push_str(&tooltip_clone);
-            new_tooltip.push_str(execute!(&tooltip_command_clone).as_str());
+            new_tooltip.push_str(&execute!(&tooltip_command_clone));
 
             let tooltip_markup = button_clone
                 .tooltip_markup()

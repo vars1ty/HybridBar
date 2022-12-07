@@ -119,13 +119,13 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let f_widget_alignment = widget_alignment.to_uppercase();
 
         // Base keys, all being optional.
-        let collected_base_keys = get_base_keys(key);
+        let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(key);
         let base_keys = BaseKeys {
-            text: collected_base_keys.0,
-            command: collected_base_keys.1,
-            update_rate: collected_base_keys.2,
-            tooltip: collected_base_keys.3,
-            tooltip_command: collected_base_keys.4,
+            text,
+            command,
+            update_rate,
+            tooltip,
+            tooltip_command,
             alignment: structures::Align::from_str(&f_widget_alignment)
                 .expect("[ERROR] Invalid widget alignment!\n"),
         };
@@ -134,9 +134,6 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let widget_name = identifiers[1..].join(SEPARATOR).to_string();
 
         if widget_name.is_empty() {
-            // JSON doesn't play nicely with duplicate keys, will probably end up making a custom
-            // format + parser later on.
-            // Closes issue #14.
             panic!("[ERROR] Found an empty widget name, this is not currently supported!\n")
         }
 
@@ -168,8 +165,7 @@ fn add_widget(
     has_started_cava: &mut bool,
 ) {
     // Extract name and type.
-    let widget_type = widget_pkg.0;
-    let widget_name = widget_pkg.1;
+    let (widget_type, widget_name) = widget_pkg;
 
     // Extract data from the base keys.
     let text = base_keys.text;
@@ -180,9 +176,7 @@ fn add_widget(
     let alignment = base_keys.alignment;
 
     // Extract left, centered and right.
-    let left = left_centered_right.0;
-    let centered = left_centered_right.1;
-    let right = left_centered_right.2;
+    let (left, centered, right) = left_centered_right;
 
     match widget_type {
         "label" => {

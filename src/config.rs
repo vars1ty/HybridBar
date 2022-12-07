@@ -83,7 +83,7 @@ fn get_custom_variables() -> Vec<(String, String), 64> {
     let mut vector: Vec<(String, String), 64> = Vec::new();
     for entry in cfg.entries() {
         vector
-            .push((entry.0.to_string(), entry.1.to_string()))
+            .push((entry.0.to_owned(), entry.1.to_string()))
             .expect("[ERROR] You cannot have more than `64` variables!\n");
     }
 
