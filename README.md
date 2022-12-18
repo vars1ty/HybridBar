@@ -66,7 +66,7 @@ It supports:
 ## I have no config
 If the AUR version for whatever reason didn't give you the example one, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
 ## Does it only work on wlroots Compositors?
-Nope, it's been tested on KDE as well and it worked just fine. GNOME should be the same story.
+Nope, it's been tested on KDE as well and it worked just fine. It just wont work on GNOME as it hasn't implemented the `wlr-layer-shell` protocol.
 # Config Layout
 I'm assuming you are familiar with JSON. If you aren't, well too bad.
 ## Base
