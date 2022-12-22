@@ -2,12 +2,7 @@
 ## Style
 Look around the project to get a view on how the code is structured, then adapt to that.
 
-One example is with `expect(1)`, **always** end your message with `\n`.
-
-### Why?
-Because it makes the custom message at the first line, whereas the stack-trace is on the line below it. Making the whole thing easier to read.
-
-Also make sure you format your code accordingly. The config I use for it is just vanilla LSP with Rust. Config is [here](https://github.com/vars1ty/NeoRS).
+Also make sure you format your code accordingly. The config I use for all my Rust projects is just vanilla LSP with Rust. Config is [here](https://github.com/vars1ty/NeoRS).
 
 ## Error Handling
 If the possibility of an error happening is super low (like never), then you may use `unwrap()`. An example of this can be seen [here](https://github.com/vars1ty/HybridBar/blob/main/src/loop.rs#L39).

@@ -57,7 +57,7 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
     }
 
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
-        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.\n")
+        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.")
     }
 
     // If the position was valid, return the result.
@@ -111,7 +111,7 @@ fn activate(application: &Application) {
 
     // Initialize gdk::Display by default value, which is decided by the compositor.
     let display = Display::default()
-        .expect("[ERROR] Could not get default display, is your compositor doing okay?\n");
+        .expect("[ERROR] Could not get default display, is your compositor doing okay?");
 
     // Loads the monitor variable from config, default is 0.
     let config_monitor = config::try_get("hybrid", "monitor", false, false)
@@ -121,7 +121,7 @@ fn activate(application: &Application) {
     // Gets the actual gdk::Monitor from configured number.
     let monitor = display
         .monitor(config_monitor)
-        .expect("[ERROR] Could not find monitor.\n");
+        .expect("[ERROR] Could not find a valid monitor.");
 
     // Sets which monitor should be used for the bar.
     gtk_layer_shell::set_monitor(&window, &monitor);
@@ -148,11 +148,11 @@ pub fn load_css() {
 
     provider
         .load_from_path(&css_path)
-        .unwrap_or_else(|_| panic!("[ERROR] Failed loading CSS from '{css_file}'!\n"));
+        .unwrap_or_else(|_| panic!("[ERROR] Failed loading CSS from '{css_file}'!"));
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(
-        &Screen::default().expect("[ERROR] Couldn't find any valid displays!\n"),
+        &Screen::default().expect("[ERROR] Couldn't find any valid displays!"),
         &provider,
         STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
@@ -189,7 +189,7 @@ fn set_visual(window: &ApplicationWindow, screen: Option<&Screen>) {
 fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f64 {
     let mut res = cfg["hybrid"][identifier]
         .as_f64()
-        .unwrap_or_else(|| panic!("[ERROR] Failed converting hybrid:{identifier} to f64!\n"));
+        .unwrap_or_else(|| panic!("[ERROR] Failed converting hybrid:{identifier} to f64!"));
 
     // Only divide by 255 if explicitly told to.
     if from_255 {
@@ -213,6 +213,6 @@ fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     // Apply
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);
-    ctx.paint().expect("[ERROR] Failed painting!\n");
+    ctx.paint().expect("[ERROR] Failed painting!");
     Inhibit(false)
 }

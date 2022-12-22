@@ -18,12 +18,12 @@ impl HWidget for CavaWidget {
         ui::add_and_align(&self.label, align, left, centered, right);
         ui::CAVA_INSTANCES
             .lock()
-            .expect("[ERROR] Couldn't access ui::CAVA_INSTANCES!\n")
+            .expect("[ERROR] Couldn't access ui::CAVA_INSTANCES!")
             .push(self)
-            .expect("[ERROR] You cannot have more than `8` Cava widgets!\n");
+            .expect("[ERROR] You cannot have more than `8` Cava widgets!");
     }
 
-    fn update_label_reg(&self, new_content: &(impl Display + Clone)) {
+    fn update_label_direct(&self, new_content: &(impl Display + Clone)) {
         let final_content = &new_content.to_string();
         // Only redraw if the text wasn't the exact same as final_content.
         if !self.label.text().eq(final_content) {

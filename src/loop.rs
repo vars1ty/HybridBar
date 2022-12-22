@@ -11,7 +11,7 @@ pub fn update() {
     // Only start the tick-loop if there are actually Cava widgets available.
     if ui::CAVA_INSTANCES
         .lock()
-        .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
+        .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!")
         .is_empty()
     {
         return;
@@ -27,10 +27,10 @@ fn update_cava() -> Continue {
     // Loop through all Cava widget instances and sync the text.
     for widget in ui::CAVA_INSTANCES
         .lock()
-        .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!\n")
+        .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!")
         .iter()
     {
-        widget.update_label_reg(bars);
+        widget.update_label_direct(bars);
     }
 
     // If unwrap fails here, then I have lost all faith in computers.

@@ -21,7 +21,7 @@ macro_rules! execute {
             }
 
             result = String::from_utf8_lossy(
-                &std::process::Command::new("bash")
+                &std::process::Command::new("sh")
                 .args(["-c", $cmd])
                 .output()
                 .unwrap()

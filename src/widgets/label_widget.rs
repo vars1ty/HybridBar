@@ -25,25 +25,21 @@ pub struct LabelWidget {
     pub listen: bool,
 }
 
-// For VEC to work.
-unsafe impl Send for LabelWidget {}
-unsafe impl Sync for LabelWidget {}
-
 /// 0.3.2: If `listen` is `true`, call this function and then set the label text-value
 ///   to that of `BUFFER`.
 fn begin_listen(cmd: String) {
     task::spawn(async move {
-        let mut child = Command::new("bash")
+        let mut child = Command::new("sh")
             .args(["-c", &cmd])
             .stdout(Stdio::piped())
             .kill_on_drop(true)
             .spawn()
-            .unwrap_or_else(|_| panic!("[ERROR] Cannot start '{cmd}'\n"));
+            .unwrap_or_else(|_| panic!("[ERROR] Cannot start '{cmd}'!"));
 
         let out = child
             .stdout
             .take()
-            .expect("[ERROR] Cannot take stdout from child!\n");
+            .expect("[ERROR] Cannot take stdout from child process!");
 
         let mut reader = BufReader::new(out).lines();
         let update_rate = config::get_update_rate();
@@ -51,8 +47,8 @@ fn begin_listen(cmd: String) {
             *BUFFER.write().unwrap() = reader
                 .next_line()
                 .await
-                .expect("[ERROR] There are no more lines available!\n")
-                .expect("[ERROR] The string value is None!\n");
+                .expect("[ERROR] There are no more lines available!")
+                .expect("[ERROR] The string value is None!");
 
             tokio::time::sleep(Duration::from_millis(update_rate)).await;
         }
@@ -61,13 +57,14 @@ fn begin_listen(cmd: String) {
 
 /// Starts updating the dynamic tooltip, if any.
 fn start_tooltip_loop(label_ref: &LabelWidget) {
-    let label = label_ref.label.to_owned();
-    let tooltip = label_ref.tooltip.to_owned();
-    let tooltip_command = label_ref.tooltip_command.to_owned();
-    if tooltip_command.is_empty() {
+    if label_ref.tooltip_command.is_empty() {
         // Not eligible, cancel.
         return;
     }
+
+    let label = label_ref.label.to_owned();
+    let tooltip = label_ref.tooltip.to_owned();
+    let tooltip_command = label_ref.tooltip_command.to_owned();
 
     const EMPTY: &str = "";
     let tick = move || {
@@ -75,7 +72,9 @@ fn start_tooltip_loop(label_ref: &LabelWidget) {
         new_tooltip.push_str(&tooltip);
         new_tooltip.push_str(&execute!(&tooltip_command));
 
-        let tooltip_markup = label.tooltip_markup().unwrap_or_else(|| GString::from(EMPTY));
+        let tooltip_markup = label
+            .tooltip_markup()
+            .unwrap_or_else(|| GString::from(EMPTY));
 
         if !tooltip_markup.eq(&new_tooltip) {
             // Markup support here, the user therefore has to deal with any upcoming issues due to

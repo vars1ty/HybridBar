@@ -82,7 +82,7 @@ fn get_base_keys(root: &str) -> (String, String, u64, String, String) {
         .unwrap_or(100)
         .try_into()
         .unwrap_or_else(|_| {
-            panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}\n")
+            panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}")
         });
     let tooltip = config::try_get(root, "tooltip", true, true)
         .string
@@ -113,7 +113,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Grabs widget alignment and widget type from the identifier separated by '-'.
         let (widget_alignment, widget_type) = identifier
             .split_once(ALIGNMENT)
-            .expect("[ERROR] Widget should be named as [alignment]-[widget_type]_[name]\n");
+            .expect("[ERROR] Widgets should be named as [alignment]-[widget_type]_[name]");
 
         // Formats the widget alignment.
         let f_widget_alignment = widget_alignment.to_uppercase();
@@ -127,18 +127,18 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             tooltip,
             tooltip_command,
             alignment: structures::Align::from_str(&f_widget_alignment)
-                .expect("[ERROR] Invalid widget alignment!\n"),
+                .expect("[ERROR] Invalid widget alignment!"),
         };
 
         // Gets every element after the widget identifier, then appends '_' in between.
-        let widget_name = identifiers[1..].join(SEPARATOR).to_string();
+        let widget_name = identifiers[1..].join(SEPARATOR).to_owned();
 
         if widget_name.is_empty() {
-            panic!("[ERROR] Found an empty widget name, this is not currently supported!\n")
+            panic!("[ERROR] Found an empty widget name, this is not currently supported!")
         }
 
         log!(format!(
-            "Adding widget '{identifier}' with alignment '{f_widget_alignment}'",
+            "Adding widget '{identifier}' with alignment '{f_widget_alignment}'!",
         ));
 
         // Add the widget.

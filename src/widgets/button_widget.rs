@@ -47,6 +47,7 @@ impl HWidget for ButtonWidget {
 
             let tooltip_markup = button_clone
                 .tooltip_markup()
+                // If the returned value was None, return an empty GString.
                 .unwrap_or_else(|| GString::from(EMPTY));
 
             if !tooltip_markup.eq(&new_tooltip) {

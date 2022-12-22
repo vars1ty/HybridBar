@@ -26,7 +26,7 @@ pub fn get_update_rate() -> u64 {
 
     update_rate
         .try_into()
-        .expect("[ERROR] Cannot convert update_rate into u64!\n")
+        .expect("[ERROR] Cannot convert update_rate into u64!")
 }
 
 /// Caches the config so we don't have to re-parse it every time.
@@ -41,9 +41,9 @@ fn read_config_raw() -> JsonValue {
     conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", "config.json"));
     json::parse(
         &fs::read_to_string(&conf_path)
-            .unwrap_or_else(|_| panic!("[ERROR] Failed reading config file from '{conf_path}'!\n")),
+            .unwrap_or_else(|_| panic!("[ERROR] Failed reading config file from '{conf_path}'!")),
     )
-    .unwrap_or_else(|_| panic!("[ERROR] Failed parsing config from '{conf_path}'!\n"))
+    .unwrap_or_else(|_| panic!("[ERROR] Failed parsing config from '{conf_path}'!"))
 }
 
 /// Tries to fetch a value from the config. Supported types are `String` and `i32`.
@@ -59,7 +59,7 @@ pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bo
                 Some(
                     grabbed_value
                         .as_i32()
-                        .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!\n")),
+                        .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!")),
                 ),
             );
         }
@@ -84,7 +84,7 @@ fn get_custom_variables() -> Vec<(String, String), 64> {
     for entry in cfg.entries() {
         vector
             .push((entry.0.to_owned(), entry.1.to_string()))
-            .expect("[ERROR] You cannot have more than `64` variables!\n");
+            .expect("[ERROR] You cannot have more than `64` variables!");
     }
 
     vector

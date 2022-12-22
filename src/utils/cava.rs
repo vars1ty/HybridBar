@@ -1,5 +1,10 @@
 use crate::{config, math};
-use std::{fs::File, io::Write, process::Stdio, sync::{RwLock, Mutex}};
+use std::{
+    fs::File,
+    io::Write,
+    process::Stdio,
+    sync::{Mutex, RwLock},
+};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -47,8 +52,7 @@ fn get_framerate() -> i32 {
 /// Builds the temporary Cava configuration and then returns the path to it,
 pub fn get_temp_config() -> String {
     let path = String::from("/tmp/cava_tmp_hybrid.conf");
-    let mut file =
-        File::create(&path).expect("[ERROR] Couldn't create the temporary Cava config!\n");
+    let mut file = File::create(&path).expect("[ERROR] Couldn't create the temporary Cava config!");
     // 0.2.7: Support for dynamically configuring the temporary config to an extent.
     let bars = get_bars();
     let framerate = get_framerate();
@@ -68,7 +72,7 @@ ascii_max_range = 7
         )
         .as_bytes(),
     )
-    .expect("[ERROR] Failed writing to the temporary Cava config!\n");
+    .expect("[ERROR] Failed writing to the temporary Cava config!");
     path
 }
 
@@ -79,17 +83,17 @@ pub fn update_bars() {
         let mut bars;
         let sed = get_sed();
         let path = get_temp_config();
-        let mut child = Command::new("bash")
+        let mut child = Command::new("sh")
             .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
             .stdout(Stdio::piped())
             .kill_on_drop(true)
             .spawn()
-            .expect("[ERROR] Cannot start cava script!\n");
+            .expect("[ERROR] Cannot start Cava script!");
 
         let out = child
             .stdout
             .take()
-            .expect("[ERROR] Cannot take stdout from child!\n");
+            .expect("[ERROR] Cannot take stdout from child process!");
 
         // Drop to free the resources as we don't need to access them anymore.
         drop(sed);
@@ -104,7 +108,7 @@ pub fn update_bars() {
                         Err(_) => {
                             *HAS_CAVA_CRASHED.write().unwrap() = true;
                             BARS.lock().unwrap().clear();
-                            panic!("[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!\n")
+                            panic!("[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!")
                         }
                     }
                 };
@@ -114,7 +118,7 @@ pub fn update_bars() {
                     None => {
                         *HAS_CAVA_CRASHED.write().unwrap() = true;
                         BARS.lock().unwrap().clear();
-                        panic!("[WARN] Cava: The string value is None, Hybrid will keep on running but Cava will be stopped!\n")
+                        panic!("[WARN] Cava: The string value is None, Hybrid will keep on running but Cava will be stopped!")
                     }
                 }
             };
