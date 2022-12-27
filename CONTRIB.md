@@ -5,9 +5,9 @@ Look around the project to get a view on how the code is structured, then adapt 
 Also make sure you format your code accordingly. The config I use for all my Rust projects is just vanilla LSP with Rust. Config is [here](https://github.com/vars1ty/NeoRS).
 
 ## Error Handling
-If the possibility of an error happening is super low (like never), then you may use `unwrap()`. An example of this can be seen [here](https://github.com/vars1ty/HybridBar/blob/main/src/loop.rs#L39).
+If the possibility of an error happening is super low (like never), then you may use `unwrap()`. An example of this can be seen with variables created via lazy_static!.
 
-If it may happen frequently however, then please use `expect(1)` with an informative message. Or if it makes sense; guard the logic and try to make it not panic-crash the application.
+If it may happen frequently however, then please use `expect()` / `unwrap_or...`. Or if it makes sense; guard the logic and try to make it not crash the application.
 
 ## Caching
 If you are just accessing a value once or twice upon startup and **it's not heavy to do so**; don't cache it.

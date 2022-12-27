@@ -10,7 +10,7 @@ You can make variables by specifying them in a similar format as `hybrid`, here'
 }
 ```
 
-The `variables` naming for the master key is required, and no I'm not going to call it "main" key in this example.
+All variables have to be a child-key of `variables`, otherwise Hybrid won't be able to find it.
 
 ## But.. How do I use my epic variable?
 To actually use your variable, you can do something like this:
@@ -28,4 +28,4 @@ Then the text will automatically be replaced with the value from `cool_message`.
 ## Limitations
 There's only two limitations with variables:
 1. You can only specify up to `64`, although I don't expect you to exceed this limit for one single Hybrid session.
-2. Tooltip commands do not currently support variables, although I might add support for this in 0.3.7.
+2. Tooltip commands do not currently support variables.
