@@ -1,4 +1,4 @@
-use crate::{environment, math, structures::ConfigData};
+use crate::{constants::*, environment, math, structures::ConfigData};
 use heapless::Vec;
 use json::JsonValue;
 use std::{fs, sync::RwLock};
@@ -20,7 +20,7 @@ pub fn get_path() -> String {
 /// Returns the set update-rate.
 pub fn get_update_rate() -> u64 {
     let mut update_rate = 100;
-    if let Some(c_update_rate) = try_get("hybrid", "update_rate", false, false).number {
+    if let Some(c_update_rate) = try_get(HYBRID_ROOT_JSON, "update_rate", false, false).number {
         update_rate = math::clamp_i32(c_update_rate, 5, 10_000)
     }
 
@@ -38,7 +38,7 @@ pub fn cache() {
 /// Parses and returns the config.
 fn read_config_raw() -> JsonValue {
     let mut conf_path = get_path();
-    conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", "config.json"));
+    conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", DEFAULT_CONFIG));
     json::parse(
         &fs::read_to_string(&conf_path)
             .unwrap_or_else(|_| panic!("[ERROR] Failed reading config file from '{conf_path}'!")),
@@ -78,7 +78,7 @@ pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bo
 
 /// Gets all the custom variables.
 fn get_custom_variables() -> Vec<(String, String), 64> {
-    let cfg = &CONFIG.read().unwrap()["variables"];
+    let cfg = &CONFIG.read().unwrap()[HYBRID_V_ROOT_JSON];
     // 0.3.0: Only allow for 64 variables.
     let mut vector: Vec<(String, String), 64> = Vec::new();
     for entry in cfg.entries() {

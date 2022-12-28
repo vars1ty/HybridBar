@@ -1,4 +1,4 @@
-use crate::{config, math};
+use crate::{config, constants::*, math};
 use std::{
     fs::File,
     io::Write,
@@ -21,7 +21,7 @@ lazy_static! {
 
 /// Gets the sed to use for Cava.
 pub fn get_sed() -> String {
-    config::try_get("hybrid", "cava_sed", true, false)
+    config::try_get(HYBRID_ROOT_JSON, "cava_sed", true, false)
         .string
         .unwrap_or_else(|| {
             String::from("s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;")
@@ -30,7 +30,7 @@ pub fn get_sed() -> String {
 
 /// Returns the amount of bars that should be present.
 fn get_bars() -> i32 {
-    let bars = config::try_get("hybrid", "cava_bars", false, false)
+    let bars = config::try_get(HYBRID_ROOT_JSON, "cava_bars", false, false)
         .number
         .unwrap_or(5);
     math::clamp_i32(bars, 2, 16)
@@ -43,7 +43,7 @@ pub fn get_current_bars() -> String {
 
 /// Returns the desired framerate to use for Cava updates.
 fn get_framerate() -> i32 {
-    let framerate = config::try_get("hybrid", "cava_framerate", false, false)
+    let framerate = config::try_get(HYBRID_ROOT_JSON, "cava_framerate", false, false)
         .number
         .unwrap_or(60);
     math::clamp_i32(framerate, 60, 360)
@@ -51,7 +51,7 @@ fn get_framerate() -> i32 {
 
 /// Builds the temporary Cava configuration and then returns the path to it,
 pub fn get_temp_config() -> String {
-    let path = String::from("/tmp/cava_tmp_hybrid.conf");
+    let path = String::from(CAVA_TMP_CONFIG);
     let mut file = File::create(&path).expect("[ERROR] Couldn't create the temporary Cava config!");
     // 0.2.7: Support for dynamically configuring the temporary config to an extent.
     let bars = get_bars();
@@ -83,7 +83,7 @@ pub fn update_bars() {
         let mut bars;
         let sed = get_sed();
         let path = get_temp_config();
-        let mut child = Command::new("sh")
+        let mut child = Command::new(PROC_TARGET)
             .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
             .stdout(Stdio::piped())
             .kill_on_drop(true)

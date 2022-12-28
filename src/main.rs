@@ -15,6 +15,7 @@ mod cava_widget;
 #[path = "widgets/cmd_widget.rs"]
 mod cmd_widget;
 mod config;
+mod constants;
 mod environment;
 #[path = "widgets/label_widget.rs"]
 mod label_widget;
@@ -27,6 +28,7 @@ mod structures;
 mod ui;
 mod widget;
 
+use constants::*;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;
 use gtk::prelude::*;
@@ -38,21 +40,24 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    const ROOT: &str = "hybrid";
     let mut expand_right = true;
     let mut expand_left = true;
     let mut pos = String::from("Top");
 
     // Check if there's any user-defined values for expand l-r/pos, if there are then sync them.
-    if let Some(c_expand_right) = config::try_get(ROOT, "expand_right", true, false).string {
+    if let Some(c_expand_right) =
+        config::try_get(HYBRID_ROOT_JSON, "expand_right", true, false).string
+    {
         expand_right = c_expand_right == "true";
     }
 
-    if let Some(c_expand_left) = config::try_get(ROOT, "expand_left", true, false).string {
+    if let Some(c_expand_left) =
+        config::try_get(HYBRID_ROOT_JSON, "expand_left", true, false).string
+    {
         expand_left = c_expand_left == "true";
     }
 
-    if let Some(c_pos) = config::try_get(ROOT, "position", true, false).string {
+    if let Some(c_pos) = config::try_get(HYBRID_ROOT_JSON, "position", true, false).string {
         pos = c_pos;
     }
 
@@ -95,7 +100,8 @@ fn activate(application: &Application) {
     // Allows for writing in input fields if the value is true.
     // This is false by default since it's stealing focus until you focus a different application,
     // which may trigger some users.
-    if let Some(c_allow_keyboard) = config::try_get("hybrid", "allow_keyboard", true, false).string
+    if let Some(c_allow_keyboard) =
+        config::try_get(HYBRID_ROOT_JSON, "allow_keyboard", true, false).string
     {
         gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard == "true");
     }
@@ -103,7 +109,7 @@ fn activate(application: &Application) {
     // Allows for specifing the namespace of the layer.
     // The default is "gtk-layer-shell" to not break existing configs.
     let mut namespace = String::from("gtk-layer-shell");
-    if let Some(c_namespace) = config::try_get("hybrid", "namespace", true, false).string {
+    if let Some(c_namespace) = config::try_get(HYBRID_ROOT_JSON, "namespace", true, false).string {
         namespace = c_namespace;
     }
 
@@ -114,7 +120,7 @@ fn activate(application: &Application) {
         .expect("[ERROR] Could not get default display, is your compositor doing okay?");
 
     // Loads the monitor variable from config, default is 0.
-    let config_monitor = config::try_get("hybrid", "monitor", false, false)
+    let config_monitor = config::try_get(HYBRID_ROOT_JSON, "monitor", false, false)
         .number
         .unwrap_or_default();
 
@@ -138,8 +144,8 @@ fn activate(application: &Application) {
 pub fn load_css() {
     let provider = CssProvider::new();
     // 0.2.8: Allow for defining the name of the stylesheet to look up
-    let mut css_file = String::from("style.css");
-    if let Some(c_css_file) = config::try_get("hybrid", "stylesheet", true, false).string {
+    let mut css_file = String::from(DEFAULT_CSS);
+    if let Some(c_css_file) = config::try_get(HYBRID_ROOT_JSON, "stylesheet", true, false).string {
         css_file = c_css_file
     }
 
@@ -187,7 +193,7 @@ fn set_visual(window: &ApplicationWindow, screen: Option<&Screen>) {
 
 /// Converts the value of a child inside `background` to a `f64`.
 fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f64 {
-    let mut res = cfg["hybrid"][identifier]
+    let mut res = cfg[HYBRID_ROOT_JSON][identifier]
         .as_f64()
         .unwrap_or_else(|| panic!("[ERROR] Failed converting hybrid:{identifier} to f64!"));
 

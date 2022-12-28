@@ -119,15 +119,19 @@ fn start_label_loop(label: Label, text: String, command: String, update_rate: u6
 
 /// Updates the labels content with the string from `BUFFER`.
 fn update_from_buffer(label: &Label) {
-    let new_content = BUFFER
-        .read()
-        .expect("[ERROR] Failed retrieving content from BUFFER!\n");
-    let old_content = label.text();
-    // eq-check the new content for old_content. Doing the opposite requires a .to_string()
-    // call.
-    if !new_content.eq(&old_content) {
-        // Not the same; set content and redraw.
-        label.set_text(&new_content);
+    if let Ok(new_content) = BUFFER.read() {
+        let old_content = label.text();
+        // eq-check the new content for old_content. Doing the opposite requires a .to_string()
+        // call.
+        if !new_content.eq(&old_content) {
+            // Not the same; set content and redraw.
+            label.set_text(&new_content);
+        }
+    } else {
+        log!(format!(
+            "[WARN] Failed retrieving content from BUFFER for label '{}'!",
+            label.widget_name()
+        ))
     }
 }
 
@@ -150,7 +154,7 @@ impl HWidget for LabelWidget {
         }
 
         log!(format!(
-            "Added a new label widget named '{name}', is static: {}",
+            "Added a new label widget named '{name}', static: {}",
             is_static
         ));
     }

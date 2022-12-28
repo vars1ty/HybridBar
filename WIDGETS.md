@@ -68,6 +68,7 @@ The `text` and `command` nested JSON keys are simply described as:
 **All** keys are optional, if you skip `text` for example, it'll be using an empty value.
 
 No, the unique name isn't actually displayed anywhere, it's just to be able to differ each component from another.
+
 ## Cava
 Here's an example of how you may setup Cava: `"right-cava_0": {}`.
 
@@ -75,6 +76,7 @@ You may also change how all Cava widgets are displayed on the bar through these 
 - `cava_sed`: String - The sed for Cava. If left empty, `s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;` will be used;
 - `cava_framerate`: u32 (min 60, max 360) - How fast Cava should check for audio levels and output it to `stdout` for Hybrid to then sync to the viewport;
 - `cava_bars`: u32 (min 2, max 16) - How many bars that should be rendered for each Cava widget
+
 ### Performance
 Because the implementation isn't perfect and relies on listening to a raw Cava stdout, the performance may fluctuate.
 
