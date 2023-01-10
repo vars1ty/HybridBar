@@ -7,6 +7,7 @@ description = "A simple status bar made for wlroots compositors."
 license = "MIT"
 
 [dependencies]
+<<<<<<< HEAD
 strum = { version = "*", features = ["derive"] }
 tokio = { version = "*", features = ["full"] }
 gtk-layer-shell = "*"
@@ -16,6 +17,17 @@ heapless = "*"
 glib = "*"
 json = "*"
 gtk = "*"
+=======
+strum = { version = "0.24.1", features = ["derive"] }
+tokio = { version = "1.23.1", features = ["full"] }
+gtk-layer-shell = "0.5.0"
+strum_macros = "0.24.3"
+lazy_static = "1.4.0"
+heapless = "0.7.16"
+glib = "0.16.7"
+json = "0.12.4"
+gtk = "0.16.2"
+>>>>>>> 959505f0d3fcfd21b6701c96374164ad2e6931ec
 
 [profile.release]
 panic = "abort"
