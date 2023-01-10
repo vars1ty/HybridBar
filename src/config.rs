@@ -5,7 +5,6 @@ use std::{fs, sync::RwLock};
 
 lazy_static! {
     /// Caches the config.
-    // TODO: Switch to Mutex sometime in the future.
     pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
 }
 
