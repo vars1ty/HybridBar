@@ -71,23 +71,19 @@ pub fn build_widgets(window: &ApplicationWindow) {
 
 /// Gets the base key values.
 fn get_base_keys(root: &str) -> (String, String, u64, String, String) {
-    let text = config::try_get(root, "text", true, true)
+    let text = conf!(root, "text", true, true).string.unwrap_or_default();
+    let command = conf!(root, "command", true, true)
         .string
         .unwrap_or_default();
-    let command = config::try_get(root, "command", true, true)
-        .string
-        .unwrap_or_default();
-    let update_rate: u64 = config::try_get(root, "update_rate", false, false)
+    let update_rate: u64 = conf!(root, "update_rate", false, false)
         .number
         .unwrap_or(100)
         .try_into()
-        .unwrap_or_else(|_| {
-            panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}")
-        });
-    let tooltip = config::try_get(root, "tooltip", true, true)
+        .unwrap_or_else(|_| panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}"));
+    let tooltip = conf!(root, "tooltip", true, true)
         .string
         .unwrap_or_default();
-    let tooltip_command = config::try_get(root, "tooltip_command", true, true)
+    let tooltip_command = conf!(root, "tooltip_command", true, true)
         .string
         .unwrap_or_default();
     (text, command, update_rate, tooltip, tooltip_command)
@@ -187,10 +183,7 @@ fn add_widget(
                 text,
                 command,
                 label: Label::new(None),
-                listen: config::try_get(key, "listen", true, false)
-                    .string
-                    .unwrap_or_default()
-                    == "true",
+                listen: conf!(key, "listen", true, false).string.unwrap_or_default() == "true",
             };
 
             label.add(widget_name, alignment, left, centered, right)
@@ -207,10 +200,10 @@ fn add_widget(
         }
         "spacing" => {
             let spacing = SpacingWidget {
-                spacing_start: config::try_get(key, "spacing_start", false, false)
+                spacing_start: conf!(key, "spacing_start", false, false)
                     .number
                     .unwrap_or_default(),
-                spacing_end: config::try_get(key, "spacing_end", false, false)
+                spacing_end: conf!(key, "spacing_end", false, false)
                     .number
                     .unwrap_or_default(),
             };
@@ -219,9 +212,7 @@ fn add_widget(
         }
         "box" => {
             let box_widget = BoxWidget {
-                width: config::try_get(key, "width", false, false)
-                    .number
-                    .unwrap_or_default(),
+                width: conf!(key, "width", false, false).number.unwrap_or_default(),
             };
 
             box_widget.add(widget_name, alignment, left, centered, right)

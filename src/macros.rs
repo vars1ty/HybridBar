@@ -33,7 +33,15 @@ macro_rules! execute {
             )*
 
             // Could use drop(&$result) but then Clippy would whine.
-            format!("{}", result)
+            result
         }
+    };
+}
+
+#[macro_export]
+/// Gets a value from the config.
+macro_rules! conf {
+    ($root:expr, $key:expr, $is_string:expr, $with_custom_variables:expr) => {
+        $crate::config::try_get($root, $key, $is_string, $with_custom_variables)
     };
 }

@@ -19,7 +19,7 @@ pub fn get_path() -> String {
 /// Returns the set update-rate.
 pub fn get_update_rate() -> u64 {
     let mut update_rate = 100;
-    if let Some(c_update_rate) = try_get(HYBRID_ROOT_JSON, "update_rate", false, false).number {
+    if let Some(c_update_rate) = conf!(HYBRID_ROOT_JSON, "update_rate", false, false).number {
         update_rate = math::clamp_i32(c_update_rate, 5, 10_000)
     }
 

@@ -45,19 +45,15 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
     let mut pos = String::from("Top");
 
     // Check if there's any user-defined values for expand l-r/pos, if there are then sync them.
-    if let Some(c_expand_right) =
-        config::try_get(HYBRID_ROOT_JSON, "expand_right", true, false).string
-    {
+    if let Some(c_expand_right) = conf!(HYBRID_ROOT_JSON, "expand_right", true, false).string {
         expand_right = c_expand_right == "true";
     }
 
-    if let Some(c_expand_left) =
-        config::try_get(HYBRID_ROOT_JSON, "expand_left", true, false).string
-    {
+    if let Some(c_expand_left) = conf!(HYBRID_ROOT_JSON, "expand_left", true, false).string {
         expand_left = c_expand_left == "true";
     }
 
-    if let Some(c_pos) = config::try_get(HYBRID_ROOT_JSON, "position", true, false).string {
+    if let Some(c_pos) = conf!(HYBRID_ROOT_JSON, "position", true, false).string {
         pos = c_pos;
     }
 
@@ -100,16 +96,14 @@ fn activate(application: &Application) {
     // Allows for writing in input fields if the value is true.
     // This is false by default since it's stealing focus until you focus a different application,
     // which may trigger some users.
-    if let Some(c_allow_keyboard) =
-        config::try_get(HYBRID_ROOT_JSON, "allow_keyboard", true, false).string
-    {
+    if let Some(c_allow_keyboard) = conf!(HYBRID_ROOT_JSON, "allow_keyboard", true, false).string {
         gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard == "true");
     }
 
     // Allows for specifing the namespace of the layer.
     // The default is "gtk-layer-shell" to not break existing configs.
     let mut namespace = String::from("gtk-layer-shell");
-    if let Some(c_namespace) = config::try_get(HYBRID_ROOT_JSON, "namespace", true, false).string {
+    if let Some(c_namespace) = conf!(HYBRID_ROOT_JSON, "namespace", true, false).string {
         namespace = c_namespace;
     }
 
@@ -120,7 +114,7 @@ fn activate(application: &Application) {
         .expect("[ERROR] Could not get default display, is your compositor doing okay?");
 
     // Loads the monitor variable from config, default is 0.
-    let config_monitor = config::try_get(HYBRID_ROOT_JSON, "monitor", false, false)
+    let config_monitor = conf!(HYBRID_ROOT_JSON, "monitor", false, false)
         .number
         .unwrap_or_default();
 
@@ -145,7 +139,7 @@ pub fn load_css() {
     let provider = CssProvider::new();
     // 0.2.8: Allow for defining the name of the stylesheet to look up
     let mut css_file = String::from(DEFAULT_CSS);
-    if let Some(c_css_file) = config::try_get(HYBRID_ROOT_JSON, "stylesheet", true, false).string {
+    if let Some(c_css_file) = conf!(HYBRID_ROOT_JSON, "stylesheet", true, false).string {
         css_file = c_css_file
     }
 
