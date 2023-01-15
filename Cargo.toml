@@ -7,6 +7,7 @@ description = "A simple status bar made for wlroots compositors."
 license = "MIT"
 
 [dependencies]
+lxinfo = { git = "https://github.com/vars1ty/lxinfo.git" }
 strum = { version = "*", features = ["derive"] }
 tokio = { version = "*", features = ["full"] }
 gtk-layer-shell = "*"

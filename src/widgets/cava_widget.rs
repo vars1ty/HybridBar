@@ -1,4 +1,4 @@
-use crate::{structures::Align, ui, widget::HWidget};
+use crate::{cava, structures::Align, ui, widget::HWidget};
 use gtk::{traits::*, *};
 use std::fmt::Display;
 
@@ -16,11 +16,11 @@ impl HWidget for CavaWidget {
     fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box) {
         self.label.set_widget_name(&name);
         ui::add_and_align(&self.label, align, left, centered, right);
-        ui::CAVA_INSTANCES
+        cava::CAVA_INSTANCES
             .lock()
             .expect("[ERROR] Couldn't access ui::CAVA_INSTANCES!")
             .push(self)
-            .expect("[ERROR] You cannot have more than `8` Cava widgets!");
+            .expect("[ERROR] You can't have more than `8` Cava widgets per Hybrid config!");
     }
 
     fn update_label_direct(&self, new_content: &(impl Display + Clone)) {

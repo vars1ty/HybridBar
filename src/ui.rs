@@ -10,13 +10,7 @@ use crate::{
 };
 use gtk::traits::*;
 use heapless::Vec;
-use std::{str::FromStr, sync::Mutex};
-
-lazy_static! {
-    /// All active cava label instances.
-    // This will be moved to `cava.rs` soon.
-    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget, 8>> = Mutex::new(Vec::new());
-}
+use std::str::FromStr;
 
 /// Adds and aligns the specified widget.
 pub fn add_and_align(
@@ -63,8 +57,10 @@ pub fn build_widgets(window: &ApplicationWindow) {
 
     // Prepare all of the widgets.
     create_components(&left, &centered, &right);
+
     // Make every widget visible.
     window.show_all();
+
     // Update dynamic content.
     update();
 }
@@ -230,7 +226,7 @@ fn add_widget(
 
             cava.add(widget_name, alignment, left, centered, right)
         }
-        "cmd" => CmdWidget {}.add(widget_name, alignment, left, centered, right),
+        "cmd" => CmdWidget.add(widget_name, alignment, left, centered, right),
         _ => {
             panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }

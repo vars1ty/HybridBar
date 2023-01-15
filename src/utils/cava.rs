@@ -1,10 +1,5 @@
-use crate::{config, constants::*, math};
-use std::{
-    fs::File,
-    io::Write,
-    process::Stdio,
-    sync::{Mutex, RwLock},
-};
+use crate::{cava_widget::CavaWidget, constants::*, math};
+use std::{fs::File, io::Write, process::Stdio, sync::Mutex};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -14,18 +9,19 @@ use tokio::{
 lazy_static! {
     /// Current Cava bars.
     static ref BARS: Mutex<String> = Mutex::new(String::default());
-
     /// Has Cava crashed? If true, don't keep `update_cava` running.
-    pub static ref HAS_CAVA_CRASHED: RwLock<bool> = RwLock::new(false);
+    pub static ref HAS_CAVA_CRASHED: Mutex<bool> = Mutex::new(false);
+    /// All active Cava widget instances.
+    pub static ref CAVA_INSTANCES: Mutex<heapless::Vec<CavaWidget, 8>> = Mutex::new(heapless::Vec::new());
 }
 
 /// Gets the sed to use for Cava.
 pub fn get_sed() -> String {
     conf!(HYBRID_ROOT_JSON, "cava_sed", true, false)
         .string
-        .unwrap_or_else(|| {
-            String::from("s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;")
-        })
+        .unwrap_or(
+            "s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;".to_owned(),
+        )
 }
 
 /// Returns the amount of bars that should be present.
@@ -84,7 +80,7 @@ pub fn update_bars() {
         let sed = get_sed();
         let path = get_temp_config();
         let mut child = Command::new(PROC_TARGET)
-            .args(["-c", format!("cava -p {path} | sed -u '{sed}'").as_str()])
+            .args(["-c", &format!("cava -p {path} | sed -u '{sed}'")])
             .stdout(Stdio::piped())
             .kill_on_drop(true)
             .spawn()
@@ -106,7 +102,7 @@ pub fn update_bars() {
                     match next_line {
                         Ok(t) => t,
                         Err(_) => {
-                            *HAS_CAVA_CRASHED.write().unwrap() = true;
+                            *HAS_CAVA_CRASHED.lock().unwrap() = true;
                             BARS.lock().unwrap().clear();
                             panic!("[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!")
                         }
@@ -116,7 +112,7 @@ pub fn update_bars() {
                 match this {
                     Some(val) => val,
                     None => {
-                        *HAS_CAVA_CRASHED.write().unwrap() = true;
+                        *HAS_CAVA_CRASHED.lock().unwrap() = true;
                         BARS.lock().unwrap().clear();
                         panic!("[WARN] Cava: The string value is None, Hybrid will keep on running but Cava will be stopped!")
                     }

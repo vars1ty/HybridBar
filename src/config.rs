@@ -1,19 +1,19 @@
 use crate::{constants::*, environment, math, structures::ConfigData};
 use heapless::Vec;
 use json::JsonValue;
+use lxinfo::info::{self, SystemInfo};
 use std::{fs, sync::RwLock};
 
 lazy_static! {
-    /// Caches the config.
+    /// Cached config.
     pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
+    /// Cached system information.
+    pub static ref SYSINFO: SystemInfo = info::get_system_information();
 }
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
-    format!(
-        "/home/{}/.config/HybridBar/",
-        execute!(&heapless::String::<6>::from("whoami"))
-    )
+    format!("/home/{}/.config/HybridBar/", SYSINFO.username)
 }
 
 /// Returns the set update-rate.

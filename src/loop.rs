@@ -1,6 +1,5 @@
 use crate::{
-    cava::{get_current_bars, HAS_CAVA_CRASHED},
-    ui,
+    cava::{self, get_current_bars, HAS_CAVA_CRASHED},
     widget::HWidget,
 };
 use glib::Continue;
@@ -9,7 +8,7 @@ use std::time::Duration;
 /// Updates dynamic bar content.
 pub fn update() {
     // Only start the tick-loop if there are actually Cava widgets available.
-    if ui::CAVA_INSTANCES
+    if cava::CAVA_INSTANCES
         .lock()
         .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!")
         .is_empty()
@@ -25,7 +24,7 @@ pub fn update() {
 fn update_cava() -> Continue {
     let bars = &get_current_bars();
     // Loop through all Cava widget instances and sync the text.
-    for widget in ui::CAVA_INSTANCES
+    for widget in cava::CAVA_INSTANCES
         .lock()
         .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!")
         .iter()
@@ -34,5 +33,5 @@ fn update_cava() -> Continue {
     }
 
     // If unwrap fails here, then I have lost all faith in computers.
-    glib::Continue(!*HAS_CAVA_CRASHED.read().unwrap())
+    glib::Continue(!*HAS_CAVA_CRASHED.lock().unwrap())
 }

@@ -21,7 +21,7 @@ macro_rules! execute {
             }
 
             result = String::from_utf8_lossy(
-                &std::process::Command::new("sh")
+                &std::process::Command::new($crate::constants::PROC_TARGET)
                 .args(["-c", $cmd])
                 .output()
                 .unwrap()

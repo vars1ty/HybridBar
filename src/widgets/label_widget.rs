@@ -1,4 +1,4 @@
-use crate::{config, structures::Align, ui, widget::HWidget};
+use crate::{config, constants::PROC_TARGET, structures::Align, ui, widget::HWidget};
 use glib::GString;
 use gtk::{traits::*, *};
 use std::{process::Stdio, sync::RwLock, time::Duration};
@@ -29,7 +29,7 @@ pub struct LabelWidget {
 ///   to that of `BUFFER`.
 fn begin_listen(cmd: String) {
     task::spawn(async move {
-        let mut child = Command::new("sh")
+        let mut child = Command::new(PROC_TARGET)
             .args(["-c", &cmd])
             .stdout(Stdio::piped())
             .kill_on_drop(true)

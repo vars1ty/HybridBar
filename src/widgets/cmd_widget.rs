@@ -3,7 +3,7 @@ use gtk::{traits::*, *};
 use std::process::Command;
 
 /// Creates a new cmd (`Entry`) widget.
-pub struct CmdWidget {}
+pub struct CmdWidget;
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for CmdWidget {
