@@ -4,6 +4,8 @@ extern crate lazy_static;
 #[macro_use]
 mod macros;
 
+#[path = "utils/aliases.rs"]
+mod aliases;
 #[path = "widgets/box_widget.rs"]
 mod box_widget;
 #[path = "widgets/button_widget.rs"]

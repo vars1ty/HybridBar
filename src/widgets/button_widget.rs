@@ -1,4 +1,4 @@
-use crate::{structures::Align, ui, widget::HWidget};
+use crate::{aliases::use_aliases, structures::Align, ui, widget::HWidget};
 use glib::GString;
 use gtk::{traits::*, *};
 use std::time::Duration;
@@ -43,7 +43,7 @@ impl HWidget for ButtonWidget {
         let tick = move || {
             let mut new_tooltip = String::default();
             new_tooltip.push_str(&tooltip_clone);
-            new_tooltip.push_str(&execute!(&tooltip_command_clone));
+            new_tooltip.push_str(&use_aliases(&tooltip_command_clone));
 
             let tooltip_markup = button_clone
                 .tooltip_markup()

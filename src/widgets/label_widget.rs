@@ -1,4 +1,6 @@
-use crate::{config, constants::PROC_TARGET, structures::Align, ui, widget::HWidget};
+use crate::{
+    aliases::use_aliases, config, constants::PROC_TARGET, structures::Align, ui, widget::HWidget,
+};
 use glib::GString;
 use gtk::{traits::*, *};
 use std::{process::Stdio, sync::RwLock, time::Duration};
@@ -70,7 +72,7 @@ fn start_tooltip_loop(label_ref: &LabelWidget) {
     let tick = move || {
         let mut new_tooltip = String::default();
         new_tooltip.push_str(&tooltip);
-        new_tooltip.push_str(&execute!(&tooltip_command));
+        new_tooltip.push_str(&use_aliases(&tooltip_command));
 
         let tooltip_markup = label
             .tooltip_markup()
@@ -100,7 +102,7 @@ fn start_label_loop(label: Label, text: String, command: String, update_rate: u6
         if !listen {
             let mut new_text = String::default();
             new_text.push_str(&text);
-            new_text.push_str(&execute!(&command));
+            new_text.push_str(&use_aliases(&command));
 
             if !label.text().eq(&new_text) {
                 // Not the same as new_text; redraw.
