@@ -8,7 +8,7 @@ lazy_static! {
     /// Cached config.
     pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
     /// Cached system information.
-    pub static ref SYSINFO: SystemInfo = info::get_system_information();
+    pub static ref SYSINFO: SystemInfo = info::get_system_information().unwrap();
 }
 
 /// Gets the root home path to Hybrid.
