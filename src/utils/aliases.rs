@@ -13,8 +13,8 @@ fn replace_if_present(content: &mut String, find: &str, replace: &str, found_any
 pub fn use_aliases(content: &str) -> String {
     // TODO: Clean this up.
     if SYSINFO.is_none() {
-        // lxinfo doesn't work on this system at the moment, skip.
-        return content.to_owned();
+        log!("System Info isn't available for this system, therefore aliases have been disabled.");
+        return execute!(content);
     }
 
     let info = SYSINFO
