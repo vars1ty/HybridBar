@@ -8,12 +8,19 @@ lazy_static! {
     /// Cached config.
     pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
     /// Cached system information.
-    pub static ref SYSINFO: SystemInfo = info::get_system_information().unwrap();
+    pub static ref SYSINFO: Option<SystemInfo> = info::get_system_information();
 }
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
-    format!("/home/{}/.config/HybridBar/", SYSINFO.username)
+    let username = if let Some(info) = info::get_system_information() {
+        info.username
+    } else {
+        // lxinfo isn't available, fallback to execute.
+        execute!("whoami")
+    };
+
+    format!("/home/{}/.config/HybridBar/", username)
 }
 
 /// Returns the set update-rate.
