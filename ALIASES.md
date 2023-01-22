@@ -18,7 +18,7 @@ These aliases are only valid for commands (+ tooltip commands).
 - `%used_mem%` - Total amount of used memory (in GB)
 
 ## I can just use `whoami`, why all of this?
-You may use completely dynamic commands like `whoami` if you want, the benefit over aliases though are:
+You may use completely dynamic commands like `whoami` if you want, the benefit with using aliases are:
 
 1. Lower overhead due to being retrieved via `libc`, rather than expensive commands
 2. A lot faster to process
