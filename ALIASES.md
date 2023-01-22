@@ -1,4 +1,9 @@
 # Aliases
+> **Warning**:
+> Aliases relies mainly the presence of `/etc/os-release`, which may or may not be available on all distributions.
+>
+> If `lxinfo` (the library used) fails to retrieve any information, then aliases will be disabled.
+***
 These aliases are only valid for commands (+ tooltip commands).
 ***
 - `%username%` - Username
@@ -15,6 +20,6 @@ These aliases are only valid for commands (+ tooltip commands).
 ## I can just use `whoami`, why all of this?
 You may use completely dynamic commands like `whoami` if you want, the benefit over aliases though are:
 
-1. Lower overhead due to being cached and retrieved via `libc`, rather than expensive commands
+1. Lower overhead due to being retrieved via `libc`, rather than expensive commands
 2. A lot faster to process
-3. Cached at startup, then reused afterwards
+3. Cached at startup, then reused afterwards - **To be changed since it's a design flaw**
