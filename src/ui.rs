@@ -108,7 +108,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             .expect("[ERROR] Widgets should be named as [alignment]-[widget_type]_[name]");
 
         // Formats the widget alignment.
-        let f_widget_alignment = widget_alignment.to_uppercase();
+        let widget_alignment = widget_alignment.to_uppercase();
 
         // Base keys, all being optional.
         let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(key);
@@ -118,7 +118,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             update_rate,
             tooltip,
             tooltip_command,
-            alignment: structures::Align::from_str(&f_widget_alignment)
+            alignment: structures::Align::from_str(&widget_alignment)
                 .expect("[ERROR] Invalid widget alignment!"),
         };
 
@@ -130,7 +130,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         }
 
         log!(format!(
-            "Adding widget '{identifier}' with alignment '{f_widget_alignment}'!",
+            "Adding widget '{identifier}' with alignment '{widget_alignment}'!",
         ));
 
         // Add the widget.

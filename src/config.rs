@@ -1,14 +1,12 @@
 use crate::{constants::*, environment, math, structures::ConfigData};
 use heapless::Vec;
 use json::JsonValue;
-use lxinfo::info::{self, SystemInfo};
+use lxinfo::info;
 use std::{fs, sync::RwLock};
 
 lazy_static! {
     /// Cached config.
     pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
-    /// Cached system information.
-    pub static ref SYSINFO: Option<SystemInfo> = info::get_system_information();
 }
 
 /// Gets the root home path to Hybrid.
@@ -25,10 +23,12 @@ pub fn get_path() -> String {
 
 /// Returns the set update-rate.
 pub fn get_update_rate() -> u64 {
-    let mut update_rate = 100;
-    if let Some(c_update_rate) = conf!(HYBRID_ROOT_JSON, "update_rate", false, false).number {
-        update_rate = math::clamp_i32(c_update_rate, 5, 10_000)
-    }
+    let update_rate =
+        if let Some(c_update_rate) = conf!(HYBRID_ROOT_JSON, "update_rate", false, false).number {
+            math::clamp_i32(c_update_rate, 5, 10_000)
+        } else {
+            100
+        };
 
     update_rate
         .try_into()

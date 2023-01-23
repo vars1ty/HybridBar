@@ -16,7 +16,7 @@ pub fn update() {
         return;
     }
 
-    // Run `update_cava` closure every 1ms.
+    // Run the `update_cava` closure every 1ms.
     glib::timeout_add_local(Duration::from_millis(1), update_cava);
 }
 

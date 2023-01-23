@@ -103,7 +103,7 @@ The rate for updating labels is read from the labels `update_rate` key (u64).
 
 It's worth noting that low update-rates may lead to performance decreases, the value specified is in **milliseconds**.
 
-**NOTE**: Cava-widgets does __not__ support a custom `update_rate` to be specified, this is to ensure better precision for the animations.
+**NOTE**: Cava widgets do __not__ support a custom `update_rate` to be specified, this is to ensure better precision for the animations.
 
 # Build dependencies
 1. rust

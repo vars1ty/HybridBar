@@ -42,22 +42,25 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let mut expand_right = true;
-    let mut expand_left = true;
-    let mut pos = String::from("Top");
+    let expand_right =
+        if let Some(c_expand_right) = conf!(HYBRID_ROOT_JSON, "expand_right", true, false).string {
+            c_expand_right == "true"
+        } else {
+            true
+        };
 
-    // Check if there's any user-defined values for expand l-r/pos, if there are then sync them.
-    if let Some(c_expand_right) = conf!(HYBRID_ROOT_JSON, "expand_right", true, false).string {
-        expand_right = c_expand_right == "true";
-    }
+    let expand_left =
+        if let Some(c_expand_left) = conf!(HYBRID_ROOT_JSON, "expand_left", true, false).string {
+            c_expand_left == "true"
+        } else {
+            true
+        };
 
-    if let Some(c_expand_left) = conf!(HYBRID_ROOT_JSON, "expand_left", true, false).string {
-        expand_left = c_expand_left == "true";
-    }
-
-    if let Some(c_pos) = conf!(HYBRID_ROOT_JSON, "position", true, false).string {
-        pos = c_pos;
-    }
+    let pos = if let Some(c_pos) = conf!(HYBRID_ROOT_JSON, "position", true, false).string {
+        c_pos
+    } else {
+        "Top".to_owned()
+    };
 
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
         panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.")
@@ -104,10 +107,12 @@ fn activate(application: &Application) {
 
     // Allows for specifing the namespace of the layer.
     // The default is "gtk-layer-shell" to not break existing configs.
-    let mut namespace = String::from("gtk-layer-shell");
-    if let Some(c_namespace) = conf!(HYBRID_ROOT_JSON, "namespace", true, false).string {
-        namespace = c_namespace;
-    }
+    let namespace =
+        if let Some(c_namespace) = conf!(HYBRID_ROOT_JSON, "namespace", true, false).string {
+            c_namespace
+        } else {
+            "gtk-layer-shell".to_owned()
+        };
 
     gtk_layer_shell::set_namespace(&window, &namespace);
 
@@ -140,10 +145,12 @@ fn activate(application: &Application) {
 pub fn load_css() {
     let provider = CssProvider::new();
     // 0.2.8: Allow for defining the name of the stylesheet to look up
-    let mut css_file = String::from(DEFAULT_CSS);
-    if let Some(c_css_file) = conf!(HYBRID_ROOT_JSON, "stylesheet", true, false).string {
-        css_file = c_css_file
-    }
+    let css_file =
+        if let Some(c_css_file) = conf!(HYBRID_ROOT_JSON, "stylesheet", true, false).string {
+            c_css_file
+        } else {
+            DEFAULT_CSS.to_owned()
+        };
 
     let mut css_path = config::get_path();
     css_path.push_str(&css_file);
@@ -182,7 +189,8 @@ async fn main() {
 fn set_visual(window: &ApplicationWindow, screen: Option<&Screen>) {
     if let Some(screen) = screen {
         if let Some(ref visual) = screen.rgba_visual() {
-            window.set_visual(Some(visual)); // crucial for transparency
+            window.set_visual(Some(visual)); // Needed for transparency, not available in GTK 4+ so
+                                             // F.
         }
     }
 }
