@@ -1,8 +1,7 @@
 use crate::{constants::*, environment, math, structures::ConfigData};
-use heapless::Vec;
 use json::JsonValue;
 use lxinfo::info;
-use std::{fs, sync::RwLock};
+use std::{collections::HashMap, fs, sync::RwLock};
 
 lazy_static! {
     /// Cached config.
@@ -23,12 +22,13 @@ pub fn get_path() -> String {
 
 /// Returns the set update-rate.
 pub fn get_update_rate() -> u64 {
-    let update_rate =
-        if let Some(c_update_rate) = conf!(HYBRID_ROOT_JSON, "update_rate", false, false).number {
-            math::clamp_i32(c_update_rate, 5, 10_000)
-        } else {
-            100
-        };
+    let update_rate = math::clamp_i32(
+        conf!(HYBRID_ROOT_JSON, "update_rate", false, false)
+            .number
+            .unwrap_or(100),
+        5,
+        10_000,
+    );
 
     update_rate
         .try_into()
@@ -47,7 +47,8 @@ fn read_config_raw() -> JsonValue {
     conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", DEFAULT_CONFIG));
     json::parse(
         &fs::read_to_string(&conf_path)
-            .unwrap_or_else(|_| panic!("[ERROR] Failed reading config file from '{conf_path}'!")),
+            // Don't panic if the file doesn't exist/couldn't be read. Instead use the example config.
+            .unwrap_or_else(|_| include_str!("../examples/config.json").to_owned()),
     )
     .unwrap_or_else(|_| panic!("[ERROR] Failed parsing config from '{conf_path}'!"))
 }
@@ -83,17 +84,14 @@ pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bo
 }
 
 /// Gets all the custom variables.
-fn get_custom_variables() -> Vec<(String, String), 64> {
+fn get_custom_variables() -> HashMap<String, String> {
     let cfg = &CONFIG.read().unwrap()[HYBRID_V_ROOT_JSON];
-    // 0.3.0: Only allow for 64 variables.
-    let mut vector: Vec<(String, String), 64> = Vec::new();
+    let mut map: HashMap<String, String> = HashMap::new();
     for entry in cfg.entries() {
-        vector
-            .push((entry.0.to_owned(), entry.1.to_string()))
-            .expect("[ERROR] You cannot have more than `64` variables!");
+        map.insert(entry.0.to_owned(), entry.1.to_string());
     }
 
-    vector
+    map
 }
 
 /// Replaces any variable-matching patterns in the `String` with the variables value.

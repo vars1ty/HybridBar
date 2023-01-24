@@ -10,10 +10,10 @@
         "command": "whoami",
         "tooltip": "And here's your kernel: ",
         "tooltip_command": "uname -r",
-        "update_rate": 5000
+        "update_rate": 50000
     },
     "centered-label_centerdummy": {
-        "text": "dummy centered label",
+        "text": "Example Config - Create/Edit yours at ~/.config/HybridBar/config.json",
         "tooltip": "An example of a centered label"
     },
     "right-label_rightdummy": {

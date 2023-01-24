@@ -91,11 +91,12 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
     const ALIGNMENT: char = '-';
     const SEPARATOR: &str = "_";
     let mut has_started_cava = false;
-    for (key, _) in config::CONFIG.read().unwrap().entries() {
-        if !key.contains(ALIGNMENT) || !key.contains(SEPARATOR) {
-            continue;
-        }
+    let conf = config::CONFIG.read().unwrap();
+    let relevant = conf
+        .entries()
+        .filter(|(key, _)| key.contains(ALIGNMENT) && key.contains(SEPARATOR));
 
+    for (key, _) in relevant {
         // Gets the widget identifiers.
         let identifiers = key.split(SEPARATOR).collect::<Vec<&str, 8>>();
 

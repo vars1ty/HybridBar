@@ -14,7 +14,7 @@ impl HWidget for CmdWidget {
 
         // .clone() because otherwise it starts crying about move.
         widget.clone().connect_key_press_event(move |_, key| {
-            let real_key = key.keycode().expect("[ERROR] No keycode retrieved (???)");
+            let real_key = key.keycode().unwrap_or_default();
             // 36 = Enter
             if real_key == 36 {
                 // Could use execute!() but it waits for the process to finish, which we don't

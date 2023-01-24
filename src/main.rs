@@ -56,11 +56,9 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
             true
         };
 
-    let pos = if let Some(c_pos) = conf!(HYBRID_ROOT_JSON, "position", true, false).string {
-        c_pos
-    } else {
-        "Top".to_owned()
-    };
+    let pos = conf!(HYBRID_ROOT_JSON, "position", true, false)
+        .string
+        .unwrap_or_else(|| "Top".to_owned());
 
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
         panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.")
@@ -107,12 +105,9 @@ fn activate(application: &Application) {
 
     // Allows for specifing the namespace of the layer.
     // The default is "gtk-layer-shell" to not break existing configs.
-    let namespace =
-        if let Some(c_namespace) = conf!(HYBRID_ROOT_JSON, "namespace", true, false).string {
-            c_namespace
-        } else {
-            "gtk-layer-shell".to_owned()
-        };
+    let namespace = conf!(HYBRID_ROOT_JSON, "namespace", true, false)
+        .string
+        .unwrap_or_else(|| "gtk-layer-shell".to_owned());
 
     gtk_layer_shell::set_namespace(&window, &namespace);
 
@@ -145,12 +140,9 @@ fn activate(application: &Application) {
 pub fn load_css() {
     let provider = CssProvider::new();
     // 0.2.8: Allow for defining the name of the stylesheet to look up
-    let css_file =
-        if let Some(c_css_file) = conf!(HYBRID_ROOT_JSON, "stylesheet", true, false).string {
-            c_css_file
-        } else {
-            DEFAULT_CSS.to_owned()
-        };
+    let css_file = conf!(HYBRID_ROOT_JSON, "stylesheet", true, false)
+        .string
+        .unwrap_or_else(|| DEFAULT_CSS.to_owned());
 
     let mut css_path = config::get_path();
     css_path.push_str(&css_file);

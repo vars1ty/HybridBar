@@ -8,7 +8,7 @@ use tokio::{
 
 lazy_static! {
     /// Current Cava bars.
-    static ref BARS: Mutex<String> = Mutex::new(String::default());
+    pub static ref BARS: Mutex<String> = Mutex::new(String::default());
     /// Has Cava crashed? If true, don't keep `update_cava` running.
     pub static ref HAS_CAVA_CRASHED: Mutex<bool> = Mutex::new(false);
     /// All active Cava widget instances.
@@ -32,11 +32,6 @@ fn get_bars() -> i32 {
     math::clamp_i32(bars, 2, 16)
 }
 
-/// Returns the current Cava bars.
-pub fn get_current_bars() -> String {
-    BARS.lock().unwrap().to_string()
-}
-
 /// Returns the desired framerate to use for Cava updates.
 fn get_framerate() -> i32 {
     let framerate = conf!(HYBRID_ROOT_JSON, "cava_framerate", false, false)
@@ -52,23 +47,14 @@ pub fn get_temp_config() -> String {
     // 0.2.7: Support for dynamically configuring the temporary config to an extent.
     let bars = get_bars();
     let framerate = get_framerate();
-    file.write_all(
-        format!(
-            r#"
-# Cava Configuration for Hybrid
-[general]
-framerate = {framerate}
-bars = {bars}
-[output]
-method = raw
-raw_target = /dev/stdout
-data_format = ascii
-ascii_max_range = 7
-                   "#,
-        )
-        .as_bytes(),
-    )
-    .expect("[ERROR] Failed writing to the temporary Cava config!");
+    let mut conf = include_str!("../../resources/cava_tmp.conf");
+    let formatted = conf
+        .replace("[framerate]", &framerate.to_string())
+        .replace("[bars]", &bars.to_string());
+
+    conf = &formatted;
+    file.write_all(conf.as_bytes())
+        .expect("[ERROR] Failed writing to the temporary Cava config!");
     path
 }
 
@@ -119,7 +105,9 @@ pub fn update_bars() {
                 }
             };
 
-            *BARS.lock().unwrap() = bars;
+            if *BARS.lock().unwrap() != bars {
+                *BARS.lock().unwrap() = bars;
+            }
         }
     });
 }
