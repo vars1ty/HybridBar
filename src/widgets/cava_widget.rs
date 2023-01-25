@@ -13,8 +13,8 @@ unsafe impl Sync for CavaWidget {}
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for CavaWidget {
-    fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box) {
-        self.label.set_widget_name(&name);
+    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box) {
+        self.label.set_widget_name(name);
         ui::add_and_align(&self.label, align, left, centered, right);
         cava::CAVA_INSTANCES
             .lock()

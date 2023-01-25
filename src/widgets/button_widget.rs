@@ -13,8 +13,8 @@ pub struct ButtonWidget {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for ButtonWidget {
-    fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box) {
-        self.button.set_widget_name(&name);
+    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box) {
+        self.button.set_widget_name(name);
         // 0.2.8: Support tooltips for buttons
         self.button.set_tooltip_markup(Some(&self.tooltip));
 
@@ -26,7 +26,6 @@ impl HWidget for ButtonWidget {
         // If the command isn't empty, subscribe to click events.
         if !self.command.is_empty() {
             self.button.connect_clicked(move |_| {
-                log!(format!("Button '{}' -> Clicked", name));
                 execute!(&self.command);
             });
         }

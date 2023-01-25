@@ -183,7 +183,7 @@ fn add_widget(
                 listen: conf!(key, "listen", true, false).string.unwrap_or_default() == "true",
             };
 
-            label.add(widget_name, alignment, left, centered, right)
+            label.add(&widget_name, alignment, left, centered, right)
         }
         "button" => {
             let button = ButtonWidget {
@@ -193,7 +193,7 @@ fn add_widget(
                 button: Button::with_label(&text),
             };
 
-            button.add(widget_name, alignment, left, centered, right)
+            button.add(&widget_name, alignment, left, centered, right)
         }
         "spacing" => {
             let spacing = SpacingWidget {
@@ -205,14 +205,14 @@ fn add_widget(
                     .unwrap_or_default(),
             };
 
-            spacing.add(widget_name, alignment, left, centered, right)
+            spacing.add(&widget_name, alignment, left, centered, right)
         }
         "box" => {
             let box_widget = BoxWidget {
                 width: conf!(key, "width", false, false).number.unwrap_or_default(),
             };
 
-            box_widget.add(widget_name, alignment, left, centered, right)
+            box_widget.add(&widget_name, alignment, left, centered, right)
         }
         "cava" => {
             let cava = CavaWidget {
@@ -225,9 +225,9 @@ fn add_widget(
                 *has_started_cava = true;
             }
 
-            cava.add(widget_name, alignment, left, centered, right)
+            cava.add(&widget_name, alignment, left, centered, right)
         }
-        "cmd" => CmdWidget.add(widget_name, alignment, left, centered, right),
+        "cmd" => CmdWidget.add(&widget_name, alignment, left, centered, right),
         _ => {
             panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
         }

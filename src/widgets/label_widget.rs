@@ -139,9 +139,9 @@ fn update_from_buffer(label: &Label) {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
-    fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box) {
+    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box) {
         let is_static = self.command.is_empty() || self.update_rate == 0;
-        self.label.set_widget_name(&name);
+        self.label.set_widget_name(name);
         self.label.set_tooltip_markup(Some(&self.tooltip));
         ui::add_and_align(&self.label, align, left, centered, right);
 

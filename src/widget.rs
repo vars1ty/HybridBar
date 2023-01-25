@@ -5,7 +5,7 @@ use std::fmt::Display;
 /// Implements basic traits for custom user-defined widgets.
 pub trait HWidget {
     /// Invoked when the widget should be added.
-    fn add(self, name: String, align: Align, left: &Box, centered: &Box, right: &Box);
+    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box);
 
     /// Label Widget: Tells the label to update content to the specified new content.
     fn update_label_direct(&self, _new_content: &(impl Display + Clone)) {}
