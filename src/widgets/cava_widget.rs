@@ -24,7 +24,7 @@ impl HWidget for CavaWidget {
 
     fn update_label_direct(&self, new_content: &str) {
         // Only redraw if the text wasn't the exact same as final_content.
-        if !self.label.text().eq(new_content) {
+        if self.label.text() != new_content {
             self.label.set_text(new_content)
         }
     }
