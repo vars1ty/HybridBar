@@ -22,7 +22,7 @@ impl HWidget for CavaWidget {
             .expect("[ERROR] You can't have more than `8` Cava widgets per Hybrid config!");
     }
 
-    fn update_label_direct<'a>(&self, new_content: &str) {
+    fn update_label_direct(&self, new_content: &str) {
         // Only redraw if the text wasn't the exact same as final_content.
         if !self.label.text().eq(new_content) {
             self.label.set_text(new_content)
