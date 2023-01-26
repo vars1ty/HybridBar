@@ -229,7 +229,7 @@ fn add_widget(
         }
         "cmd" => CmdWidget.add(widget_name, alignment, left, centered, right),
         _ => {
-            panic!("[ERROR] There are no widgets identified as '{identifier}'!\n")
+            panic!("[ERROR] There is no widget type defined as '{identifier}'!\n")
         }
     }
 }
