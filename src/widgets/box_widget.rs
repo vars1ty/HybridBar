@@ -8,7 +8,7 @@ pub struct BoxWidget {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for BoxWidget {
-    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box) {
+    fn add(self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box) {
         let widget = Box::new(Orientation::Horizontal, 0);
         widget.set_widget_name(name);
         widget.set_width_request(self.width);

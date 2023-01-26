@@ -4,7 +4,7 @@ use gtk::Box;
 /// Implements basic traits for custom user-defined widgets.
 pub trait HWidget {
     /// Invoked when the widget should be added.
-    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box);
+    fn add(self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box);
 
     /// Label Widget: Tells the label to update content to the specified new content.
     fn update_label_direct(&self, _new_content: &str) {}
@@ -13,5 +13,5 @@ pub trait HWidget {
     fn update_label_internal(&self) {}
 
     /// Function dedicated to starting optional loops.
-    fn start_loop(&self) {}
+    fn start_loop(&mut self) {}
 }

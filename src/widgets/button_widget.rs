@@ -1,7 +1,6 @@
 use crate::{aliases::use_aliases, structures::Align, ui, widget::HWidget};
-use glib::GString;
 use gtk::{traits::*, *};
-use std::time::Duration;
+use std::{mem::take, time::Duration};
 
 /// Creates a new button widget.
 pub struct ButtonWidget {
@@ -13,7 +12,7 @@ pub struct ButtonWidget {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for ButtonWidget {
-    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box) {
+    fn add(mut self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box) {
         self.button.set_widget_name(name);
         // 0.2.8: Support tooltips for buttons
         self.button.set_tooltip_markup(Some(&self.tooltip));
@@ -34,25 +33,21 @@ impl HWidget for ButtonWidget {
         log!("Added a new button widget");
     }
 
-    fn start_loop(&self) {
-        let button_clone = self.button.clone();
-        let tooltip_clone = self.tooltip.clone();
-        let tooltip_command_clone = self.tooltip_command.clone();
-        const EMPTY: &str = "";
+    fn start_loop(&mut self) {
+        let button = self.button.clone();
+        let tooltip = take(&mut self.tooltip);
+        let tooltip_command = take(&mut self.tooltip_command);
         let tick = move || {
             let mut new_tooltip = String::default();
-            new_tooltip.push_str(&tooltip_clone);
-            new_tooltip.push_str(&use_aliases(&tooltip_command_clone));
+            new_tooltip.push_str(&tooltip);
+            new_tooltip.push_str(&use_aliases(&tooltip_command));
 
-            let tooltip_markup = button_clone
-                .tooltip_markup()
-                // If the returned value was None, return an empty GString.
-                .unwrap_or_else(|| GString::from(EMPTY));
-
-            if !tooltip_markup.eq(&new_tooltip) {
-                // Markup support here, the user therefore has to deal with any upcoming issues due to
-                // the command output, on their own.
-                button_clone.set_tooltip_markup(Some(&new_tooltip));
+            if let Some(tooltip_markup) = button.tooltip_markup() {
+                if !tooltip_markup.eq(&new_tooltip) {
+                    // Markup support here, the user therefore has to deal with any upcoming issues due to
+                    // the command output, on their own.
+                    button.set_tooltip_markup(Some(&new_tooltip));
+                }
             }
 
             glib::Continue(true)

@@ -3,7 +3,7 @@ use crate::{
 };
 use glib::GString;
 use gtk::{traits::*, *};
-use std::{process::Stdio, sync::RwLock, time::Duration};
+use std::{mem::take, process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -58,15 +58,15 @@ fn begin_listen(cmd: String) {
 }
 
 /// Starts updating the dynamic tooltip, if any.
-fn start_tooltip_loop(label_ref: &LabelWidget) {
+fn start_tooltip_loop(label_ref: &mut LabelWidget) {
     if label_ref.tooltip_command.is_empty() {
         // Not eligible, cancel.
         return;
     }
 
-    let label = label_ref.label.to_owned();
-    let tooltip = label_ref.tooltip.to_owned();
-    let tooltip_command = label_ref.tooltip_command.to_owned();
+    let label = label_ref.label.clone();
+    let tooltip = take(&mut label_ref.tooltip);
+    let tooltip_command = take(&mut label_ref.tooltip_command);
 
     const EMPTY: &str = "";
     let tick = move || {
@@ -139,14 +139,14 @@ fn update_from_buffer(label: &Label) {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
-    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box) {
+    fn add(mut self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box) {
         let is_static = self.command.is_empty() || self.update_rate == 0;
         self.label.set_widget_name(name);
         self.label.set_tooltip_markup(Some(&self.tooltip));
         ui::add_and_align(&self.label, align, left, centered, right);
 
         if self.listen {
-            begin_listen(self.command.to_owned());
+            begin_listen(take(&mut self.command));
         }
 
         self.start_loop();
@@ -156,18 +156,17 @@ impl HWidget for LabelWidget {
         }
 
         log!(format!(
-            "Added a new label widget named '{name}', static: {}",
-            is_static
+            "Added a new label widget named '{name}', static: {is_static}"
         ));
     }
 
-    fn start_loop(&self) {
+    fn start_loop(&mut self) {
         // Start loops.
         start_tooltip_loop(self);
         start_label_loop(
-            self.label.to_owned(),
-            self.text.to_owned(),
-            self.command.to_owned(),
+            take(&mut self.label),
+            take(&mut self.text),
+            take(&mut self.command),
             self.update_rate,
             self.listen,
         );

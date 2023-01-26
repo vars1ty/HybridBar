@@ -17,7 +17,7 @@ pub fn get_path() -> String {
         execute!("whoami")
     };
 
-    format!("/home/{}/.config/HybridBar/", username)
+    format!("/home/{username}/.config/HybridBar/")
 }
 
 /// Returns the set update-rate.

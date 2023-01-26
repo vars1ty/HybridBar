@@ -9,7 +9,7 @@ pub struct SpacingWidget {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for SpacingWidget {
-    fn add<'a>(self, name: &'a str, align: Align, left: &Box, centered: &Box, right: &Box) {
+    fn add(self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box) {
         let widget = Box::new(Orientation::Horizontal, 0);
         // 0.2.2: Allow for named spacings
         widget.set_widget_name(name);
