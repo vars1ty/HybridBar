@@ -1,3 +1,5 @@
+#![no_main]
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -159,6 +161,7 @@ pub fn load_css() {
 }
 
 /// Called upon application startup.
+#[no_mangle]
 #[tokio::main]
 async fn main() {
     log!("Caching config...");
