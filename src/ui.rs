@@ -180,7 +180,7 @@ fn add_widget(
                 text,
                 command,
                 label: Label::new(None),
-                listen: conf!(key, "listen", true, false).string.unwrap_or_default() == "true",
+                listen: conf_bool!(key, "listen", false),
             };
 
             label.add(widget_name, alignment, left, centered, right)

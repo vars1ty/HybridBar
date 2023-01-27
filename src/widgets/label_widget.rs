@@ -1,7 +1,6 @@
 use crate::{
     aliases::use_aliases, config, constants::PROC_TARGET, structures::Align, ui, widget::HWidget,
 };
-use glib::GString;
 use gtk::{traits::*, *};
 use std::{mem::take, process::Stdio, sync::RwLock, time::Duration};
 use tokio::{
@@ -67,21 +66,17 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
     let label = label_ref.label.clone();
     let tooltip = take(&mut label_ref.tooltip);
     let tooltip_command = take(&mut label_ref.tooltip_command);
-
-    const EMPTY: &str = "";
     let tick = move || {
         let mut new_tooltip = String::default();
         new_tooltip.push_str(&tooltip);
         new_tooltip.push_str(&use_aliases(&tooltip_command));
 
-        let tooltip_markup = label
-            .tooltip_markup()
-            .unwrap_or_else(|| GString::from(EMPTY));
-
-        if !tooltip_markup.eq(&new_tooltip) {
-            // Markup support here, the user therefore has to deal with any upcoming issues due to
-            // the command output, on their own.
-            label.set_tooltip_markup(Some(&new_tooltip));
+        if let Some(tooltip_markup) = label.tooltip_markup() {
+            if !tooltip_markup.eq(&new_tooltip) {
+                // Markup support here, the user therefore has to deal with any upcoming issues due to
+                // the command output, on their own.
+                label.set_tooltip_markup(Some(&new_tooltip));
+            }
         }
 
         glib::Continue(true)

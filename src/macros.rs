@@ -40,3 +40,14 @@ macro_rules! conf {
         $crate::config::try_get($root, $key, $is_string, $with_custom_variables)
     };
 }
+
+#[macro_export]
+macro_rules! conf_bool {
+    ($root:expr, $key:expr, $default:expr) => {
+        if let Some(res) = conf!($root, $key, true, false).string {
+            res == "true"
+        } else {
+            $default
+        }
+    };
+}

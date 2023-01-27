@@ -30,6 +30,8 @@ mod structures;
 mod ui;
 mod widget;
 
+use std::path::Path;
+
 use constants::*;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;
@@ -42,19 +44,8 @@ use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let expand_right =
-        if let Some(c_expand_right) = conf!(HYBRID_ROOT_JSON, "expand_right", true, false).string {
-            c_expand_right == "true"
-        } else {
-            true
-        };
-
-    let expand_left =
-        if let Some(c_expand_left) = conf!(HYBRID_ROOT_JSON, "expand_left", true, false).string {
-            c_expand_left == "true"
-        } else {
-            true
-        };
+    let expand_left = conf_bool!(HYBRID_ROOT_JSON, "expand_left", true);
+    let expand_right = conf_bool!(HYBRID_ROOT_JSON, "expand_right", true);
 
     let pos = conf!(HYBRID_ROOT_JSON, "position", true, false)
         .string
@@ -99,9 +90,10 @@ fn activate(application: &Application) {
     // Allows for writing in input fields if the value is true.
     // This is false by default since it's stealing focus until you focus a different application,
     // which may trigger some users.
-    if let Some(c_allow_keyboard) = conf!(HYBRID_ROOT_JSON, "allow_keyboard", true, false).string {
-        gtk_layer_shell::set_keyboard_interactivity(&window, c_allow_keyboard == "true");
-    }
+    gtk_layer_shell::set_keyboard_interactivity(
+        &window,
+        conf_bool!(HYBRID_ROOT_JSON, "allow_keyboard", false),
+    );
 
     // Allows for specifing the namespace of the layer.
     // The default is "gtk-layer-shell" to not break existing configs.
@@ -147,9 +139,16 @@ pub fn load_css() {
     let mut css_path = config::get_path();
     css_path.push_str(&css_file);
 
-    provider
-        .load_from_path(&css_path)
-        .unwrap_or_else(|_| panic!("[ERROR] Failed loading CSS from '{css_file}'!"));
+    if Path::new(&css_file).is_file() {
+        provider
+            .load_from_path(&css_path)
+            .unwrap_or_else(|_| panic!("[ERROR] Failed loading CSS from '{css_file}'!"))
+    } else {
+        provider
+            .load_from_data(include_bytes!("../examples/style.css"))
+            .unwrap_or_else(|_| panic!("[ERROR] Failed loading example CSS!"));
+        log!("No custom stylesheet was found, using ../examples/style.css")
+    }
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(
