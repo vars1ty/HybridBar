@@ -1,5 +1,6 @@
 use crate::{
     cava::{self, BARS, HAS_CAVA_CRASHED},
+    constants::HYBRID_ROOT_JSON,
     widget::HWidget,
 };
 use glib::Continue;
@@ -15,8 +16,17 @@ pub fn update() {
         return;
     }
 
-    // Run the `update_cava` closure every 1ms.
-    glib::timeout_add_local(Duration::from_millis(1), update_cava);
+    // Run the `update_cava` closure every x ms.
+    glib::timeout_add_local(
+        Duration::from_millis(
+            conf!(HYBRID_ROOT_JSON, "cava_update_rate", false, false)
+                .number
+                .unwrap_or(1)
+                .try_into()
+                .unwrap(),
+        ),
+        update_cava,
+    );
 }
 
 /// Updates all Cava widgets.

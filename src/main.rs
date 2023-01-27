@@ -32,8 +32,6 @@ mod structures;
 mod ui;
 mod widget;
 
-use std::path::Path;
-
 use constants::*;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;
@@ -42,6 +40,7 @@ use gtk::*;
 use gtk_layer_shell::Edge;
 use json::JsonValue;
 use label_widget::LabelWidget;
+use std::path::Path;
 use widget::HWidget;
 
 /// Gets the anchors.

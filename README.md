@@ -79,6 +79,7 @@ Here's an example:
 ```json
 {
     "hybrid": {
+        "namespace": "hybrid-bar",
         "r": 10,
         "g": 10,
         "b": 10,

@@ -42,6 +42,8 @@ macro_rules! conf {
 }
 
 #[macro_export]
+/// Gets a `bool` value from the config.
+/// If there is no value assigned, the value from `default` is returned.
 macro_rules! conf_bool {
     ($root:expr, $key:expr, $default:expr) => {
         if let Some(res) = conf!($root, $key, true, false).string {

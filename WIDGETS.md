@@ -35,6 +35,7 @@ Keys Supported:
 `cava`:
 
 Keys Supported:
+- Shared: `hybrid` -> `cava_update_rate`: u64
 - Shared: `hybrid` -> `cava_sed`: String
 - Shared: `hybrid` -> `cava_bars`: i32
 - Shared: `hybrid` -> `cava_framerate`: i32

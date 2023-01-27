@@ -1,6 +1,6 @@
 # FAQ
 - Can I hot-reload my changes?
-  - No, there's no built-in support for this. What you can do though is make a button on your bar and set the command as: `killall -I hybrid-bar -9 && hybrid-bar` - Which kills the bar and starts it again, acting as hot-reload.
+  - No, there's no built-in support for this.
 
 - Are PRs accepted?
   - Yeah, as long as they follow the existing code structure and don't introduce breaking changes without a really good reason as to why it's needed.
@@ -28,7 +28,7 @@
   - Because if you for say, focus a window with some special characters and it's being drawn in markup, it'll freak out. I might be able to fix it later on, but for now it's not happening.
 
 - I want to add widgets at runtime
-  - Not possible for now, what you can do instead as a workaround is to read the `hot-reload` part and implement that when you add new widgets through some script or whatever.
+  - Not possible for the time being.
 
 - I'm tired of repeating long commands in the JSON, can variables be added?
   - **Available since 0.2.9**
@@ -44,7 +44,7 @@
   - Then you either lack a functional brain, or you are the definition of lazy.
 
 - Can I make the bar not take up my entire top/bottom part of the screen?
-  - Yes, read `Can I split the bar into sections, like with Waybar and/or eww?`.
+  - To an extent yeah, read `Can I split the bar into sections, like with Waybar and/or eww?`.
 
 - Is there support for distros other than Arch?
   - Hybrid should work on every distro, only difference being that I won't officially ship it to anything but the AUR Repo and on GitHub Releases.
