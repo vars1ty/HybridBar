@@ -7,7 +7,8 @@ pub trait HWidget {
     fn add(self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box);
 
     /// Label Widget: Tells the label to update content to the specified new content.
-    fn update_label_direct(&self, _new_content: &str) {}
+    #[allow(unused_variables)]
+    fn update_label_direct(&self, new_content: &str) {}
 
     /// Label Widget: Tells the label to update with custom-defined behavior, for example from a local buffer.
     fn update_label_internal(&self) {}
