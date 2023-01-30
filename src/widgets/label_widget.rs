@@ -2,7 +2,7 @@ use crate::{
     aliases::use_aliases, config, constants::PROC_TARGET, structures::Align, ui, widget::HWidget,
 };
 use gtk::{traits::*, *};
-use std::{mem::take, process::Stdio, sync::RwLock, time::Duration};
+use std::{mem::take, process::Stdio, sync::Mutex, time::Duration};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -11,7 +11,7 @@ use tokio::{
 
 lazy_static! {
     /// Current text buffer from `stdout`.
-    static ref BUFFER: RwLock<String> = RwLock::new(String::default());
+    static ref BUFFER: Mutex<String> = Mutex::new(String::default());
 }
 
 /// Creates a new label widget.
@@ -45,7 +45,7 @@ fn begin_listen(cmd: String) {
         let mut reader = BufReader::new(out).lines();
         let update_rate = config::get_update_rate();
         loop {
-            *BUFFER.write().unwrap() = reader
+            *BUFFER.lock().unwrap() = reader
                 .next_line()
                 .await
                 .expect("[ERROR] There are no more lines available!")
@@ -116,7 +116,7 @@ fn start_label_loop(label: Label, text: String, command: String, update_rate: u6
 
 /// Updates the labels content with the string from `BUFFER`.
 fn update_from_buffer(label: &Label) {
-    if let Ok(new_content) = BUFFER.read() {
+    if let Ok(new_content) = BUFFER.lock() {
         let old_content = label.text();
         // eq-check the new content for old_content. Doing the opposite requires a .to_string()
         // call.
