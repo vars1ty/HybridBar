@@ -140,7 +140,7 @@ pub fn load_css() {
     let mut css_path = config::get_path();
     css_path.push_str(&css_file);
 
-    if Path::new(&css_file).is_file() {
+    if Path::new(&css_path).is_file() {
         provider
             .load_from_path(&css_path)
             .unwrap_or_else(|_| panic!("[ERROR] Failed loading CSS from '{css_file}'!"))

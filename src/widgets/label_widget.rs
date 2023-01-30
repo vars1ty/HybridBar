@@ -141,7 +141,7 @@ impl HWidget for LabelWidget {
         ui::add_and_align(&self.label, align, left, centered, right);
 
         if self.listen {
-            begin_listen(take(&mut self.command));
+            begin_listen(self.command.to_owned());
         }
 
         self.start_loop();
@@ -159,7 +159,7 @@ impl HWidget for LabelWidget {
         // Start loops.
         start_tooltip_loop(self);
         start_label_loop(
-            take(&mut self.label),
+            self.label.to_owned(),
             take(&mut self.text),
             take(&mut self.command),
             self.update_rate,
