@@ -30,9 +30,7 @@ pub fn get_update_rate() -> u64 {
         10_000,
     );
 
-    update_rate
-        .try_into()
-        .expect("[ERROR] Cannot convert update_rate into u64!")
+    update_rate.try_into().expect(ERR_PARSE_UPDATE_RATE)
 }
 
 /// Caches the config so we don't have to re-parse it every time.

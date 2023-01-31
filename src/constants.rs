@@ -12,3 +12,37 @@ pub const DEFAULT_CSS: &str = "style.css";
 pub const DEFAULT_CONFIG: &str = "config.json";
 /// Cava temporary config path.
 pub const CAVA_TMP_CONFIG: &str = "/tmp/cava_tmp_hybrid.conf";
+
+// Constant errors.
+
+pub const ERR_PARSE_CAVA_UPDATE_RATE: &str =
+    "[ERROR] hybrid:cava_update_rate couldn't be parsed into a 64-bit unsigned integer (u64)!";
+pub const ERR_PARSE_UPDATE_RATE: &str = "[ERROR] Cannot convert update_rate into u64!";
+pub const ERR_ACCESS_CAVA_INSTANCES: &str = "[ERROR] Cannot access ui::CAVA_INSTANCES!";
+pub const ERR_INVALID_POS: &str =
+    "[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.";
+pub const ERR_GET_DISPLAY: &str =
+    "[ERROR] Couldn't find a valid display, is your compositor doing alright?";
+pub const ERR_GET_MONITOR: &str = "[ERROR] Couldn't find a valid monitor.";
+pub const ERR_SCREEN_DEFAULT: &str = "[ERROR] Couldn't find a valid screen!";
+pub const ERR_LOAD_SAMPLE_CSS: &str = "[ERROR] Failed loading the example stylesheet!";
+pub const ERR_CUSTOM_DRAW: &str =
+    "[ERROR] Failed drawing Hybrid using custom color sources, which is needed for transparency!";
+pub const ERR_INVALID_WIDGET_FORMAT: &str =
+    "[ERROR] Widgets should be named as [alignment]-[widget_type]_[name]";
+pub const ERR_EMPTY_NAME: &str =
+    "[ERROR] Found an empty widget name, this is not currently supported!";
+pub const ERR_INVALID_ALIGNMENT: &str =
+    "[ERROR] Invalid widget alignment! Valid values are: [ left, centered, right ]";
+pub const ERR_TAKE_STDOUT: &str = "[ERROR] Cannot take stdout from child process!";
+pub const ERR_NO_LINES: &str = "[ERROR] There are no more lines available!";
+pub const ERR_STRING_NONE: &str = "[ERROR] The string value is None!";
+pub const ERR_NO_LXINFO: &str =
+    "System Info isn't available for this system, therefore aliases have been disabled.";
+pub const ERR_CREATE_TMP_CONF: &str = "[ERROR] Couldn't create the temporary Cava config!";
+pub const ERR_WRITE_TMP_CONF: &str = "[ERROR] Failed writing to the temporary Cava config!";
+pub const ERR_START_CAVA: &str = "[ERROR] Cannot start Cava script!";
+
+// Constant warnings.
+
+pub const WARN_CAVA_NO_LINES: &str = "[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!";

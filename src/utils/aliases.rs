@@ -1,5 +1,7 @@
 use lxinfo::info;
 
+use crate::constants::ERR_NO_LXINFO;
+
 /// Replaces `find` with `replace` if found.
 fn replace_if_present(content: &mut String, find: &str, replace: &str, found_any: &mut bool) {
     if content.contains(find) {
@@ -49,7 +51,7 @@ pub fn use_aliases(content: &str) -> String {
 
         content
     } else {
-        log!("System Info isn't available for this system, therefore aliases have been disabled.");
+        log!(ERR_NO_LXINFO);
         execute!(content)
     }
 }

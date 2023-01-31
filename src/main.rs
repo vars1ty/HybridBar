@@ -53,7 +53,7 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
         .unwrap_or_else(|| "Top".to_owned());
 
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
-        panic!("[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.")
+        panic!("{}", ERR_INVALID_POS)
     }
 
     // If the position was valid, return the result.
@@ -105,8 +105,7 @@ fn activate(application: &Application) {
     gtk_layer_shell::set_namespace(&window, &namespace);
 
     // Initialize gdk::Display by default value, which is decided by the compositor.
-    let display = Display::default()
-        .expect("[ERROR] Could not get default display, is your compositor doing okay?");
+    let display = Display::default().expect(ERR_GET_DISPLAY);
 
     // Loads the monitor variable from config, default is 0.
     let config_monitor = conf!(HYBRID_ROOT_JSON, "monitor", false, false)
@@ -114,9 +113,7 @@ fn activate(application: &Application) {
         .unwrap_or_default();
 
     // Gets the actual gdk::Monitor from configured number.
-    let monitor = display
-        .monitor(config_monitor)
-        .expect("[ERROR] Could not find a valid monitor.");
+    let monitor = display.monitor(config_monitor).expect(ERR_GET_MONITOR);
 
     // Sets which monitor should be used for the bar.
     gtk_layer_shell::set_monitor(&window, &monitor);
@@ -147,13 +144,13 @@ pub fn load_css() {
     } else {
         provider
             .load_from_data(include_bytes!("../examples/style.css"))
-            .unwrap_or_else(|_| panic!("[ERROR] Failed loading example CSS!"));
+            .unwrap_or_else(|_| panic!("{}", ERR_LOAD_SAMPLE_CSS));
         log!("No custom stylesheet was found, using ../examples/style.css")
     }
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_screen(
-        &Screen::default().expect("[ERROR] Couldn't find any valid displays!"),
+        &Screen::default().expect(ERR_SCREEN_DEFAULT),
         &provider,
         STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
@@ -216,6 +213,6 @@ fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
     // Apply
     ctx.set_source_rgba(r, g, b, a);
     ctx.set_operator(cairo::Operator::Screen);
-    ctx.paint().expect("[ERROR] Failed painting!");
+    ctx.paint().expect(ERR_CUSTOM_DRAW);
     Inhibit(false)
 }

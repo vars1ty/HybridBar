@@ -1,4 +1,4 @@
-use crate::{cava, structures::Align, ui, widget::HWidget};
+use crate::{cava, constants::ERR_ACCESS_CAVA_INSTANCES, structures::Align, ui, widget::HWidget};
 use gtk::{traits::*, *};
 
 /// Creates a new label widget.
@@ -17,9 +17,8 @@ impl HWidget for CavaWidget {
         ui::add_and_align(&self.label, align, left, centered, right);
         cava::CAVA_INSTANCES
             .lock()
-            .expect("[ERROR] Couldn't access ui::CAVA_INSTANCES!")
-            .push(self)
-            .expect("[ERROR] You can't have more than `8` Cava widgets per Hybrid config!");
+            .expect(ERR_ACCESS_CAVA_INSTANCES)
+            .push(self);
     }
 
     fn update_label_direct(&self, new_content: &str) {

@@ -1,6 +1,6 @@
 use crate::{
     cava::{self, BARS, HAS_CAVA_CRASHED},
-    constants::HYBRID_ROOT_JSON,
+    constants::{ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, HYBRID_ROOT_JSON},
     widget::HWidget,
 };
 use glib::Continue;
@@ -11,7 +11,7 @@ pub fn update() {
     // Only start the tick-loop if there are actually Cava widgets available.
     let widgets = cava::CAVA_INSTANCES
         .lock()
-        .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!");
+        .expect(ERR_ACCESS_CAVA_INSTANCES);
     if widgets.is_empty() {
         return;
     }
@@ -23,7 +23,7 @@ pub fn update() {
                 .number
                 .unwrap_or(1)
                 .try_into()
-                .unwrap(),
+                .unwrap_or_else(|_| panic!("{}", ERR_PARSE_CAVA_UPDATE_RATE)),
         ),
         update_cava,
     );
@@ -35,7 +35,7 @@ fn update_cava() -> Continue {
     // Loop through all Cava widget instances and sync the text.
     let widgets = cava::CAVA_INSTANCES
         .lock()
-        .expect("[ERROR] Cannot access ui::CAVA_INSTANCES!");
+        .expect(ERR_ACCESS_CAVA_INSTANCES);
     let widgets = widgets.iter();
     for widget in widgets {
         widget.update_label_direct(bars);

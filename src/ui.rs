@@ -106,7 +106,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         // Grabs widget alignment and widget type from the identifier separated by '-'.
         let (widget_alignment, widget_type) = identifier
             .split_once(ALIGNMENT)
-            .expect("[ERROR] Widgets should be named as [alignment]-[widget_type]_[name]");
+            .expect(ERR_INVALID_WIDGET_FORMAT);
 
         // Formats the widget alignment.
         let widget_alignment = widget_alignment.to_uppercase();
@@ -119,15 +119,14 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             update_rate,
             tooltip,
             tooltip_command,
-            alignment: structures::Align::from_str(&widget_alignment)
-                .expect("[ERROR] Invalid widget alignment!"),
+            alignment: structures::Align::from_str(&widget_alignment).expect(ERR_INVALID_ALIGNMENT),
         };
 
         // Gets every element after the widget identifier, then appends '_' in between.
         let widget_name = identifiers[1..].join(SEPARATOR).to_owned();
 
         if widget_name.is_empty() {
-            panic!("[ERROR] Found an empty widget name, this is not currently supported!")
+            panic!("{}", ERR_EMPTY_NAME)
         }
 
         log!(format!(

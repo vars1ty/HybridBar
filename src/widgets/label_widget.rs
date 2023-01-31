@@ -1,5 +1,10 @@
 use crate::{
-    aliases::use_aliases, config, constants::PROC_TARGET, structures::Align, ui, widget::HWidget,
+    aliases::use_aliases,
+    config,
+    constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
+    structures::Align,
+    ui,
+    widget::HWidget,
 };
 use gtk::{traits::*, *};
 use std::{mem::take, process::Stdio, sync::Mutex, time::Duration};
@@ -37,10 +42,7 @@ fn begin_listen(cmd: String) {
             .spawn()
             .unwrap_or_else(|_| panic!("[ERROR] Cannot start '{cmd}'!"));
 
-        let out = child
-            .stdout
-            .take()
-            .expect("[ERROR] Cannot take stdout from child process!");
+        let out = child.stdout.take().expect(ERR_TAKE_STDOUT);
 
         let mut reader = BufReader::new(out).lines();
         let update_rate = config::get_update_rate();
@@ -48,8 +50,8 @@ fn begin_listen(cmd: String) {
             *BUFFER.lock().unwrap() = reader
                 .next_line()
                 .await
-                .expect("[ERROR] There are no more lines available!")
-                .expect("[ERROR] The string value is None!");
+                .expect(ERR_NO_LINES)
+                .expect(ERR_STRING_NONE);
 
             tokio::time::sleep(Duration::from_millis(update_rate)).await;
         }

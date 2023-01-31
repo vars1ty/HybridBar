@@ -12,7 +12,7 @@ lazy_static! {
     /// Has Cava crashed? If true, don't keep `update_cava` running.
     pub static ref HAS_CAVA_CRASHED: Mutex<bool> = Mutex::new(false);
     /// All active Cava widget instances.
-    pub static ref CAVA_INSTANCES: Mutex<heapless::Vec<CavaWidget, 8>> = Mutex::new(heapless::Vec::new());
+    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget>> = Mutex::new(Vec::new());
 }
 
 /// Gets the sed to use for Cava.
@@ -43,7 +43,7 @@ fn get_framerate() -> i32 {
 /// Builds the temporary Cava configuration and then returns the path to it,
 pub fn get_temp_config() -> String {
     let path = String::from(CAVA_TMP_CONFIG);
-    let mut file = File::create(&path).expect("[ERROR] Couldn't create the temporary Cava config!");
+    let mut file = File::create(&path).expect(ERR_CREATE_TMP_CONF);
     // 0.2.7: Support for dynamically configuring the temporary config to an extent.
     let bars = get_bars();
     let framerate = get_framerate();
@@ -53,8 +53,7 @@ pub fn get_temp_config() -> String {
         .replace("[bars]", &bars.to_string());
 
     conf = &formatted;
-    file.write_all(conf.as_bytes())
-        .expect("[ERROR] Failed writing to the temporary Cava config!");
+    file.write_all(conf.as_bytes()).expect(ERR_WRITE_TMP_CONF);
     path
 }
 
@@ -70,12 +69,9 @@ pub fn update_bars() {
             .stdout(Stdio::piped())
             .kill_on_drop(true)
             .spawn()
-            .expect("[ERROR] Cannot start Cava script!");
+            .expect(ERR_START_CAVA);
 
-        let out = child
-            .stdout
-            .take()
-            .expect("[ERROR] Cannot take stdout from child process!");
+        let out = child.stdout.take().expect(ERR_TAKE_STDOUT);
 
         // Drop to free the resources as we don't need to access them anymore.
         drop(sed);
@@ -90,7 +86,7 @@ pub fn update_bars() {
                         Err(_) => {
                             *HAS_CAVA_CRASHED.lock().unwrap() = true;
                             BARS.lock().unwrap().clear();
-                            panic!("[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!")
+                            panic!("{}", WARN_CAVA_NO_LINES)
                         }
                     }
                 };
@@ -100,7 +96,7 @@ pub fn update_bars() {
                     None => {
                         *HAS_CAVA_CRASHED.lock().unwrap() = true;
                         BARS.lock().unwrap().clear();
-                        panic!("[WARN] Cava: The string value is None, Hybrid will keep on running but Cava will be stopped!")
+                        panic!("{}", WARN_CAVA_NO_LINES)
                     }
                 }
             };
