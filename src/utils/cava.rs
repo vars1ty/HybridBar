@@ -101,8 +101,8 @@ pub fn update_bars() {
                 }
             };
 
-            if *BARS.lock().unwrap() != bars {
-                *BARS.lock().unwrap() = bars;
+            if let Ok(mut r_bars) = BARS.lock() {
+                *r_bars = bars;
             }
         }
     });

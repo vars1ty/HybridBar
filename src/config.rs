@@ -5,7 +5,7 @@ use std::{collections::HashMap, fs, sync::RwLock};
 
 lazy_static! {
     /// Cached config.
-    pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(JsonValue::Null);
+    pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(read_config_raw());
 }
 
 /// Gets the root home path to Hybrid.
@@ -33,13 +33,7 @@ pub fn get_update_rate() -> u64 {
     update_rate.try_into().expect(ERR_PARSE_UPDATE_RATE)
 }
 
-/// Caches the config so we don't have to re-parse it every time.
-/// Works as a fix for issue #13
-pub fn cache() {
-    *CONFIG.write().unwrap() = read_config_raw();
-}
-
-/// Parses and returns the config.
+// Parses and returns the config.
 fn read_config_raw() -> JsonValue {
     let mut conf_path = get_path();
     conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", DEFAULT_CONFIG));

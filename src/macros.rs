@@ -12,11 +12,6 @@ macro_rules! log {
 /// Executes a bash command and outputs it to `result`.
 macro_rules! execute {
     ($cmd:expr) => {{
-        if $cmd.is_empty() {
-            // Return a stack-allocated string containing no content.
-            drop(heapless::String::<0>::default());
-        }
-
         let mut result = String::from_utf8_lossy(
             &std::process::Command::new($crate::constants::PROC_TARGET)
                 .args(["-c", $cmd])

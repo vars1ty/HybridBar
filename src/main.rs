@@ -160,8 +160,6 @@ pub fn load_css() {
 #[no_mangle]
 #[tokio::main]
 async fn main() {
-    log!("Caching config...");
-    config::cache();
     log!("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
     log!("Loading CSS...");
