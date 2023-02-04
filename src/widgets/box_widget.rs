@@ -53,7 +53,7 @@ fn build_child_widgets(
 
         // Add the widget.
         ui::add_widget(
-            key,
+            json,
             (widget_type, widget_name),
             base_keys,
             (left, centered, right),

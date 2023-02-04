@@ -99,7 +99,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 
     for (key, json) in relevant {
         // Gets the widget identifiers.
-        let identifiers = key.split(SEPARATOR).collect::<Vec<&str>>();
+        let identifiers: Vec<_> = key.split(SEPARATOR).collect();
 
         // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
         let identifier = identifiers[0];
@@ -136,7 +136,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 
         // Add the widget.
         add_widget(
-            key,
+            json,
             (widget_type, &widget_name),
             base_keys,
             (left, centered, right),
@@ -148,7 +148,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 
 /// Add a new widget of specified identifier.
 pub fn add_widget(
-    key: &str,
+    key: &JsonValue,
     widget_pkg: (&str, &str),
     base_keys: BaseKeys,
     left_centered_right: (&Box, &Box, &Box),
@@ -178,7 +178,7 @@ pub fn add_widget(
                 text,
                 command,
                 label: Label::new(None),
-                listen: conf_bool!(key, "listen", false),
+                listen: key["listen"].as_bool().unwrap_or_default(),
             };
 
             label.add(widget_name, alignment, left, centered, right, box_holder)
@@ -195,20 +195,16 @@ pub fn add_widget(
         }
         "spacing" => {
             let spacing = SpacingWidget {
-                spacing_start: conf!(key, "spacing_start", false, false)
-                    .number
-                    .unwrap_or_default(),
-                spacing_end: conf!(key, "spacing_end", false, false)
-                    .number
-                    .unwrap_or_default(),
+                spacing_start: key["spacing_start"].as_i32().unwrap_or_default(),
+                spacing_end: key["spacing_end"].as_i32().unwrap_or_default(),
             };
 
             spacing.add(widget_name, alignment, left, centered, right, box_holder)
         }
         "box" => {
             let box_widget = BoxWidget {
-                width: conf!(key, "width", false, false).number.unwrap_or_default(),
-                widgets: config::CONFIG.read().unwrap()[key]["widgets"].to_owned(),
+                width: key["width"].as_i32().unwrap_or_default(),
+                widgets: key["widgets"].to_owned(),
             };
 
             box_widget.add(widget_name, alignment, left, centered, right, box_holder)
