@@ -1,6 +1,6 @@
 use lxinfo::info;
 
-use crate::constants::ERR_NO_LXINFO;
+use crate::{config::with_variables, constants::ERR_NO_LXINFO};
 
 /// Replaces `find` with `replace` if found.
 fn replace_if_present(content: &mut String, find: &str, replace: &str, found_any: &mut bool) {
@@ -46,12 +46,12 @@ pub fn use_aliases(content: &str) -> String {
 
         if !found_any {
             // Couldn't find any aliases present, run execute.
-            return execute!(&content);
+            return execute!(&with_variables(content));
         }
 
         content
     } else {
         log!(ERR_NO_LXINFO);
-        execute!(content)
+        execute!(&with_variables(content.to_owned()))
     }
 }

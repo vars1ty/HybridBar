@@ -1,6 +1,6 @@
 use crate::{
     aliases::use_aliases,
-    config,
+    config::{self, with_variables},
     constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
     structures::Align,
     ui,
@@ -70,7 +70,7 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
     let tooltip_command = take(&mut label_ref.tooltip_command);
     let tick = move || {
         let mut new_tooltip = String::default();
-        new_tooltip.push_str(&tooltip);
+        new_tooltip.push_str(&with_variables(tooltip.to_owned()));
         new_tooltip.push_str(&use_aliases(&tooltip_command));
 
         if let Some(tooltip_markup) = label.tooltip_markup() {
@@ -98,7 +98,7 @@ fn start_label_loop(label: Label, text: String, command: String, update_rate: u6
     let tick = move || {
         if !listen {
             let mut new_text = String::default();
-            new_text.push_str(&text);
+            new_text.push_str(&with_variables(text.to_owned()));
             new_text.push_str(&use_aliases(&command));
 
             if !label.text().eq(&new_text) {
@@ -147,7 +147,8 @@ impl HWidget for LabelWidget {
     ) {
         let is_static = self.command.is_empty() || self.update_rate == 0;
         self.label.set_widget_name(name);
-        self.label.set_tooltip_markup(Some(&self.tooltip));
+        self.label
+            .set_tooltip_markup(Some(&with_variables(self.tooltip.to_owned())));
         ui::add_and_align(&self.label, align, left, centered, right, box_holder);
 
         if self.listen {

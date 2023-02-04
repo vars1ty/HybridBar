@@ -76,7 +76,7 @@ pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bo
 }
 
 /// Gets all the custom variables.
-fn get_custom_variables() -> HashMap<String, String> {
+pub fn get_custom_variables() -> HashMap<String, String> {
     let cfg = &CONFIG.read().unwrap()[HYBRID_V_ROOT_JSON];
     let mut map: HashMap<String, String> = HashMap::new();
     for entry in cfg.entries() {
@@ -87,7 +87,7 @@ fn get_custom_variables() -> HashMap<String, String> {
 }
 
 /// Replaces any variable-matching patterns in the `String` with the variables value.
-fn with_variables(input: String) -> String {
+pub fn with_variables(input: String) -> String {
     let mut input = input;
     for variable in get_custom_variables() {
         // Only replace if `result` actually contains the defined variable.

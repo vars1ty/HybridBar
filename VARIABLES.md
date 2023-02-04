@@ -26,6 +26,3 @@ Then the text will automatically be replaced with the value from `cool_message`.
 - `text`
 - `command`
 - `tooltip`
-
-## Limitations
-There's only one limitation with variables: Tooltip commands do not currently support variables.
