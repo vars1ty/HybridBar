@@ -136,11 +136,19 @@ fn update_from_buffer(label: &Label) {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
-    fn add(mut self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box) {
+    fn add(
+        mut self,
+        name: &str,
+        align: Align,
+        left: &Box,
+        centered: &Box,
+        right: &Box,
+        box_holder: Option<&Box>,
+    ) {
         let is_static = self.command.is_empty() || self.update_rate == 0;
         self.label.set_widget_name(name);
         self.label.set_tooltip_markup(Some(&self.tooltip));
-        ui::add_and_align(&self.label, align, left, centered, right);
+        ui::add_and_align(&self.label, align, left, centered, right, box_holder);
 
         if self.listen {
             begin_listen(self.command.to_owned());
@@ -162,8 +170,8 @@ impl HWidget for LabelWidget {
         start_tooltip_loop(self);
         start_label_loop(
             self.label.to_owned(),
-            take(&mut self.text),
-            take(&mut self.command),
+            self.text.to_owned(),
+            self.command.to_owned(),
             self.update_rate,
             self.listen,
         );

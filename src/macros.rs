@@ -48,3 +48,11 @@ macro_rules! conf_bool {
         }
     };
 }
+
+#[macro_export]
+/// Are experimental features enabled?
+macro_rules! experimental {
+    () => {
+        conf_bool!($crate::constants::HYBRID_ROOT_JSON, "experimental", false)
+    };
+}

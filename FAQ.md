@@ -61,3 +61,7 @@
 - Can I change the namespace for blurring Hybrid Bar on Hyprland?
   - **Available since 0.3.9**
   - Yes you can thanks to this PR: https://github.com/vars1ty/HybridBar/pull/27, option: `hybrid` -> `namespace` (`String`)
+
+- How do I activate experimental features?
+  > **Warning** Experimental features may change, be removed entirely or break at any time.
+  - Set `hybrid` -> `experimental` (`bool`) to `true`, then restart Hybrid.

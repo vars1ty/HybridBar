@@ -19,11 +19,16 @@ pub fn add_and_align(
     left: &Box,
     centered: &Box,
     right: &Box,
+    box_holder: Option<&Box>,
 ) {
-    match align {
-        Align::LEFT => left.add(widget),
-        Align::CENTERED => centered.add(widget),
-        Align::RIGHT => right.add(widget),
+    if let Some(r#box) = box_holder {
+        r#box.add(widget)
+    } else {
+        match align {
+            Align::LEFT => left.add(widget),
+            Align::CENTERED => centered.add(widget),
+            Align::RIGHT => right.add(widget),
+        }
     }
 }
 
@@ -66,7 +71,7 @@ pub fn build_widgets(window: &ApplicationWindow) {
 }
 
 /// Gets the base key values.
-fn get_base_keys(root: &str) -> (String, String, u64, String, String) {
+pub fn get_base_keys(root: &str) -> (String, String, u64, String, String) {
     let text = conf!(root, "text", true, true).string.unwrap_or_default();
     let command = conf!(root, "command", true, true)
         .string
@@ -82,6 +87,23 @@ fn get_base_keys(root: &str) -> (String, String, u64, String, String) {
     let tooltip_command = conf!(root, "tooltip_command", true, true)
         .string
         .unwrap_or_default();
+    (text, command, update_rate, tooltip, tooltip_command)
+}
+
+/// Gets the base key values.
+pub fn get_base_keys_from(root: &JsonValue) -> (String, String, u64, String, String) {
+    let text = root["text"].as_str().unwrap_or_default().to_owned();
+    let command = root["command"].as_str().unwrap_or_default().to_owned();
+    let update_rate: u64 = root["update_rate"]
+        .as_i32()
+        .unwrap_or(100)
+        .try_into()
+        .unwrap_or_else(|_| panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}"));
+    let tooltip = root["tooltip"].as_str().unwrap_or_default().to_owned();
+    let tooltip_command = root["tooltip_command"]
+        .as_str()
+        .unwrap_or_default()
+        .to_owned();
     (text, command, update_rate, tooltip, tooltip_command)
 }
 
@@ -140,21 +162,21 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             base_keys,
             (left, centered, right),
             identifier,
-            &mut has_started_cava,
+            Some(&mut has_started_cava),
+            None,
         )
     }
 }
 
 /// Add a new widget of specified identifier.
-// This uses tuples for several parameters to get around the "max parameters" limitation.
-// Plus, it looks nicer.
-fn add_widget(
+pub fn add_widget(
     key: &str,
     widget_pkg: (&str, &str),
     base_keys: BaseKeys,
     left_centered_right: (&Box, &Box, &Box),
     identifier: &str,
-    has_started_cava: &mut bool,
+    has_started_cava: Option<&mut bool>,
+    box_holder: Option<&Box>,
 ) {
     // Extract name and type.
     let (widget_type, widget_name) = widget_pkg;
@@ -182,7 +204,7 @@ fn add_widget(
                 listen: conf_bool!(key, "listen", false),
             };
 
-            label.add(widget_name, alignment, left, centered, right)
+            label.add(widget_name, alignment, left, centered, right, box_holder)
         }
         "button" => {
             let button = ButtonWidget {
@@ -192,7 +214,7 @@ fn add_widget(
                 button: Button::with_label(&text),
             };
 
-            button.add(widget_name, alignment, left, centered, right)
+            button.add(widget_name, alignment, left, centered, right, box_holder)
         }
         "spacing" => {
             let spacing = SpacingWidget {
@@ -204,29 +226,32 @@ fn add_widget(
                     .unwrap_or_default(),
             };
 
-            spacing.add(widget_name, alignment, left, centered, right)
+            spacing.add(widget_name, alignment, left, centered, right, box_holder)
         }
         "box" => {
             let box_widget = BoxWidget {
                 width: conf!(key, "width", false, false).number.unwrap_or_default(),
+                widgets: config::CONFIG.read().unwrap()[key]["widgets"].to_owned(),
             };
 
-            box_widget.add(widget_name, alignment, left, centered, right)
+            box_widget.add(widget_name, alignment, left, centered, right, box_holder)
         }
         "cava" => {
             let cava = CavaWidget {
                 label: Label::new(None),
             };
 
-            if !*has_started_cava {
-                cava::update_bars();
-                // Ensure it only calls update_bars once.
-                *has_started_cava = true;
+            if let Some(has_started_cava) = has_started_cava {
+                if !*has_started_cava {
+                    cava::update_bars();
+                    // Ensure it only calls update_bars once.
+                    *has_started_cava = true;
+                }
             }
 
-            cava.add(widget_name, alignment, left, centered, right)
+            cava.add(widget_name, alignment, left, centered, right, box_holder)
         }
-        "cmd" => CmdWidget.add(widget_name, alignment, left, centered, right),
+        "cmd" => CmdWidget.add(widget_name, alignment, left, centered, right, box_holder),
         _ => {
             panic!("[ERROR] There is no widget type defined as '{identifier}'!\n")
         }

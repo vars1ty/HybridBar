@@ -7,10 +7,18 @@ pub struct CmdWidget;
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for CmdWidget {
-    fn add(self, name: &str, align: Align, left: &Box, centered: &Box, right: &Box) {
+    fn add(
+        self,
+        name: &str,
+        align: Align,
+        left: &Box,
+        centered: &Box,
+        right: &Box,
+        box_holder: Option<&Box>,
+    ) {
         let widget = Entry::new();
         widget.set_widget_name(name);
-        ui::add_and_align(&widget, align, left, centered, right);
+        ui::add_and_align(&widget, align, left, centered, right, box_holder);
 
         // .clone() because otherwise it starts crying about move.
         widget.clone().connect_key_press_event(move |_, key| {

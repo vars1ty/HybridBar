@@ -1,5 +1,10 @@
 # Widgets
-**NOTE**: In order to use a widget, you'll have to specify how it should be aligned. For example: `left-button`, `centered-button` and `right-button`.
+> **Note**
+> If you add widgets that aren't attached to a `box` widget, you have to specify how the widget should be placed.
+>
+> For example: `left-label_UNIQUE_NAME`
+>
+> For child widgets inside of boxes, you can simply define the widget as `label_UNIQUE_NAME`.
 
 Available widgets:
 
@@ -31,6 +36,7 @@ Keys Supported:
 
 Keys Supported:
 - width: i32
+- widgets: JSON - **EXPERIMENTAL**
 ***
 `cava`:
 
