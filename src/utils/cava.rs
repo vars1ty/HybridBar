@@ -7,6 +7,8 @@ use tokio::{
 };
 
 lazy_static! {
+    /// Has Cava been started yet?
+    pub static ref HAS_CAVA_STARTED: Mutex<bool> = Mutex::new(false);
     /// Current Cava bars.
     pub static ref BARS: Mutex<String> = Mutex::new(String::default());
     /// Has Cava crashed? If true, don't keep `update_cava` running.

@@ -1,6 +1,7 @@
 use crate::{
     box_widget::BoxWidget,
     button_widget::ButtonWidget,
+    cava::HAS_CAVA_STARTED,
     cava_widget::CavaWidget,
     cmd_widget::CmdWidget,
     r#loop::update,
@@ -71,27 +72,7 @@ pub fn build_widgets(window: &ApplicationWindow) {
 }
 
 /// Gets the base key values.
-pub fn get_base_keys(root: &str) -> (String, String, u64, String, String) {
-    let text = conf!(root, "text", true, true).string.unwrap_or_default();
-    let command = conf!(root, "command", true, true)
-        .string
-        .unwrap_or_default();
-    let update_rate: u64 = conf!(root, "update_rate", false, false)
-        .number
-        .unwrap_or(100)
-        .try_into()
-        .unwrap_or_else(|_| panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}"));
-    let tooltip = conf!(root, "tooltip", true, true)
-        .string
-        .unwrap_or_default();
-    let tooltip_command = conf!(root, "tooltip_command", true, true)
-        .string
-        .unwrap_or_default();
-    (text, command, update_rate, tooltip, tooltip_command)
-}
-
-/// Gets the base key values.
-pub fn get_base_keys_from(root: &JsonValue) -> (String, String, u64, String, String) {
+pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) {
     let text = root["text"].as_str().unwrap_or_default().to_owned();
     let command = root["command"].as_str().unwrap_or_default().to_owned();
     let update_rate: u64 = root["update_rate"]
@@ -112,13 +93,12 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
     const ALIGNMENT: char = '-';
     const SEPARATOR: &str = "_";
-    let mut has_started_cava = false;
     let conf = config::CONFIG.read().unwrap();
     let relevant = conf
         .entries()
         .filter(|(key, _)| key.contains(ALIGNMENT) && key.contains(SEPARATOR));
 
-    for (key, _) in relevant {
+    for (key, json) in relevant {
         // Gets the widget identifiers.
         let identifiers = key.split(SEPARATOR).collect::<Vec<&str, 8>>();
 
@@ -134,7 +114,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
         let widget_alignment = widget_alignment.to_uppercase();
 
         // Base keys, all being optional.
-        let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(key);
+        let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(json);
         let base_keys = BaseKeys {
             text,
             command,
@@ -162,7 +142,6 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             base_keys,
             (left, centered, right),
             identifier,
-            Some(&mut has_started_cava),
             None,
         )
     }
@@ -175,7 +154,6 @@ pub fn add_widget(
     base_keys: BaseKeys,
     left_centered_right: (&Box, &Box, &Box),
     identifier: &str,
-    has_started_cava: Option<&mut bool>,
     box_holder: Option<&Box>,
 ) {
     // Extract name and type.
@@ -241,11 +219,11 @@ pub fn add_widget(
                 label: Label::new(None),
             };
 
-            if let Some(has_started_cava) = has_started_cava {
-                if !*has_started_cava {
+            if let Ok(mut has_cava_started) = HAS_CAVA_STARTED.lock() {
+                if !*has_cava_started {
                     cava::update_bars();
                     // Ensure it only calls update_bars once.
-                    *has_started_cava = true;
+                    *has_cava_started = true
                 }
             }
 

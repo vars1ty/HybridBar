@@ -32,7 +32,7 @@ fn build_child_widgets(
         let widget_type = identifiers[0];
 
         // Base keys.
-        let (text, command, update_rate, tooltip, tooltip_command) = ui::get_base_keys_from(json);
+        let (text, command, update_rate, tooltip, tooltip_command) = ui::get_base_keys(json);
         let base_keys = BaseKeys {
             text,
             command,
@@ -58,7 +58,6 @@ fn build_child_widgets(
             base_keys,
             (left, centered, right),
             widget_type,
-            None,
             Some(box_holder),
         )
     }
