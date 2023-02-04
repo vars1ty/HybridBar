@@ -13,7 +13,6 @@ tokio = { version = "*", features = ["full"] }
 gtk-layer-shell = "*"
 strum_macros = "*"
 lazy_static = "*"
-heapless = "*"
 glib = "*"
 json = "*"
 gtk = "*"

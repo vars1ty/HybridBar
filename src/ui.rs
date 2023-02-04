@@ -10,7 +10,6 @@ use crate::{
     *,
 };
 use gtk::traits::*;
-use heapless::Vec;
 use std::str::FromStr;
 
 /// Adds and aligns the specified widget.
@@ -100,7 +99,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
 
     for (key, json) in relevant {
         // Gets the widget identifiers.
-        let identifiers = key.split(SEPARATOR).collect::<Vec<&str, 8>>();
+        let identifiers = key.split(SEPARATOR).collect::<Vec<&str>>();
 
         // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
         let identifier = identifiers[0];
