@@ -144,7 +144,7 @@ pub fn load_css() {
     } else {
         provider
             .load_from_data(include_bytes!("../examples/style.css"))
-            .unwrap_or_else(|_| panic!("{}", ERR_LOAD_SAMPLE_CSS));
+            .expect(ERR_LOAD_SAMPLE_CSS);
         log!("No custom stylesheet was found, using ../examples/style.css")
     }
 

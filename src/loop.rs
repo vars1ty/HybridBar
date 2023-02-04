@@ -23,7 +23,7 @@ pub fn update() {
                 .number
                 .unwrap_or(1)
                 .try_into()
-                .unwrap_or_else(|_| panic!("{}", ERR_PARSE_CAVA_UPDATE_RATE)),
+                .expect(ERR_PARSE_CAVA_UPDATE_RATE),
         ),
         update_cava,
     );
