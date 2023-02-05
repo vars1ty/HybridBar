@@ -1,4 +1,5 @@
 use crate::{aliases::use_aliases, config::with_variables, structures::Align, ui, widget::HWidget};
+use glib::GString;
 use gtk::{traits::*, *};
 use std::{mem::take, time::Duration};
 
@@ -51,12 +52,11 @@ impl HWidget for ButtonWidget {
             new_tooltip.push_str(&with_variables(tooltip.to_owned()));
             new_tooltip.push_str(&use_aliases(&tooltip_command));
 
-            if let Some(tooltip_markup) = button.tooltip_markup() {
-                if !tooltip_markup.eq(&new_tooltip) {
-                    // Markup support here, the user therefore has to deal with any upcoming issues due to
-                    // the command output, on their own.
-                    button.set_tooltip_markup(Some(&new_tooltip));
-                }
+            let tooltip_markup = button.tooltip_markup().unwrap_or(GString::from(""));
+            if !tooltip_markup.eq(&new_tooltip) {
+                // Markup support here, the user therefore has to deal with any upcoming issues due to
+                // the command output, on their own.
+                button.set_tooltip_markup(Some(&new_tooltip));
             }
 
             glib::Continue(true)

@@ -26,7 +26,7 @@ fn build_child_widgets(
 
     for (key, json) in relevant {
         // Gets the widget identifiers.
-        let identifiers = key.split(SEPARATOR).collect::<Vec<&str>>();
+        let identifiers: Vec<_> = key.split(SEPARATOR).collect();
 
         // Type example: `label_ABC` <= `label` is the IDENTIFIER, `ABC` is the NAME.
         let widget_type = identifiers[0];
@@ -48,7 +48,8 @@ fn build_child_widgets(
         }
 
         log!(format!(
-            "Adding child widget '{widget_name}', type '{widget_type}'!",
+            "Adding child widget '{widget_name}', type '{widget_type}' into '{}'!",
+            box_holder.widget_name()
         ));
 
         // Add the widget.
