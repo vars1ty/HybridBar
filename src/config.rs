@@ -1,6 +1,5 @@
 use crate::{constants::*, environment, math, structures::ConfigData};
 use json::JsonValue;
-use lxinfo::info;
 use std::{collections::HashMap, fs, sync::RwLock};
 
 lazy_static! {
@@ -10,14 +9,7 @@ lazy_static! {
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
-    let username = if let Some(info) = info::get_system_information() {
-        info.username
-    } else {
-        // lxinfo isn't available, fallback to execute.
-        execute!("whoami")
-    };
-
-    format!("/home/{username}/.config/HybridBar/")
+    format!("{}/.config/HybridBar/", env!("HOME"))
 }
 
 /// Returns the set update-rate.

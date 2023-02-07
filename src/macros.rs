@@ -3,7 +3,7 @@
 macro_rules! log {
     ($msg:expr) => {
         if $crate::environment::try_get_var("HYBRID_LOG", "0") == "1" {
-            println!("[HYBRID] [DEBUG] {}", $msg)
+            println!("[{}]:\n» {}", file!(), $msg)
         }
     };
 }

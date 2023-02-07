@@ -1,4 +1,4 @@
-use crate::{aliases::use_aliases, config::with_variables, structures::Align, ui, widget::HWidget};
+use crate::{aliases::use_aliases, structures::Align, ui, widget::HWidget};
 use glib::GString;
 use gtk::{traits::*, *};
 use std::{mem::take, time::Duration};
@@ -24,8 +24,7 @@ impl HWidget for ButtonWidget {
     ) {
         self.button.set_widget_name(name);
         // 0.2.8: Support tooltips for buttons
-        self.button
-            .set_tooltip_markup(Some(&with_variables(self.tooltip.to_owned())));
+        self.button.set_tooltip_markup(Some(&self.tooltip));
 
         // 0.3.6: Support for commands on tooltips.
         if !self.tooltip_command.is_empty() {
@@ -49,7 +48,7 @@ impl HWidget for ButtonWidget {
         let tooltip_command = take(&mut self.tooltip_command);
         let tick = move || {
             let mut new_tooltip = String::default();
-            new_tooltip.push_str(&with_variables(tooltip.to_owned()));
+            new_tooltip.push_str(&tooltip);
             new_tooltip.push_str(&use_aliases(&tooltip_command));
 
             let tooltip_markup = button.tooltip_markup().unwrap_or(GString::from(""));

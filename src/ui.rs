@@ -4,6 +4,7 @@ use crate::{
     cava::HAS_CAVA_STARTED,
     cava_widget::CavaWidget,
     cmd_widget::CmdWidget,
+    config::with_variables,
     r#loop::update,
     spacing_widget::SpacingWidget,
     structures::{Align, BaseKeys},
@@ -72,18 +73,20 @@ pub fn build_widgets(window: &ApplicationWindow) {
 
 /// Gets the base key values.
 pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) {
-    let text = root["text"].as_str().unwrap_or_default().to_owned();
-    let command = root["command"].as_str().unwrap_or_default().to_owned();
+    let text = with_variables(root["text"].as_str().unwrap_or_default().to_owned());
+    let command = with_variables(root["command"].as_str().unwrap_or_default().to_owned());
     let update_rate: u64 = root["update_rate"]
         .as_i32()
         .unwrap_or(100)
         .try_into()
         .unwrap_or_else(|_| panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}"));
-    let tooltip = root["tooltip"].as_str().unwrap_or_default().to_owned();
-    let tooltip_command = root["tooltip_command"]
-        .as_str()
-        .unwrap_or_default()
-        .to_owned();
+    let tooltip = with_variables(root["tooltip"].as_str().unwrap_or_default().to_owned());
+    let tooltip_command = with_variables(
+        root["tooltip_command"]
+            .as_str()
+            .unwrap_or_default()
+            .to_owned(),
+    );
     (text, command, update_rate, tooltip, tooltip_command)
 }
 
