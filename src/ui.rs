@@ -3,7 +3,6 @@ use crate::{
     button_widget::ButtonWidget,
     cava::HAS_CAVA_STARTED,
     cava_widget::CavaWidget,
-    cmd_widget::CmdWidget,
     config::with_variables,
     r#loop::update,
     spacing_widget::SpacingWidget,
