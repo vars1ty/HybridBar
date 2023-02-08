@@ -29,7 +29,7 @@ It supports:
 - Top / Bottom positioning;
 - Transparency (+ blur if your compositor allows for blurring surface layers);
 - System Tray via `stray`;
-- Compatible with different monitors;
+- Compatible with different monitors
 
 ## I have no config
 If the AUR version for whatever reason didn't give you the example one, copy the example from `examples/config.json` into `~/.config/HybridBar/`.

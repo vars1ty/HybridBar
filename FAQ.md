@@ -50,10 +50,6 @@
   - Hybrid should work on every distro, only difference being that I won't officially ship it to anything but the AUR Repo and on GitHub Releases.
   - If you however decide to package it and want to ship it yourself, go ahead and submit an issue which holds the URL to the package, if it's git or not, etc.
 
-- I can't focus my command field(s)!
-  - **Available since 0.3.2**
-  - Set `hybrid` -> `allow_keyboard` (`bool`) to `true`, restart Hybrid and it should work
-
 - I want to move Hybrid to a different monitor
   - **Available since 0.3.2**
   - You can specify your monitor via `hybrid` -> `monitor` (`i32`)
