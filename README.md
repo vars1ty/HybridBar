@@ -2,7 +2,7 @@
 A status bar focused on wlroots Wayland compositors
 
 ## Notice
-> **Warning**:
+> **Note**:
 > Hybrid is basically feature-complete for me.
 >
 > Which in turn means that commits might not happen as often, and new features might not get added by myself unless I need them.
