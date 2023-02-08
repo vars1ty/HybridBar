@@ -8,6 +8,7 @@ use crate::{
     r#loop::update,
     spacing_widget::SpacingWidget,
     structures::{Align, BaseKeys},
+    tray_widget::TrayWidget,
     *,
 };
 use gtk::traits::*;
@@ -227,7 +228,7 @@ pub fn add_widget(
 
             cava.add(widget_name, alignment, left, centered, right, box_holder)
         }
-        "cmd" => CmdWidget.add(widget_name, alignment, left, centered, right, box_holder),
+        "tray" => TrayWidget.add(widget_name, alignment, left, centered, right, box_holder),
         _ => {
             panic!("[ERROR] There is no widget type defined as '{identifier}'!\n")
         }

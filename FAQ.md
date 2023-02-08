@@ -16,7 +16,7 @@
   - Yes you can specify where the bar should be located at.
   - Use `hybrid` -> `expand_left` / `expand_right` (`bool`) and mess around with them until you find what you like.
   - Default values are `true` for both; a.k.a expanded across your monitor.
-  - **NOTE**: Aligning your bar to one side only may result in weird bugs, such as it not allocating a region of free space below it.
+  - > **Note**: Aligning your bar to one side only may result in weird bugs, such as it not allocating a region of free space below it.
 
 - Does this only act as a status bar?
   - It's intended purpose is to be a status bar, but you can turn it into a smaller application shortcut launcher through scripts and buttons.

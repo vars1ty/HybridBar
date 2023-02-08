@@ -16,8 +16,6 @@ mod button_widget;
 mod cava;
 #[path = "widgets/cava_widget.rs"]
 mod cava_widget;
-#[path = "widgets/cmd_widget.rs"]
-mod cmd_widget;
 mod config;
 mod constants;
 mod environment;
@@ -29,6 +27,8 @@ mod math;
 #[path = "widgets/spacing_widget.rs"]
 mod spacing_widget;
 mod structures;
+#[path = "widgets/tray_widget.rs"]
+mod tray_widget;
 mod ui;
 mod widget;
 
@@ -87,14 +87,6 @@ fn activate(application: &Application) {
     for (anchor, state) in get_anchors() {
         gtk_layer_shell::set_anchor(&window, anchor, state);
     }
-
-    // Allows for writing in input fields if the value is true.
-    // This is false by default since it's stealing focus until you focus a different application,
-    // which may trigger some users.
-    gtk_layer_shell::set_keyboard_interactivity(
-        &window,
-        conf_bool!(HYBRID_ROOT_JSON, "allow_keyboard", false),
-    );
 
     // Allows for specifing the namespace of the layer.
     // The default is "gtk-layer-shell" to not break existing configs.
@@ -170,6 +162,7 @@ async fn main() {
         activate(app);
     });
 
+    tracing_subscriber::fmt::init();
     application.run();
 }
 

@@ -7,7 +7,6 @@
 ```json
 {
    "left-box_my_box": {
-      "width": 20,
       "widgets": {
          "label_experimental": {
             "text": "Experimental"

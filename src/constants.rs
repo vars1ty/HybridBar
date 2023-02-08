@@ -42,6 +42,8 @@ pub const ERR_NO_LXINFO: &str =
 pub const ERR_CREATE_TMP_CONF: &str = "[ERROR] Couldn't create the temporary Cava config!";
 pub const ERR_WRITE_TMP_CONF: &str = "[ERROR] Failed writing to the temporary Cava config!";
 pub const ERR_START_CAVA: &str = "[ERROR] Cannot start Cava script!";
+pub const ERR_CREATE_RT: &str = "[ERROR] Couldn't create the Tokio runtime!";
+pub const ERR_SEND_MSG_UI: &str = "[ERROR] Couldn't send tray messages to the UI!";
 
 // Constant warnings.
 
