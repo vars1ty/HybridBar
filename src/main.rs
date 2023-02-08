@@ -8,29 +8,18 @@ mod macros;
 
 #[path = "utils/aliases.rs"]
 mod aliases;
-#[path = "widgets/box_widget.rs"]
-mod box_widget;
-#[path = "widgets/button_widget.rs"]
-mod button_widget;
 #[path = "utils/cava.rs"]
 mod cava;
-#[path = "widgets/cava_widget.rs"]
-mod cava_widget;
 mod config;
 mod constants;
 mod environment;
-#[path = "widgets/label_widget.rs"]
-mod label_widget;
 mod r#loop;
 #[path = "utils/math.rs"]
 mod math;
-#[path = "widgets/spacing_widget.rs"]
-mod spacing_widget;
 mod structures;
-#[path = "widgets/tray_widget.rs"]
-mod tray_widget;
 mod ui;
 mod widget;
+mod widgets;
 
 use constants::*;
 use gtk::gdk::*;
@@ -39,9 +28,7 @@ use gtk::prelude::*;
 use gtk::*;
 use gtk_layer_shell::Edge;
 use json::JsonValue;
-use label_widget::LabelWidget;
 use std::path::Path;
-use widget::HWidget;
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {

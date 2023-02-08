@@ -1,4 +1,4 @@
-use crate::{cava_widget::CavaWidget, constants::*, math};
+use crate::{constants::*, math, widgets::cava_widget::CavaWidget};
 use std::{fs::File, io::Write, process::Stdio, sync::Mutex};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},

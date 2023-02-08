@@ -9,7 +9,10 @@ lazy_static! {
 
 /// Gets the root home path to Hybrid.
 pub fn get_path() -> String {
-    format!("{}/.config/HybridBar/", env!("HOME"))
+    format!(
+        "{}/.config/HybridBar/",
+        std::env::var("HOME").unwrap_or(execute!("whoami"))
+    )
 }
 
 /// Returns the set update-rate.

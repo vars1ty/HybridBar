@@ -1,14 +1,13 @@
 use crate::{
-    box_widget::BoxWidget,
-    button_widget::ButtonWidget,
-    cava::HAS_CAVA_STARTED,
-    cava_widget::CavaWidget,
-    config::with_variables,
-    r#loop::update,
-    spacing_widget::SpacingWidget,
-    structures::{Align, BaseKeys},
-    tray_widget::TrayWidget,
-    *,
+    cava::HAS_CAVA_STARTED, config::with_variables, r#loop::update, structures::BaseKeys, *,
+};
+use crate::{
+    structures::Align,
+    widget::HWidget,
+    widgets::{
+        box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget,
+        label_widget::LabelWidget, spacing_widget::SpacingWidget, tray_widget::TrayWidget,
+    },
 };
 use gtk::traits::*;
 use std::str::FromStr;
