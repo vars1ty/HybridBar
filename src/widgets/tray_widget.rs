@@ -190,12 +190,12 @@ fn spawn_local_handler(
             }
 
             for (address, notifier_item) in state.iter() {
-                if let Some(icon) = notifier_item.get_icon() {
+                if let Some(ref icon) = notifier_item.get_icon() {
                     // Create the menu
 
                     let menu_item = MenuItem::new();
                     let menu_item_box = gtk::Box::default();
-                    menu_item_box.add(&icon);
+                    menu_item_box.add(icon);
                     menu_item.add(&menu_item_box);
 
                     if let Some(tray_menu) = &notifier_item.menu {

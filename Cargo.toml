@@ -10,10 +10,10 @@ license = "MIT"
 lxinfo = { git = "https://github.com/vars1ty/lxinfo.git" }
 strum = { version = "*", features = ["derive"] }
 tokio = { version = "*", features = ["full"] }
+tracing-subscriber = "*"
 gtk-layer-shell = "*"
 strum_macros = "*"
 lazy_static = "*"
-tracing-subscriber = "*"
 stray = "*"
 glib = "*"
 json = "*"

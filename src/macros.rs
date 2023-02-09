@@ -3,7 +3,7 @@
 macro_rules! log {
     ($msg:expr) => {
         if $crate::environment::try_get_var("HYBRID_LOG", "0") == "1" {
-            println!("[{}]:\n» {}", file!(), $msg)
+            println!("[LOG]: {}", $msg)
         }
     };
 }
@@ -41,7 +41,7 @@ macro_rules! conf {
 /// If there is no value assigned, the value from `default` is returned.
 macro_rules! conf_bool {
     ($root:expr, $key:expr, $default:expr) => {
-        if let Some(res) = conf!($root, $key, true, false).string {
+        if let Some(ref res) = conf!($root, $key, true, false).string {
             res == "true"
         } else {
             $default

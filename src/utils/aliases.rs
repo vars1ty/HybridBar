@@ -13,7 +13,7 @@ fn replace_if_present(content: &mut String, find: &str, replace: &str, found_any
 /// value.
 pub fn use_aliases(content: &str) -> String {
     // TODO: Clean this up.
-    if let Some(info) = info::get_system_information() {
+    if let Some(ref info) = info::get_system_information() {
         let mut found_any = false;
         let mut content = content.to_owned();
         replace_if_present(&mut content, "%username%", &info.username, &mut found_any);
