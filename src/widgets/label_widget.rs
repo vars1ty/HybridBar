@@ -6,8 +6,7 @@ use crate::{
     ui,
     widget::HWidget,
 };
-use glib::GString;
-use gtk::{traits::*, *};
+use gtk::{glib::GString, traits::*, *};
 use std::{mem::take, process::Stdio, sync::Mutex, time::Duration};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},

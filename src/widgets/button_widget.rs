@@ -1,6 +1,5 @@
 use crate::{aliases::use_aliases, structures::Align, ui, widget::HWidget};
-use glib::GString;
-use gtk::{traits::*, *};
+use gtk::{glib::GString, traits::*, *};
 use std::{mem::take, time::Duration};
 
 /// Creates a new button widget.
