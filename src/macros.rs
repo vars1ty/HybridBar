@@ -56,3 +56,10 @@ macro_rules! experimental {
         conf_bool!($crate::constants::HYBRID_ROOT_JSON, "experimental", false)
     };
 }
+
+#[macro_export]
+macro_rules! define {
+    ($type:ty, $name:ident, $val:expr) => {
+        pub const $name: $type = $val;
+    };
+}

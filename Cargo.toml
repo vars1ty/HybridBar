@@ -13,6 +13,7 @@ tokio = { version = "*", features = ["full"] }
 tracing-subscriber = "*"
 gtk-layer-shell = "*"
 strum_macros = "*"
+jemallocator = "*"
 lazy_static = "*"
 stray = "*"
 glib = "*"

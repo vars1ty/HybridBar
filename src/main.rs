@@ -1,4 +1,6 @@
 #![no_main]
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
 
 #[macro_use]
 extern crate lazy_static;
@@ -27,6 +29,7 @@ use gtk::gio::ApplicationFlags;
 use gtk::prelude::*;
 use gtk::*;
 use gtk_layer_shell::Edge;
+use jemallocator::Jemalloc;
 use json::JsonValue;
 use std::path::Path;
 
