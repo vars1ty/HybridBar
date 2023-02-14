@@ -18,7 +18,7 @@ pub const CAVA_TMP_CONFIG: &str = "/tmp/cava_tmp_hybrid.conf";
 pub const ERR_PARSE_CAVA_UPDATE_RATE: &str =
     "[ERROR] hybrid:cava_update_rate couldn't be parsed into a 64-bit unsigned integer (u64)!";
 pub const ERR_PARSE_UPDATE_RATE: &str = "[ERROR] Cannot convert update_rate into u64!";
-pub const ERR_ACCESS_CAVA_INSTANCES: &str = "[ERROR] Cannot access ui::CAVA_INSTANCES!";
+pub const ERR_ACCESS_CAVA_INSTANCES: &str = "[ERROR] Couldn't access ui::CAVA_INSTANCES!";
 pub const ERR_INVALID_POS: &str =
     "[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.";
 pub const ERR_GET_DISPLAY: &str =
@@ -44,6 +44,7 @@ pub const ERR_WRITE_TMP_CONF: &str = "[ERROR] Failed writing to the temporary Ca
 pub const ERR_START_CAVA: &str = "[ERROR] Cannot start Cava script!";
 pub const ERR_CREATE_RT: &str = "[ERROR] Couldn't create the Tokio runtime!";
 pub const ERR_SEND_MSG_UI: &str = "[ERROR] Couldn't send tray messages to the UI!";
+pub const ERR_ACCESS_CONFIG: &str = "[ERROR] Couldn't access CONFIG!";
 
 // Constant warnings.
 

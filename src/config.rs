@@ -1,4 +1,9 @@
-use crate::{constants::*, environment, math, structures::ConfigData};
+use crate::{
+    constants::*,
+    environment, math,
+    structures::ConfigData,
+    types::{MediumString, SmallString},
+};
 use json::JsonValue;
 use std::{collections::HashMap, fs, sync::RwLock};
 
@@ -11,7 +16,7 @@ lazy_static! {
 pub fn get_path() -> String {
     format!(
         "{}/.config/HybridBar/",
-        std::env::var("HOME").unwrap_or(execute!("whoami"))
+        std::env::var("HOME").unwrap_or(execute!("whoami").to_string())
     )
 }
 
@@ -42,54 +47,75 @@ fn read_config_raw() -> JsonValue {
 
 /// Tries to fetch a value from the config. Supported types are `String` and `i32`.
 pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bool) -> ConfigData {
-    let config = &CONFIG.read().unwrap()[root];
-    if config.has_key(key) {
-        let grabbed_value = &config[key];
+    if let Ok(cfg) = CONFIG.read() {
+        let cfg = &cfg[root];
+        if cfg.has_key(key) {
+            let grabbed_value = &cfg[key];
 
-        // If the desired value isn't a string, try and get it as a 32-bit integer.
-        if !is_string {
-            return ConfigData::new(
-                None,
-                Some(
-                    grabbed_value
-                        .as_i32()
-                        .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!")),
-                ),
-            );
-        }
+            // If the desired value isn't a string, try and get it as a 32-bit integer.
+            if !is_string {
+                return ConfigData::new(
+                    None,
+                    Some(
+                        grabbed_value.as_i32().unwrap_or_else(|| {
+                            panic!("[ERROR] Failed parsing {root}:{key} as i32!")
+                        }),
+                    ),
+                );
+            }
 
-        // Convert it to a string-value.
-        if with_custom_variables {
-            ConfigData::new(Some(with_variables(grabbed_value.to_string())), None)
+            // Convert it to a string-value.
+            if with_custom_variables {
+                ConfigData::new(
+                    Some(with_variables(
+                        str!(MediumString, grabbed_value.to_string(), false),
+                        &get_custom_variables(),
+                    )),
+                    None,
+                )
+            } else {
+                ConfigData::new(
+                    Some(str!(MediumString, grabbed_value.to_string(), false)),
+                    None,
+                )
+            }
         } else {
-            ConfigData::new(Some(grabbed_value.to_string()), None)
+            // The key wasn't found, so just return None on all values.
+            ConfigData::default()
         }
     } else {
-        // The key wasn't found, so just return None on all values.
-        ConfigData::default()
+        panic!("{}", ERR_ACCESS_CONFIG)
     }
 }
 
 /// Gets all the custom variables.
-pub fn get_custom_variables() -> HashMap<String, String> {
-    let cfg = &CONFIG.read().unwrap()[HYBRID_V_ROOT_JSON];
-    let mut map: HashMap<String, String> = HashMap::new();
-    for entry in cfg.entries() {
-        map.insert(entry.0.to_owned(), entry.1.to_string());
-    }
+pub fn get_custom_variables() -> HashMap<SmallString, String> {
+    if let Ok(cfg) = CONFIG.read() {
+        let cfg = &cfg[HYBRID_V_ROOT_JSON];
+        let mut map: HashMap<SmallString, String> = HashMap::new();
+        for entry in cfg.entries() {
+            map.insert(str!(SmallString, entry.0, false), entry.1.to_string());
+        }
 
-    map
+        map
+    } else {
+        panic!("{}", ERR_ACCESS_CONFIG)
+    }
 }
 
 /// Replaces any variable-matching patterns in the `String` with the variables value.
-pub fn with_variables(input: String) -> String {
-    let mut input = input;
-    for variable in get_custom_variables() {
+pub fn with_variables(
+    input: MediumString,
+    custom_variables: &HashMap<SmallString, String>,
+) -> MediumString {
+    let mut input = input.to_string();
+    for variable in custom_variables {
         // Only replace if `result` actually contains the defined variable.
-        if input.contains(&variable.0) {
-            input = input.replace(&variable.0, &variable.1);
+        let as_str = variable.0.as_str();
+        if input.contains(as_str) {
+            input = input.replace(as_str, variable.1);
         }
     }
 
-    input
+    str!(MediumString, input, false)
 }

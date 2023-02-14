@@ -1,5 +1,10 @@
 use crate::{
-    cava::HAS_CAVA_STARTED, config::with_variables, r#loop::update, structures::BaseKeys, *,
+    cava::HAS_CAVA_STARTED,
+    config::{get_custom_variables, with_variables, CONFIG},
+    r#loop::update,
+    structures::BaseKeys,
+    types::{MediumString, SmallString},
+    *,
 };
 use crate::{
     structures::Align,
@@ -70,21 +75,36 @@ pub fn build_widgets(window: &ApplicationWindow) {
     update();
 }
 
+/// Tries to convert the given data into a `MediumString`.
+fn ms(data: &str) -> MediumString {
+    str!(MediumString, data, false)
+}
+
 /// Gets the base key values.
-pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) {
-    let text = with_variables(root["text"].as_str().unwrap_or_default().to_owned());
-    let command = with_variables(root["command"].as_str().unwrap_or_default().to_owned());
+pub fn get_base_keys(
+    root: &JsonValue,
+) -> (MediumString, MediumString, u64, MediumString, MediumString) {
+    let custom_variables = &get_custom_variables();
+    let text = with_variables(
+        ms(root["text"].as_str().unwrap_or_default()),
+        custom_variables,
+    );
+    let command = with_variables(
+        ms(root["command"].as_str().unwrap_or_default()),
+        custom_variables,
+    );
     let update_rate: u64 = root["update_rate"]
         .as_i32()
         .unwrap_or(100)
         .try_into()
         .unwrap_or_else(|_| panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}"));
-    let tooltip = with_variables(root["tooltip"].as_str().unwrap_or_default().to_owned());
+    let tooltip = with_variables(
+        ms(root["tooltip"].as_str().unwrap_or_default()),
+        custom_variables,
+    );
     let tooltip_command = with_variables(
-        root["tooltip_command"]
-            .as_str()
-            .unwrap_or_default()
-            .to_owned(),
+        ms(root["tooltip_command"].as_str().unwrap_or_default()),
+        custom_variables,
     );
     (text, command, update_rate, tooltip, tooltip_command)
 }
@@ -92,59 +112,63 @@ pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) 
 /// Creates all of the widgets.
 fn create_components(left: &Box, centered: &Box, right: &Box) {
     // Add all of the widgets defined from the config.
-    const ALIGNMENT: char = '-';
-    const SEPARATOR: &str = "_";
-    let conf = config::CONFIG.read().unwrap();
-    let relevant = conf
-        .entries()
-        .filter(|(key, _)| key.contains(ALIGNMENT) && key.contains(SEPARATOR));
+    if let Ok(cfg) = CONFIG.read() {
+        const ALIGNMENT: char = '-';
+        const SEPARATOR: &str = "_";
+        let relevant = cfg
+            .entries()
+            .filter(|(key, _)| key.contains(ALIGNMENT) && key.contains(SEPARATOR));
 
-    for (key, json) in relevant {
-        // Gets the widget identifiers.
-        let identifiers: Vec<_> = key.split(SEPARATOR).collect();
+        for (key, json) in relevant {
+            // Gets the widget identifiers.
+            let identifiers: Vec<_> = key.split(SEPARATOR).collect();
 
-        // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
-        let identifier = identifiers[0];
+            // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
+            let identifier = identifiers[0];
 
-        // Grabs widget alignment and widget type from the identifier separated by '-'.
-        let (widget_alignment, widget_type) = identifier
-            .split_once(ALIGNMENT)
-            .expect(ERR_INVALID_WIDGET_FORMAT);
+            // Grabs widget alignment and widget type from the identifier separated by '-'.
+            let (widget_alignment, widget_type) = identifier
+                .split_once(ALIGNMENT)
+                .expect(ERR_INVALID_WIDGET_FORMAT);
 
-        // Formats the widget alignment.
-        let widget_alignment = widget_alignment.to_uppercase();
+            // Formats the widget alignment.
+            let widget_alignment = widget_alignment.to_uppercase();
 
-        // Base keys, all being optional.
-        let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(json);
-        let base_keys = BaseKeys {
-            text,
-            command,
-            update_rate,
-            tooltip,
-            tooltip_command,
-            alignment: structures::Align::from_str(&widget_alignment).expect(ERR_INVALID_ALIGNMENT),
-        };
+            // Base keys, all being optional.
+            let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(json);
+            let base_keys = BaseKeys {
+                text,
+                command,
+                update_rate,
+                tooltip,
+                tooltip_command,
+                alignment: structures::Align::from_str(&widget_alignment)
+                    .expect(ERR_INVALID_ALIGNMENT),
+            };
 
-        // Gets every element after the widget identifier, then appends '_' in between.
-        let widget_name = identifiers[1..].join(SEPARATOR).to_owned();
+            // Gets every element after the widget identifier, then appends '_' in between.
+            let widget_name = identifiers[1..].join(SEPARATOR).to_owned();
 
-        if widget_name.is_empty() {
-            panic!("{}", ERR_EMPTY_NAME)
+            if widget_name.is_empty() {
+                panic!("{}", ERR_EMPTY_NAME)
+            }
+
+            log!(format!(
+                "Adding widget '{identifier}' with alignment '{widget_alignment}'!",
+            ));
+
+            // Add the widget.
+            add_widget(
+                json,
+                (widget_type, &widget_name),
+                base_keys,
+                (left, centered, right),
+                identifier,
+                None,
+            )
         }
-
-        log!(format!(
-            "Adding widget '{identifier}' with alignment '{widget_alignment}'!",
-        ));
-
-        // Add the widget.
-        add_widget(
-            json,
-            (widget_type, &widget_name),
-            base_keys,
-            (left, centered, right),
-            identifier,
-            None,
-        )
+    } else {
+        panic!("{}", ERR_ACCESS_CONFIG)
     }
 }
 
