@@ -1,12 +1,12 @@
-use crate::{aliases::use_aliases, structures::Align, types::MediumString, ui, widget::HWidget};
+use crate::{aliases::use_aliases, structures::Align, ui, widget::HWidget};
 use gtk::{glib::GString, traits::*, *};
 use std::{mem::take, time::Duration};
 
 /// Creates a new button widget.
 pub struct ButtonWidget {
-    pub tooltip: MediumString,
-    pub tooltip_command: MediumString,
-    pub command: MediumString,
+    pub tooltip: String,
+    pub tooltip_command: String,
+    pub command: String,
     pub button: Button,
 }
 
@@ -46,12 +46,12 @@ impl HWidget for ButtonWidget {
         let tooltip = take(&mut self.tooltip);
         let tooltip_command = take(&mut self.tooltip_command);
         let tick = move || {
-            let mut new_tooltip = MediumString::default();
-            new_tooltip.push_str(tooltip);
-            new_tooltip.push_str(use_aliases(&tooltip_command));
+            let mut new_tooltip = String::default();
+            new_tooltip.push_str(&tooltip);
+            new_tooltip.push_str(&use_aliases(&tooltip_command));
 
             let tooltip_markup = button.tooltip_markup().unwrap_or(GString::from(""));
-            if str!(MediumString, tooltip_markup, false) != new_tooltip {
+            if !tooltip_markup.eq(&new_tooltip) {
                 // Markup support here, the user therefore has to deal with any upcoming issues due to
                 // the command output, on their own.
                 button.set_tooltip_markup(Some(&new_tooltip));

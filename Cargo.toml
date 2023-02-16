@@ -12,7 +12,6 @@ strum = { version = "*", features = ["derive"] }
 tokio = { version = "*", features = ["full"] }
 tracing-subscriber = "*"
 gtk-layer-shell = "*"
-arraystring = "0.3.0"
 strum_macros = "*"
 lazy_static = "*"
 stray = "*"

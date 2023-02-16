@@ -12,14 +12,14 @@ macro_rules! log {
 /// Executes a bash command and outputs it to `result`.
 macro_rules! execute {
     ($cmd:expr) => {{
-        let mut result = $crate::types::LargeString::from_utf8(
+        let mut result = String::from_utf8_lossy(
             &std::process::Command::new($crate::constants::PROC_TARGET)
                 .args(["-c", $cmd])
                 .output()
                 .unwrap()
                 .stdout,
         )
-        .unwrap();
+        .to_string();
 
         // Remove the last character as its a new line.
         result.pop();
@@ -48,19 +48,5 @@ macro_rules! conf {
 macro_rules! experimental {
     () => {
         conf!($crate::constants::HYBRID_ROOT_JSON, "experimental", false)
-    };
-}
-
-#[macro_export]
-/// Tries to convert the data into the given stack-allocated string type.
-macro_rules! str {
-    ($type:ty, $data:expr, $truncate:expr) => {
-        if $truncate {
-            <$type>::from_str_truncate(&$data)
-        } else {
-            <$type>::try_from_str(&$data).unwrap_or_else(|_| {
-                panic!("[ERROR] Couldn't convert '{}' to the given type, perhaps it exceeded the max length?", $data)
-            })
-        }
     };
 }

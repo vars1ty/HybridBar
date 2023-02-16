@@ -3,7 +3,6 @@ use crate::{
     config::{get_custom_variables, with_variables, CONFIG},
     r#loop::update,
     structures::BaseKeys,
-    types::{MediumString, SmallString},
     *,
 };
 use crate::{
@@ -75,22 +74,15 @@ pub fn build_widgets(window: &ApplicationWindow) {
     update();
 }
 
-/// Tries to convert the given data into a `MediumString`.
-fn ms(data: &str) -> MediumString {
-    str!(MediumString, data, false)
-}
-
 /// Gets the base key values.
-pub fn get_base_keys(
-    root: &JsonValue,
-) -> (MediumString, MediumString, u64, MediumString, MediumString) {
+pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) {
     let custom_variables = &get_custom_variables();
     let text = with_variables(
-        ms(root["text"].as_str().unwrap_or_default()),
+        root["text"].as_str().unwrap_or_default().to_owned(),
         custom_variables,
     );
     let command = with_variables(
-        ms(root["command"].as_str().unwrap_or_default()),
+        root["command"].as_str().unwrap_or_default().to_owned(),
         custom_variables,
     );
     let update_rate: u64 = root["update_rate"]
@@ -99,11 +91,14 @@ pub fn get_base_keys(
         .try_into()
         .unwrap_or_else(|_| panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}"));
     let tooltip = with_variables(
-        ms(root["tooltip"].as_str().unwrap_or_default()),
+        root["tooltip"].as_str().unwrap_or_default().to_owned(),
         custom_variables,
     );
     let tooltip_command = with_variables(
-        ms(root["tooltip_command"].as_str().unwrap_or_default()),
+        root["tooltip_command"]
+            .as_str()
+            .unwrap_or_default()
+            .to_owned(),
         custom_variables,
     );
     (text, command, update_rate, tooltip, tooltip_command)

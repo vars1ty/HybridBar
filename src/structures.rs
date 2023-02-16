@@ -1,29 +1,27 @@
 use strum::EnumString;
 
-use crate::types::MediumString;
-
 /// Fetched config data.
 #[derive(Default)]
 pub struct ConfigData {
-    pub string: Option<MediumString>,
+    pub string: Option<String>,
     pub number: Option<i32>,
 }
 
 /// Implements `new` for Config Data.
 impl ConfigData {
     /// Creates a new Config Data instance and returns it.
-    pub fn new(string: Option<MediumString>, number: Option<i32>) -> ConfigData {
+    pub fn new(string: Option<String>, number: Option<i32>) -> ConfigData {
         ConfigData { string, number }
     }
 }
 
 /// Base keys.
 pub struct BaseKeys {
-    pub text: MediumString,
-    pub command: MediumString,
+    pub text: String,
+    pub command: String,
     pub update_rate: u64,
-    pub tooltip: MediumString,
-    pub tooltip_command: MediumString,
+    pub tooltip: String,
+    pub tooltip_command: String,
     pub alignment: Align,
 }
 

@@ -3,7 +3,6 @@ use crate::{
     config,
     constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
     structures::Align,
-    types::MediumString,
     ui,
     widget::HWidget,
 };
@@ -23,10 +22,10 @@ lazy_static! {
 /// Creates a new label widget.
 #[derive(Debug)]
 pub struct LabelWidget {
-    pub tooltip: MediumString,
-    pub tooltip_command: MediumString,
-    pub text: MediumString,
-    pub command: MediumString,
+    pub tooltip: String,
+    pub tooltip_command: String,
+    pub text: String,
+    pub command: String,
     pub update_rate: u64,
     pub label: Label,
     pub listen: bool,
@@ -34,7 +33,7 @@ pub struct LabelWidget {
 
 /// 0.3.2: If `listen` is `true`, call this function and then set the label text-value
 ///   to that of `BUFFER`.
-fn begin_listen(cmd: MediumString) {
+fn begin_listen(cmd: String) {
     task::spawn(async move {
         let mut child = Command::new(PROC_TARGET)
             .args(["-c", &cmd])
@@ -70,12 +69,12 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
     let tooltip = take(&mut label_ref.tooltip);
     let tooltip_command = take(&mut label_ref.tooltip_command);
     let tick = move || {
-        let mut new_tooltip = MediumString::default();
-        new_tooltip.push_str(tooltip);
-        new_tooltip.push_str(use_aliases(&tooltip_command));
+        let mut new_tooltip = String::default();
+        new_tooltip.push_str(&tooltip);
+        new_tooltip.push_str(&use_aliases(&tooltip_command));
 
         let tooltip_markup = label.tooltip_markup().unwrap_or(GString::from(""));
-        if str!(MediumString, tooltip_markup, false) != new_tooltip {
+        if !tooltip_markup.eq(&new_tooltip) {
             // Markup support here, the user therefore has to deal with any upcoming issues due to
             // the command output, on their own.
             label.set_tooltip_markup(Some(&new_tooltip));
@@ -89,25 +88,24 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
 }
 
 /// Starts updating the dynamic label content.
-fn start_label_loop(
-    label: Label,
-    text: MediumString,
-    command: MediumString,
-    update_rate: u64,
-    listen: bool,
-) {
+fn start_label_loop(label_ref: &mut LabelWidget) {
+    let label = take(&mut label_ref.label);
+    let command = label_ref.command.to_owned();
+    let update_rate = label_ref.update_rate;
     if command.is_empty() || update_rate == 0 {
         // Not eligible, cancel.
         return;
     }
 
+    let listen = label_ref.listen;
+    let text = label_ref.text.to_owned();
     let tick = move || {
         if !listen {
-            let mut new_text = MediumString::default();
-            new_text.push_str(text);
-            new_text.push_str(use_aliases(&command));
+            let mut new_text = String::default();
+            new_text.push_str(&text);
+            new_text.push_str(&use_aliases(&command));
 
-            if str!(MediumString, label.text(), false) != new_text {
+            if !label.text().eq(&new_text) {
                 // Not the same as new_text; redraw.
                 label.set_text(&new_text);
             }
@@ -153,17 +151,16 @@ impl HWidget for LabelWidget {
     ) {
         let is_static = self.command.is_empty() || self.update_rate == 0;
         self.label.set_widget_name(name);
+        self.label.set_markup(&self.text);
         self.label.set_tooltip_markup(Some(&self.tooltip));
         ui::add_and_align(&self.label, align, left, centered, right, box_holder);
 
-        if self.listen {
-            begin_listen(self.command.to_owned());
-        }
+        if !is_static {
+            if self.listen {
+                begin_listen(self.command.to_owned());
+            }
 
-        self.start_loop();
-
-        if is_static {
-            self.label.set_markup(&self.text);
+            self.start_loop();
         }
 
         log!(format!(
@@ -174,12 +171,6 @@ impl HWidget for LabelWidget {
     fn start_loop(&mut self) {
         // Start loops.
         start_tooltip_loop(self);
-        start_label_loop(
-            self.label.to_owned(),
-            self.text,
-            self.command,
-            self.update_rate,
-            self.listen,
-        );
+        start_label_loop(self);
     }
 }

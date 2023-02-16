@@ -1,5 +1,4 @@
-use crate::{constants::*, math, types::MediumString, widgets::cava_widget::CavaWidget};
-use arraystring::{typenum::U25, ArrayString};
+use crate::{constants::*, math, widgets::cava_widget::CavaWidget};
 use std::{fs::File, io::Write, process::Stdio, sync::Mutex};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
@@ -7,13 +6,11 @@ use tokio::{
     task,
 };
 
-type SmallString = ArrayString<U25>;
-
 lazy_static! {
     /// Has Cava been started yet?
     pub static ref HAS_CAVA_STARTED: Mutex<bool> = Mutex::new(false);
     /// Current Cava bars.
-    pub static ref BARS: Mutex<SmallString> = Mutex::new(SmallString::default());
+    pub static ref BARS: Mutex<String> = Mutex::new(String::default());
     /// Has Cava crashed? If true, don't keep `update_cava` running.
     pub static ref HAS_CAVA_CRASHED: Mutex<bool> = Mutex::new(false);
     /// All active Cava widget instances.
@@ -21,14 +18,12 @@ lazy_static! {
 }
 
 /// Gets the sed to use for Cava.
-pub fn get_sed() -> MediumString {
+pub fn get_sed() -> String {
     conf!(HYBRID_ROOT_JSON, "cava_sed", true, false)
         .string
-        .unwrap_or(str!(
-            MediumString,
-            "s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;",
-            false
-        ))
+        .unwrap_or(
+            "s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;".to_owned(),
+        )
 }
 
 /// Returns the amount of bars that should be present.
@@ -108,7 +103,7 @@ pub fn update_bars() {
             };
 
             if let Ok(mut r_bars) = BARS.lock() {
-                *r_bars = SmallString::try_from_str(bars).unwrap();
+                *r_bars = bars;
             }
         }
     });

@@ -1,4 +1,4 @@
-use crate::{constants::ERR_NO_LXINFO, types::LargeString};
+use crate::constants::ERR_NO_LXINFO;
 use lxinfo::info;
 
 /// Replaces `find` with `replace` if found.
@@ -11,7 +11,7 @@ fn replace_if_present(content: &mut String, find: &str, replace: &str, found_any
 
 /// Checks if the `content` contains any of the built-in aliases, then replaces it with the real
 /// value.
-pub fn use_aliases(content: &str) -> LargeString {
+pub fn use_aliases(content: &str) -> String {
     // TODO: Clean this up.
     if let Some(ref info) = info::get_system_information() {
         let mut found_any = false;
@@ -54,7 +54,7 @@ pub fn use_aliases(content: &str) -> LargeString {
             ))
         }
 
-        str!(LargeString, content, true)
+        content
     } else {
         log!(ERR_NO_LXINFO);
         execute!(content)

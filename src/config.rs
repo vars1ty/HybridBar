@@ -1,9 +1,4 @@
-use crate::{
-    constants::*,
-    environment, math,
-    structures::ConfigData,
-    types::{MediumString, SmallString},
-};
+use crate::{constants::*, environment, math, structures::ConfigData};
 use json::JsonValue;
 use std::{collections::HashMap, fs, sync::RwLock};
 
@@ -16,7 +11,7 @@ lazy_static! {
 pub fn get_path() -> String {
     format!(
         "{}/.config/HybridBar/",
-        std::env::var("HOME").unwrap_or(execute!("whoami").to_string())
+        std::env::var("HOME").unwrap_or(execute!("whoami"))
     )
 }
 
@@ -68,16 +63,13 @@ pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bo
             if with_custom_variables {
                 ConfigData::new(
                     Some(with_variables(
-                        str!(MediumString, grabbed_value.to_string(), false),
+                        grabbed_value.to_string(),
                         &get_custom_variables(),
                     )),
                     None,
                 )
             } else {
-                ConfigData::new(
-                    Some(str!(MediumString, grabbed_value.to_string(), false)),
-                    None,
-                )
+                ConfigData::new(Some(grabbed_value.to_string()), None)
             }
         } else {
             // The key wasn't found, so just return None on all values.
@@ -89,12 +81,12 @@ pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bo
 }
 
 /// Gets all the custom variables.
-pub fn get_custom_variables() -> HashMap<SmallString, String> {
+pub fn get_custom_variables() -> HashMap<String, String> {
     if let Ok(cfg) = CONFIG.read() {
         let cfg = &cfg[HYBRID_V_ROOT_JSON];
-        let mut map: HashMap<SmallString, String> = HashMap::new();
+        let mut map: HashMap<String, String> = HashMap::new();
         for entry in cfg.entries() {
-            map.insert(str!(SmallString, entry.0, false), entry.1.to_string());
+            map.insert(entry.0.to_owned(), entry.1.to_string());
         }
 
         map
@@ -104,18 +96,14 @@ pub fn get_custom_variables() -> HashMap<SmallString, String> {
 }
 
 /// Replaces any variable-matching patterns in the `String` with the variables value.
-pub fn with_variables(
-    input: MediumString,
-    custom_variables: &HashMap<SmallString, String>,
-) -> MediumString {
-    let mut input = input.to_string();
+pub fn with_variables(input: String, custom_variables: &HashMap<String, String>) -> String {
+    let mut input = input;
     for variable in custom_variables {
         // Only replace if `result` actually contains the defined variable.
-        let as_str = variable.0.as_str();
-        if input.contains(as_str) {
-            input = input.replace(as_str, variable.1);
+        if input.contains(variable.0) {
+            input = input.replace(variable.0, variable.1);
         }
     }
 
-    str!(MediumString, input, false)
+    input
 }
