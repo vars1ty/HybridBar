@@ -49,3 +49,6 @@ pub const ERR_ACCESS_CONFIG: &str = "[ERROR] Couldn't access CONFIG!";
 // Constant warnings.
 
 pub const WARN_CAVA_NO_LINES: &str = "[WARN] Cava: There are no more lines available. Hybrid will keep on running but Cava will be stopped!";
+pub const WARN_CAVA_NO_BARS_INSTANCE: &str = "[WARN] Cava: Failed accessing cava::BARS, stopping!";
+pub const WARN_CAVA_NO_CRASHED_INSTANCE: &str =
+    "[WARN] Cava: Failed accessing cava::HAS_CAVA_CRASHED, stopping!";

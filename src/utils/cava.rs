@@ -21,16 +21,16 @@ lazy_static! {
 pub fn get_sed() -> String {
     conf!(HYBRID_ROOT_JSON, "cava_sed", true, false)
         .string
-        .unwrap_or(
-            "s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;".to_owned(),
-        )
+        .unwrap_or_else(|| {
+            "s/;//g;s/0/▁/g;s/1/▂/g;s/2/▃/g;s/3/▄/g;s/4/▅/g;s/5/▆/g;s/6/▇/g;s/7/█/g;".to_owned()
+        })
 }
 
 /// Returns the amount of bars that should be present.
 fn get_bars() -> i32 {
     let bars = conf!(HYBRID_ROOT_JSON, "cava_bars", false, false)
         .number
-        .unwrap_or(5);
+        .unwrap_or_else(|| 5);
     math::clamp_i32(bars, 2, 16)
 }
 
@@ -38,7 +38,7 @@ fn get_bars() -> i32 {
 fn get_framerate() -> i32 {
     let framerate = conf!(HYBRID_ROOT_JSON, "cava_framerate", false, false)
         .number
-        .unwrap_or(60);
+        .unwrap_or_else(|| 60);
     math::clamp_i32(framerate, 60, 360)
 }
 

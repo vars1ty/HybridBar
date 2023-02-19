@@ -73,7 +73,7 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
         new_tooltip.push_str(&tooltip);
         new_tooltip.push_str(&use_aliases(&tooltip_command));
 
-        let tooltip_markup = label.tooltip_markup().unwrap_or(GString::from(""));
+        let tooltip_markup = label.tooltip_markup().unwrap_or_else(|| GString::from(""));
         if !tooltip_markup.eq(&new_tooltip) {
             // Markup support here, the user therefore has to deal with any upcoming issues due to
             // the command output, on their own.

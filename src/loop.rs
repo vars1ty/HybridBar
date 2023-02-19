@@ -1,6 +1,9 @@
 use crate::{
-    cava::{self, BARS, HAS_CAVA_CRASHED},
-    constants::{ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, HYBRID_ROOT_JSON},
+    cava::{self, HAS_CAVA_CRASHED},
+    constants::{
+        ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, HYBRID_ROOT_JSON,
+        WARN_CAVA_NO_BARS_INSTANCE, WARN_CAVA_NO_CRASHED_INSTANCE,
+    },
     widget::HWidget,
 };
 use glib::Continue;
@@ -21,7 +24,7 @@ pub fn update() {
         Duration::from_millis(
             conf!(HYBRID_ROOT_JSON, "cava_update_rate", false, false)
                 .number
-                .unwrap_or(1)
+                .unwrap_or_else(|| 1)
                 .try_into()
                 .expect(ERR_PARSE_CAVA_UPDATE_RATE),
         ),
@@ -31,16 +34,24 @@ pub fn update() {
 
 /// Updates all Cava widgets.
 fn update_cava() -> Continue {
-    let bars = &*BARS.lock().unwrap();
-    // Loop through all Cava widget instances and sync the text.
-    let widgets = cava::CAVA_INSTANCES
-        .lock()
-        .expect(ERR_ACCESS_CAVA_INSTANCES);
-    let widgets = widgets.iter();
-    for widget in widgets {
-        widget.update_label_direct(bars);
-    }
+    if let Ok(ref bars) = cava::BARS.lock() {
+        // Loop through all Cava widget instances and sync the text.
+        let widgets = cava::CAVA_INSTANCES
+            .lock()
+            .expect(ERR_ACCESS_CAVA_INSTANCES);
+        let widgets = widgets.iter();
+        for widget in widgets {
+            widget.update_label_direct(bars);
+        }
 
-    // If unwrap fails here, then I have lost all faith in computers.
-    glib::Continue(!*HAS_CAVA_CRASHED.lock().unwrap())
+        if let Ok(has_cava_crashed) = HAS_CAVA_CRASHED.lock() {
+            glib::Continue(*has_cava_crashed)
+        } else {
+            log!(WARN_CAVA_NO_CRASHED_INSTANCE);
+            glib::Continue(false)
+        }
+    } else {
+        log!(WARN_CAVA_NO_BARS_INSTANCE);
+        glib::Continue(false)
+    }
 }

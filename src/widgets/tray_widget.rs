@@ -123,7 +123,7 @@ impl NotifierItem {
 
     /// Tries to get the application icon from the current icon theme.
     fn get_icon_from_theme(&self) -> Option<Image> {
-        let theme = gtk::IconTheme::default().unwrap_or(IconTheme::new());
+        let theme = gtk::IconTheme::default().unwrap_or_else(IconTheme::new);
         theme.rescan_if_needed();
 
         if let Some(path) = self.item.icon_theme_path.as_ref() {
@@ -151,6 +151,10 @@ impl HWidget for TrayWidget {
         right: &gtk::Box,
         box_holder: Option<&gtk::Box>,
     ) {
+        if !experimental!() {
+            return;
+        }
+
         let menu_bar = MenuBar::new();
         menu_bar.set_widget_name(name);
         ui::add_and_align(&menu_bar, align, left, centered, right, box_holder);

@@ -11,7 +11,7 @@ lazy_static! {
 pub fn get_path() -> String {
     format!(
         "{}/.config/HybridBar/",
-        std::env::var("HOME").unwrap_or(execute!("whoami"))
+        std::env::var("HOME").unwrap_or_else(|_| execute!("whoami"))
     )
 }
 
@@ -20,7 +20,7 @@ pub fn get_update_rate() -> u64 {
     let update_rate = math::clamp_i32(
         conf!(HYBRID_ROOT_JSON, "update_rate", false, false)
             .number
-            .unwrap_or(100),
+            .unwrap_or_else(|| 100),
         5,
         10_000,
     );

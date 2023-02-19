@@ -37,7 +37,7 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
 
     let pos = conf!(HYBRID_ROOT_JSON, "position", true, false)
         .string
-        .unwrap_or("Top".to_owned());
+        .unwrap_or_else(|| "Top".to_owned());
 
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
         panic!("{}", ERR_INVALID_POS)
@@ -79,7 +79,7 @@ fn activate(application: &Application) {
     // The default is "gtk-layer-shell" to not break existing configs.
     let namespace = conf!(HYBRID_ROOT_JSON, "namespace", true, false)
         .string
-        .unwrap_or("gtk-layer-shell".to_owned());
+        .unwrap_or_else(|| "gtk-layer-shell".to_owned());
 
     gtk_layer_shell::set_namespace(&window, &namespace);
 
@@ -111,7 +111,7 @@ pub fn load_css() {
     // 0.2.8: Allow for defining the name of the stylesheet to look up
     let css_file = conf!(HYBRID_ROOT_JSON, "stylesheet", true, false)
         .string
-        .unwrap_or(DEFAULT_CSS.to_owned());
+        .unwrap_or_else(|| DEFAULT_CSS.to_owned());
 
     let mut css_path = config::get_path();
     css_path.push_str(&css_file);
