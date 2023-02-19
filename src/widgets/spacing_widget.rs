@@ -1,4 +1,7 @@
-use crate::{structures::Align, ui, widget::HWidget};
+use crate::{
+    ui,
+    widget::{Align, HWidget},
+};
 use gtk::{traits::*, *};
 
 /// Creates a new basic spacing widget.

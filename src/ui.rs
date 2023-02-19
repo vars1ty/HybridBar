@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use crate::{
     cava::HAS_CAVA_STARTED,
     config::{get_custom_variables, with_variables, CONFIG},
@@ -6,15 +8,13 @@ use crate::{
     *,
 };
 use crate::{
-    structures::Align,
-    widget::HWidget,
+    widget::{Align, HWidget},
     widgets::{
         box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget,
         label_widget::LabelWidget, spacing_widget::SpacingWidget, tray_widget::TrayWidget,
     },
 };
 use gtk::traits::*;
-use std::str::FromStr;
 
 /// Adds and aligns the specified widget.
 pub fn add_and_align(
@@ -137,7 +137,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 update_rate,
                 tooltip,
                 tooltip_command,
-                alignment: structures::Align::from_str(&widget_alignment)
+                alignment: Align::from_str(&widget_alignment)
                     .expect(ERR_INVALID_ALIGNMENT),
             };
 

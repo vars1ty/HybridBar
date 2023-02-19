@@ -1,5 +1,15 @@
-use crate::structures::Align;
 use gtk::Box;
+use strum::EnumString;
+
+/// Widget alignment.
+// Allow for uppercase enum namings here.
+#[allow(clippy::upper_case_acronyms)]
+#[derive(EnumString)]
+pub enum Align {
+    LEFT,
+    CENTERED,
+    RIGHT,
+}
 
 /// Implements basic traits for custom user-defined widgets.
 pub trait HWidget {

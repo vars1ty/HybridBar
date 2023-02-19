@@ -1,4 +1,9 @@
-use crate::{cava, constants::ERR_ACCESS_CAVA_INSTANCES, structures::Align, ui, widget::HWidget};
+use crate::{
+    cava,
+    constants::ERR_ACCESS_CAVA_INSTANCES,
+    ui,
+    widget::{Align, HWidget},
+};
 use gtk::{traits::*, *};
 
 /// Creates a new label widget.

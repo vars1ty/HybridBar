@@ -2,9 +2,8 @@ use crate::{
     aliases::use_aliases,
     config,
     constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
-    structures::Align,
     ui,
-    widget::HWidget,
+    widget::{Align, HWidget},
 };
 use gtk::{glib::GString, traits::*, *};
 use std::{mem::take, process::Stdio, sync::Mutex, time::Duration};

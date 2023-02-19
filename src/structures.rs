@@ -1,4 +1,4 @@
-use strum::EnumString;
+use crate::widget::Align;
 
 /// Fetched config data.
 #[derive(Default)]
@@ -23,15 +23,4 @@ pub struct BaseKeys {
     pub tooltip: String,
     pub tooltip_command: String,
     pub alignment: Align,
-}
-
-/// Widget alignment.
-// Allow for uppercase enum namings here.
-// TODO: Move this, or rename the file because this is no struct.
-#[allow(clippy::upper_case_acronyms)]
-#[derive(EnumString)]
-pub enum Align {
-    LEFT,
-    CENTERED,
-    RIGHT,
 }

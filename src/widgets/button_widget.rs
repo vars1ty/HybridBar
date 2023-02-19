@@ -1,4 +1,8 @@
-use crate::{aliases::use_aliases, structures::Align, ui, widget::HWidget};
+use crate::{
+    aliases::use_aliases,
+    ui,
+    widget::{Align, HWidget},
+};
 use gtk::{glib::GString, traits::*, *};
 use std::{mem::take, time::Duration};
 

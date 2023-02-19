@@ -1,8 +1,7 @@
 use crate::{
     constants::{ERR_CREATE_RT, ERR_SEND_MSG_UI},
-    structures::Align,
     ui,
-    widget::HWidget,
+    widget::{Align, HWidget},
 };
 use gtk::{
     traits::*, IconLookupFlags, IconTheme, Image, Menu, MenuBar, MenuItem, SeparatorMenuItem,

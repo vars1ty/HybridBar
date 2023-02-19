@@ -1,8 +1,8 @@
 use crate::{
     constants::ERR_EMPTY_NAME,
-    structures::{Align, BaseKeys},
+    structures::BaseKeys,
     ui,
-    widget::HWidget,
+    widget::{Align, HWidget},
 };
 use gtk::{traits::*, *};
 use json::JsonValue;

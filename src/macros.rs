@@ -7,19 +7,19 @@ macro_rules! log {
         }
     };
 }
-
 #[macro_export]
 /// Executes a bash command and outputs it to `result`.
 macro_rules! execute {
     ($cmd:expr) => {{
-        let mut result = String::from_utf8_lossy(
-            &std::process::Command::new($crate::constants::PROC_TARGET)
-                .args(["-c", $cmd])
-                .output()
-                .unwrap()
-                .stdout,
-        )
-        .to_string();
+        let mut result = unsafe {
+            String::from_utf8_unchecked(
+                std::process::Command::new($crate::constants::PROC_TARGET)
+                    .args(["-c", $cmd])
+                    .output()
+                    .unwrap()
+                    .stdout,
+            )
+        };
 
         // Remove the last character as its a new line.
         result.pop();
