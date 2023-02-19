@@ -1,4 +1,4 @@
-use crate::{constants::*, math, widgets::cava_widget::CavaWidget};
+use crate::{constants::*, widgets::cava_widget::CavaWidget};
 use std::{fs::File, io::Write, process::Stdio, sync::Mutex};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
@@ -31,7 +31,7 @@ fn get_bars() -> i32 {
     let bars = conf!(HYBRID_ROOT_JSON, "cava_bars", false, false)
         .number
         .unwrap_or_else(|| 5);
-    math::clamp_i32(bars, 2, 16)
+    bars.clamp(2, 16)
 }
 
 /// Returns the desired framerate to use for Cava updates.
@@ -39,7 +39,7 @@ fn get_framerate() -> i32 {
     let framerate = conf!(HYBRID_ROOT_JSON, "cava_framerate", false, false)
         .number
         .unwrap_or_else(|| 60);
-    math::clamp_i32(framerate, 60, 360)
+    framerate.clamp(60, 360)
 }
 
 /// Builds the temporary Cava configuration and then returns the path to it,

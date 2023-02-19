@@ -1,4 +1,4 @@
-use crate::{constants::*, environment, math, structures::ConfigData};
+use crate::{constants::*, environment, structures::ConfigData};
 use json::JsonValue;
 use std::{collections::HashMap, fs, sync::RwLock};
 
@@ -17,13 +17,10 @@ pub fn get_path() -> String {
 
 /// Returns the set update-rate.
 pub fn get_update_rate() -> u64 {
-    let update_rate = math::clamp_i32(
-        conf!(HYBRID_ROOT_JSON, "update_rate", false, false)
-            .number
-            .unwrap_or_else(|| 100),
-        5,
-        10_000,
-    );
+    let update_rate = conf!(HYBRID_ROOT_JSON, "update_rate", false, false)
+        .number
+        .unwrap_or_else(|| 100)
+        .clamp(5, 10_000);
 
     update_rate.try_into().expect(ERR_PARSE_UPDATE_RATE)
 }

@@ -1,7 +1,7 @@
 use crate::{
-    cava,
     constants::ERR_ACCESS_CAVA_INSTANCES,
     ui,
+    utils::cava,
     widget::{Align, HWidget},
 };
 use gtk::{traits::*, *};

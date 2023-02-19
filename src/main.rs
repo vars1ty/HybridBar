@@ -6,20 +6,15 @@ extern crate lazy_static;
 #[macro_use]
 mod macros;
 
-#[path = "utils/aliases.rs"]
-mod aliases;
-#[path = "utils/cava.rs"]
-mod cava;
 mod config;
 mod constants;
 mod environment;
 mod r#loop;
-#[path = "utils/math.rs"]
-mod math;
 mod structures;
 mod ui;
 mod widget;
 mod widgets;
+mod utils;
 
 use constants::*;
 use gtk::gdk::*;

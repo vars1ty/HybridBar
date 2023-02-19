@@ -1,9 +1,9 @@
 use crate::{
-    cava::{self, HAS_CAVA_CRASHED},
     constants::{
         ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, HYBRID_ROOT_JSON,
         WARN_CAVA_NO_BARS_INSTANCE, WARN_CAVA_NO_CRASHED_INSTANCE,
     },
+    utils::cava::{self, HAS_CAVA_CRASHED},
     widget::HWidget,
 };
 use glib::Continue;

@@ -1,10 +1,8 @@
-use std::str::FromStr;
-
 use crate::{
-    cava::HAS_CAVA_STARTED,
     config::{get_custom_variables, with_variables, CONFIG},
     r#loop::update,
     structures::BaseKeys,
+    utils::cava::{self, HAS_CAVA_STARTED},
     *,
 };
 use crate::{
@@ -15,6 +13,7 @@ use crate::{
     },
 };
 use gtk::traits::*;
+use std::str::FromStr;
 
 /// Adds and aligns the specified widget.
 pub fn add_and_align(
@@ -137,8 +136,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 update_rate,
                 tooltip,
                 tooltip_command,
-                alignment: Align::from_str(&widget_alignment)
-                    .expect(ERR_INVALID_ALIGNMENT),
+                alignment: Align::from_str(&widget_alignment).expect(ERR_INVALID_ALIGNMENT),
             };
 
             // Gets every element after the widget identifier, then appends '_' in between.

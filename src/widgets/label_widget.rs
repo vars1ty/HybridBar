@@ -1,8 +1,8 @@
 use crate::{
-    aliases::use_aliases,
     config,
     constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
     ui,
+    utils::aliases::use_aliases,
     widget::{Align, HWidget},
 };
 use gtk::{glib::GString, traits::*, *};

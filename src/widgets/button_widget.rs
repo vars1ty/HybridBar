@@ -1,6 +1,6 @@
 use crate::{
-    aliases::use_aliases,
     ui,
+    utils::aliases::use_aliases,
     widget::{Align, HWidget},
 };
 use gtk::{glib::GString, traits::*, *};
