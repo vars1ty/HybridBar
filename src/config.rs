@@ -34,7 +34,7 @@ fn read_config_raw() -> JsonValue {
             // Don't panic if the file doesn't exist/couldn't be read. Instead use the example config.
             .unwrap_or_else(|_| include_str!("../examples/config.json").to_owned()),
     )
-    .unwrap_or_else(|_| panic!("[ERROR] Failed parsing config from '{conf_path}'!"))
+    .unwrap_or_else(|error| panic!("[ERROR] Error parsing config: {error}"))
 }
 
 /// Tries to fetch a value from the config. Supported types are `String` and `i32`.

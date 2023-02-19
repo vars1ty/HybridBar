@@ -42,20 +42,20 @@ fn build_child_widgets(
             alignment: Align::LEFT,
         };
 
-        let widget_name = identifiers[1];
+        let widget_name = identifiers[1..].join(SEPARATOR);
         if widget_name.is_empty() {
             panic!("{}", ERR_EMPTY_NAME)
         }
 
         log!(format!(
-            "Adding child widget '{widget_name}', type '{widget_type}' into '{}'!",
+            "Adding child widget '{widget_name:?}', type '{widget_type}' into '{}'!",
             box_holder.widget_name()
         ));
 
         // Add the widget.
         ui::add_widget(
             json,
-            (widget_type, widget_name),
+            (widget_type, &widget_name),
             base_keys,
             (left, centered, right),
             widget_type,

@@ -12,9 +12,9 @@ mod environment;
 mod r#loop;
 mod structures;
 mod ui;
+mod utils;
 mod widget;
 mod widgets;
-mod utils;
 
 use constants::*;
 use gtk::gdk::*;
@@ -114,7 +114,7 @@ pub fn load_css() {
     if Path::new(&css_path).is_file() {
         provider
             .load_from_path(&css_path)
-            .unwrap_or_else(|_| panic!("[ERROR] Failed loading CSS from '{css_file}'!"))
+            .unwrap_or_else(|error| panic!("[ERROR] Error loading stylesheet: {error}"))
     } else {
         provider
             .load_from_data(include_bytes!("../examples/style.css"))
@@ -144,7 +144,10 @@ async fn main() {
         activate(app);
     });
 
-    tracing_subscriber::fmt::init();
+    if experimental!() {
+        tracing_subscriber::fmt::init();
+    }
+
     application.run();
 }
 
