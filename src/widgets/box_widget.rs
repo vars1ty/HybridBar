@@ -84,7 +84,14 @@ impl HWidget for BoxWidget {
             build_child_widgets(self.widgets, left, centered, right, &widget)
         }
 
-        ui::add_and_align(&widget, align, left, centered, right, box_holder);
+        ui::add_and_align(
+            &widget,
+            align,
+            left,
+            centered,
+            right,
+            if experimental!() { box_holder } else { None },
+        );
         log!("Added a new box widget");
     }
 }
