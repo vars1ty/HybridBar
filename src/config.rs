@@ -1,4 +1,4 @@
-use crate::{constants::*, environment, structures::ConfigData};
+use crate::{constants::*, structures::ConfigData, utils::environment};
 use json::JsonValue;
 use std::{collections::HashMap, fs, sync::RwLock};
 

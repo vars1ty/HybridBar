@@ -8,7 +8,6 @@ mod macros;
 
 mod config;
 mod constants;
-mod environment;
 mod r#loop;
 mod structures;
 mod ui;
@@ -173,7 +172,7 @@ fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f6
     }
 
     // Return the result.
-    res
+    res.clamp(0.0, 255.0)
 }
 
 /// Draws the window using a custom color and opacity.

@@ -8,7 +8,6 @@ license = "MIT"
 
 [dependencies]
 lxinfo = { git = "https://github.com/vars1ty/lxinfo.git" }
-strum = { version = "*", features = ["derive"] }
 tokio = { version = "*", features = ["full"] }
 tracing-subscriber = "*"
 gtk-layer-shell = "*"

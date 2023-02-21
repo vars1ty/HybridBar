@@ -13,7 +13,6 @@ use crate::{
     },
 };
 use gtk::traits::*;
-use std::str::FromStr;
 
 /// Adds and aligns the specified widget.
 pub fn add_and_align(
@@ -53,20 +52,13 @@ pub fn build_widgets(window: &ApplicationWindow) {
     centered.set_widget_name("centered");
     right.set_widget_name("right");
 
-    // Add and align both centered and right.
     root.set_center_widget(Some(&centered));
     root.pack_end(&right, false, true, 0);
-
-    // Add only left because centered and right are implicitly added above.
     root.add(&left);
-
-    // Add root to the main canvas before finally adding all the widgets and drawing it.
     window.add(&root);
 
-    // Prepare all of the widgets.
+    // Prepare and show all of the widgets.
     create_components(&left, &centered, &right);
-
-    // Make every widget visible.
     window.show_all();
 
     // Update dynamic content.
@@ -140,7 +132,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
             };
 
             // Gets every element after the widget identifier, then appends '_' in between.
-            let widget_name = identifiers[1..].join(SEPARATOR).to_owned();
+            let widget_name = identifiers[1..].join(SEPARATOR);
 
             if widget_name.is_empty() {
                 panic!("{}", ERR_EMPTY_NAME)

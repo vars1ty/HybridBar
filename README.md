@@ -64,7 +64,7 @@ CSS is supported and you can make it auto-load on startup by making a `style.css
 If you want a sample CSS which has good defaults, check `examples/style.css`.
 
 ## Environment Variables
-`HYBRID_LOG` = `0` OR `1` : Logs Hybrid output to stdout.
+`HYBRID_LOG` = `1` : Logs Hybrid output to stdout.
 
 `HYBRID_CONFIG` = `name.json` : Locates the config inside the HybridBar config path, then uses it for the rest of the bars session.
 
@@ -74,8 +74,6 @@ Hybrid automatically performs background updates for dynamic labels/tooltips and
 The rate for updating labels is read from the labels `update_rate` key (u64).
 
 It's worth noting that low update-rates may lead to performance decreases, the value specified is in **milliseconds**.
-
-**NOTE**: Cava widgets do __not__ support a custom `update_rate` to be specified, this is to ensure better precision for the animations.
 
 # Build dependencies
 1. rust

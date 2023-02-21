@@ -1,14 +1,28 @@
 use gtk::Box;
-use strum::EnumString;
 
 /// Widget alignment.
 // Allow for uppercase enum namings here.
 #[allow(clippy::upper_case_acronyms)]
-#[derive(EnumString)]
 pub enum Align {
     LEFT,
     CENTERED,
     RIGHT,
+}
+
+/// Implements `from_str` for the Align structure.
+impl Align {
+    /// Tries to get the enum by its string-identifier.
+    pub fn from_str(string: &str) -> Option<Align> {
+        if string.eq_ignore_ascii_case("left") {
+            Some(Align::LEFT)
+        } else if string.eq_ignore_ascii_case("centered") {
+            Some(Align::CENTERED)
+        } else if string.eq_ignore_ascii_case("right") {
+            Some(Align::RIGHT)
+        } else {
+            None
+        }
+    }
 }
 
 /// Implements basic traits for custom user-defined widgets.

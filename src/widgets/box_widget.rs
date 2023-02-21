@@ -39,7 +39,7 @@ fn build_child_widgets(
             update_rate,
             tooltip,
             tooltip_command,
-            alignment: Align::LEFT,
+            alignment: Align::LEFT, // <= Doesn't matter as it won't be used.
         };
 
         let widget_name = identifiers[1..].join(SEPARATOR);
@@ -48,7 +48,7 @@ fn build_child_widgets(
         }
 
         log!(format!(
-            "Adding child widget '{widget_name:?}', type '{widget_type}' into '{}'!",
+            "Adding child widget '{widget_name}', type '{widget_type}' into '{}'!",
             box_holder.widget_name()
         ));
 
