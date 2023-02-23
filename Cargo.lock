@@ -574,7 +574,7 @@ version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5d3076ecb86c8c3a672c9843d6232b3a344fb81d304d0ba1ac64b23343efa46"
 dependencies = [
- "glib-sys 0.17.0",
+ "glib-sys 0.17.2",
  "gobject-sys 0.17.0",
  "libc",
  "system-deps",
@@ -605,9 +605,9 @@ dependencies = [
 
 [[package]]
 name = "glib"
-version = "0.17.1"
+version = "0.17.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91b429154ec5943185aeeaf79e646297567b6a056965f1e89da2657a0e23255b"
+checksum = "a78b6a0901e258cb03c761ca94c84d519427ede489cae12cd5ba0d7d584e69e9"
 dependencies = [
  "bitflags",
  "futures-channel",
@@ -616,8 +616,8 @@ dependencies = [
  "futures-task",
  "futures-util",
  "gio-sys 0.17.0",
- "glib-macros 0.17.1",
- "glib-sys 0.17.0",
+ "glib-macros 0.17.2",
+ "glib-sys 0.17.2",
  "gobject-sys 0.17.0",
  "libc",
  "memchr",
@@ -643,9 +643,9 @@ dependencies = [
 
 [[package]]
 name = "glib-macros"
-version = "0.17.1"
+version = "0.17.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bc80ac951300ca288dd9ab3863743c37a608fb0e5ca12863495640ec6b781ab"
+checksum = "55e93d79ed130f0f0b58bc0aa29fb0e40c9dfd63997fec51f8adf780d1520bc4"
 dependencies = [
  "anyhow",
  "heck",
@@ -668,9 +668,9 @@ dependencies = [
 
 [[package]]
 name = "glib-sys"
-version = "0.17.0"
+version = "0.17.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ddcb73fa8236277bedadaaadb76aef49c85d66340f83bece244f46c2d4f0e01"
+checksum = "72a0985cf568e18cf63b443c9a14f4bdaa947fed7437476000dba84926a20b25"
 dependencies = [
  "libc",
  "system-deps",
@@ -693,7 +693,7 @@ version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a0155d388840c77d61b033b66ef4f9bc7f4133d83df83572d6b4fb234a3be7d"
 dependencies = [
- "glib-sys 0.17.0",
+ "glib-sys 0.17.2",
  "libc",
  "system-deps",
 ]
@@ -812,7 +812,7 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 name = "hybrid-bar"
 version = "0.4.5"
 dependencies = [
- "glib 0.17.1",
+ "glib 0.17.2",
  "gtk",
  "gtk-layer-shell",
  "json",
@@ -1431,9 +1431,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.107"
+version = "1.0.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f4064b5b16e03ae50984a5a8ed5d4f8803e6bc1fd170a3cda91a1be4b18e3f5"
+checksum = "d56e159d99e6c2b93995d171050271edb50ecc5288fbc7cc17de8fdce4e58c14"
 dependencies = [
  "proc-macro2",
  "quote",

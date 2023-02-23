@@ -35,7 +35,7 @@ macro_rules! conf {
         $crate::config::try_get($root, $key, $is_string, $with_custom_variables)
     };
     ($root:expr, $key:expr, $default:expr) => {
-        if let Some(ref res) = conf!($root, $key, true, false).string {
+        if let Some(res) = conf!($root, $key, true, false).string {
             res == "true"
         } else {
             $default
