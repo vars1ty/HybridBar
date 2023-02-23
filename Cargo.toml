@@ -1,14 +1,14 @@
 [package]
 name = "hybrid-bar"
 authors = [ "varsity <varsity@duck.com>" ]
-version = "0.4.5"
+version = "0.4.6"
 edition = "2021"
 description = "A simple status bar made for wlroots compositors."
 license = "MIT"
 
 [dependencies]
 lxinfo = { git = "https://github.com/vars1ty/lxinfo.git" }
-tokio = { version = "*", features = ["full"] }
+tokio = { version = "*", features = [ "full" ] }
 tracing-subscriber = "*"
 gtk-layer-shell = "*"
 strum_macros = "*"
