@@ -39,7 +39,7 @@ fn build_child_widgets(
             update_rate,
             tooltip,
             tooltip_command,
-            alignment: Align::LEFT, // <= Doesn't matter as it won't be used.
+            alignment: Align::Left, // <= Doesn't matter as it won't be used.
         };
 
         let widget_name = identifiers[1..].join(SEPARATOR);

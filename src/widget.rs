@@ -2,11 +2,10 @@ use gtk::Box;
 
 /// Widget alignment.
 // Allow for uppercase enum namings here.
-#[allow(clippy::upper_case_acronyms)]
 pub enum Align {
-    LEFT,
-    CENTERED,
-    RIGHT,
+    Left,
+    Centered,
+    Right,
 }
 
 /// Implements `from_str` for the Align structure.
@@ -14,11 +13,11 @@ impl Align {
     /// Tries to get the enum by its string-identifier.
     pub fn from_str(string: &str) -> Option<Align> {
         if string.eq_ignore_ascii_case("left") {
-            Some(Align::LEFT)
+            Some(Align::Left)
         } else if string.eq_ignore_ascii_case("centered") {
-            Some(Align::CENTERED)
+            Some(Align::Centered)
         } else if string.eq_ignore_ascii_case("right") {
-            Some(Align::RIGHT)
+            Some(Align::Right)
         } else {
             None
         }

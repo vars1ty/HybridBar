@@ -27,9 +27,9 @@ pub fn add_and_align(
         r#box.add(widget)
     } else {
         match align {
-            Align::LEFT => left.add(widget),
-            Align::CENTERED => centered.add(widget),
-            Align::RIGHT => right.add(widget),
+            Align::Left => left.add(widget),
+            Align::Centered => centered.add(widget),
+            Align::Right => right.add(widget),
         }
     }
 }
