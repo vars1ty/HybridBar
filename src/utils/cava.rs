@@ -79,32 +79,22 @@ pub fn update_bars() {
         drop(path);
         let mut reader = BufReader::new(out).lines();
         loop {
-            bars = {
-                let this = {
-                    let next_line = reader.next_line().await;
-                    match next_line {
-                        Ok(t) => t,
-                        Err(_) => {
-                            *HAS_CAVA_CRASHED.lock().unwrap() = true;
-                            BARS.lock().unwrap().clear();
-                            panic!("{}", WARN_CAVA_NO_LINES)
-                        }
-                    }
-                };
-
-                match this {
-                    Some(val) => val,
-                    None => {
-                        *HAS_CAVA_CRASHED.lock().unwrap() = true;
-                        BARS.lock().unwrap().clear();
-                        panic!("{}", WARN_CAVA_NO_LINES)
-                    }
-                }
-            };
+            bars = reader
+                .next_line()
+                .await
+                .unwrap_or_else(|_| on_cava_crashed())
+                .unwrap_or_else(|| on_cava_crashed());
 
             if let Ok(mut r_bars) = BARS.lock() {
                 *r_bars = bars;
             }
         }
     });
+}
+
+/// Called when Cava has crashed.
+fn on_cava_crashed() -> ! {
+    *HAS_CAVA_CRASHED.lock().unwrap() = true;
+    BARS.lock().unwrap().clear();
+    panic!("{}", WARN_CAVA_NO_LINES)
 }
