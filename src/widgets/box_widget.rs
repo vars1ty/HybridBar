@@ -80,18 +80,12 @@ impl HWidget for BoxWidget {
         widget.set_width_request(self.width);
 
         // 0.4.3: Experimental: Allow for widgets enclosed into boxes.
-        if !self.widgets.is_null() && experimental!() {
+        // 0.4.7: Stabilize Box Child-Widgets.
+        if !self.widgets.is_null() {
             build_child_widgets(self.widgets, left, centered, right, &widget)
         }
 
-        ui::add_and_align(
-            &widget,
-            align,
-            left,
-            centered,
-            right,
-            if experimental!() { box_holder } else { None },
-        );
+        ui::add_and_align(&widget, align, left, centered, right, box_holder);
         log!("Added a new box widget");
     }
 }

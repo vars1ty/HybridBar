@@ -91,7 +91,7 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
     let label = take(&mut label_ref.label);
     let command = label_ref.command.to_owned();
     let update_rate = label_ref.update_rate;
-    if command.is_empty() || update_rate == 0 {
+    if command.is_empty() || update_rate <= 3 {
         // Not eligible, cancel.
         return;
     }

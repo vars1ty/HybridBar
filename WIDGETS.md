@@ -36,7 +36,7 @@ Keys Supported:
 
 Keys Supported:
 - width: i32
-- widgets: JSON - **EXPERIMENTAL**
+- widgets: JSON
 ***
 `cava`:
 
@@ -47,6 +47,8 @@ Keys Supported:
 - Shared: `hybrid` -> `cava_framerate`: i32
 ***
 `tray`:
+
+> **Warning**: Experimental Widget, expect issues.
 
 Keys Supported:
 - None

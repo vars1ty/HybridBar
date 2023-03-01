@@ -39,7 +39,6 @@ pub const ERR_NO_LINES: &str = "[ERROR] There are no more lines available!";
 pub const ERR_STRING_NONE: &str = "[ERROR] The string value is None!";
 pub const ERR_NO_LXINFO: &str =
     "System Info isn't available for this system, therefore aliases have been disabled.";
-pub const ERR_CREATE_TMP_CONF: &str = "[ERROR] Couldn't create the temporary Cava config!";
 pub const ERR_WRITE_TMP_CONF: &str = "[ERROR] Failed writing to the temporary Cava config!";
 pub const ERR_START_CAVA: &str = "[ERROR] Cannot start Cava script!";
 pub const ERR_CREATE_RT: &str = "[ERROR] Couldn't create the Tokio runtime!";

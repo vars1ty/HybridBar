@@ -1,5 +1,5 @@
 use crate::{constants::*, widgets::cava_widget::CavaWidget};
-use std::{fs::File, io::Write, process::Stdio, sync::Mutex};
+use std::{fs::write, process::Stdio, sync::Mutex};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -44,8 +44,7 @@ fn get_framerate() -> i32 {
 
 /// Builds the temporary Cava configuration and then returns the path to it,
 pub fn get_temp_config() -> String {
-    let path = String::from(CAVA_TMP_CONFIG);
-    let mut file = File::create(&path).expect(ERR_CREATE_TMP_CONF);
+    let path = CAVA_TMP_CONFIG.to_owned();
     // 0.2.7: Support for dynamically configuring the temporary config to an extent.
     let bars = get_bars();
     let framerate = get_framerate();
@@ -55,7 +54,7 @@ pub fn get_temp_config() -> String {
         .replace("[bars]", &bars.to_string());
 
     conf = &formatted;
-    file.write_all(conf.as_bytes()).expect(ERR_WRITE_TMP_CONF);
+    write(&path, conf).expect(ERR_WRITE_TMP_CONF);
     path
 }
 
@@ -77,6 +76,7 @@ pub fn update_bars() {
 
         // Drop to free the resources as we don't need to access them anymore.
         drop(path);
+        drop(sed);
         let mut reader = BufReader::new(out).lines();
         loop {
             bars = reader
