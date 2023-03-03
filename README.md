@@ -1,13 +1,5 @@
 # Hybrid Bar
-A status bar focused on wlroots Wayland compositors
-
-## Notice
-> **Note**:
-> Hybrid is basically feature-complete for me.
->
-> Which in turn means that commits might not happen as often, and new features might not get added by myself unless I need them.
->
-> Although if you know Rust and you want something implemented, feel free to fork and work on said thing, then submit a PR.
+A simple status bar focused on wlroots Wayland compositors
 
 ## Preview
 With blur through Hyprland.
@@ -18,24 +10,26 @@ The bottom bar is also made with Hybrid.
 ## What does it support?
 It supports:
 - Straight-forward configuration;
-- Labels with commands (+ listen support);
+- Labels with shell commands (+ listen support);
 - Spacings (a.k.a. Separators if styled);
 - Boxes with child widgets;
 - Custom update-rate for dynamic labels;
 - Cava;
-- Buttons with commands;
+- Buttons with shell commands;
 - Tooltips for buttons and labels;
-- Markup for buttons and static labels;
-- Top / Bottom positioning;
+- Markup for buttons and labels;
+- Top and Bottom pinning;
 - Transparency (+ blur if your compositor allows for blurring surface layers);
-- System Tray via `stray`;
-- Compatible with different monitors
+- Experimental system tray via `stray`;
+- Different monitors for each configuration
 
 ## I have no config
-If the AUR version for whatever reason didn't give you the example one, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
+If you installed outside the AUR, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
 
 ## Does it only work on wlroots Compositors?
-Nope, it's been tested on KDE as well and it worked just fine. It just won't work on GNOME as it hasn't implemented the `wlr-layer-shell` protocol.
+Nope, it's been tested on KDE as well and it worked just fine.
+
+It just won't work on GNOME as it hasn't implemented the `wlr-layer-shell` protocol.
 
 # Config Layout
 I'm assuming you are familiar with JSON. If you aren't, well too bad.
@@ -82,12 +76,10 @@ It's worth noting that low update-rates may lead to performance decreases, the v
 4. a compositor that supports layer-shells
    - This excludes GNOME. KDE, Hyprland and Sway have been confirmed working.
 
-## Arch Linux
-Git Version: `yay/paru -S hybrid-bar-git`
+## Installation
+Arch Linux: `yay/paru -S hybrid-bar`
 
-**NOTE**: Git may include changes that are experimental. It's heavily advised that you use the package listed below if you care about stability.
-
-Latest Binary: `yay/paru -S hybrid-bar`
+Other distros: `cargo install hybrid-bar`
 
 ## Building
 1. `git clone https://github.com/vars1ty/HybridBar`
@@ -95,5 +87,3 @@ Latest Binary: `yay/paru -S hybrid-bar`
 3. `cargo build --release`
 4. `cd target/release`
 5. Done, the executable is called `hybrid-bar`.
-
-**TIP**: `chmod +x hybrid-bar` - So you can run the executable directly.

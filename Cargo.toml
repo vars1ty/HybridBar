@@ -1,18 +1,22 @@
 [package]
 name = "hybrid-bar"
-authors = [ "varsity <varsity@duck.com>" ]
-version = "0.4.6"
-edition = "2021"
 description = "A simple status bar made for wlroots compositors."
+authors = [ "varsity <refined@skiff.com>" ]
+readme = "README.md"
+repository = "https://github.com/vars1ty/HybridBar"
+keywords = [ "gui", "wayland", "status bar", "gtk-layer-shell", "linux" ]
+categories = [ "rendering" ]
+version = "0.4.7"
+edition = "2021"
 license = "MIT"
 
 [dependencies]
-lxinfo = { git = "https://github.com/vars1ty/lxinfo.git" }
 tokio = { version = "*", features = [ "full" ] }
 tracing-subscriber = "*"
 gtk-layer-shell = "*"
 strum_macros = "*"
 lazy_static = "*"
+lxinfo = "*"
 stray = "*"
 glib = "*"
 json = "*"
