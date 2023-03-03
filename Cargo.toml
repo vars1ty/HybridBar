@@ -11,16 +11,15 @@ edition = "2021"
 license = "MIT"
 
 [dependencies]
-tokio = { version = "*", features = [ "full" ] }
-tracing-subscriber = "*"
-gtk-layer-shell = "*"
-strum_macros = "*"
-lazy_static = "*"
-lxinfo = "*"
-stray = "*"
-glib = "*"
-json = "*"
-gtk = "*"
+tokio = { version = "1.26.0", features = [ "full" ] }
+tracing-subscriber = "0.3.16"
+gtk-layer-shell = "0.6.0"
+lazy_static = "1.4.0"
+lxinfo = "0.1.2"
+stray = "0.1.3"
+glib = "0.17.2"
+json = "0.12.4"
+gtk = "0.17.0"
 
 [profile.release]
 codegen-units = 1
