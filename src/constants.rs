@@ -44,6 +44,8 @@ pub const ERR_START_CAVA: &str = "[ERROR] Cannot start Cava script!";
 pub const ERR_CREATE_RT: &str = "[ERROR] Couldn't create the Tokio runtime!";
 pub const ERR_SEND_MSG_UI: &str = "[ERROR] Couldn't send tray messages to the UI!";
 pub const ERR_ACCESS_CONFIG: &str = "[ERROR] Couldn't access CONFIG!";
+pub const ERR_WRONG_LABEL_RANIM: &str =
+    "[ERROR] Invalid revealer animation! Use `crossfade`, `slide_left` or `slide_right`.";
 
 // Constant warnings.
 

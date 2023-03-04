@@ -12,39 +12,63 @@ Available widgets:
 
 Keys Supported:
 - text: String
+   - Constant Text string
 - command: String
+   - Command to be executed and appended to the back of the text string
 - update_rate: u64
+   - How often the command should be called if `listen` isn't enabled
 - tooltip: String
+   - Constant Tooltip string
 - tooltip_command: String
+   - Command to be executed and appended to the back of the tooltip string
 - listen: bool
+   - Should Hybrid listen to the commands output, rather than calling it once and moving on?
+- reveal_if_eq: String
+   - Fades in when the content of the dynamic label equals to this string.
+   - Put `!=` in front of the text to be checked to invert the equals-check
+- reveal_anim: String
+   - Changes the animation which is by default set to `crossfade`.
+   - Available animations are: `crossfade`, `slide_left` and `slide_right`
 ***
 `button`:
 
 Keys Supported:
 - text: String
+   - Constant Text string
 - command: String
+   - Command to be executed when pressing on the button
 - tooltip: String
+   - Constant Tooltip string
 - tooltip_command: String
+   - Command to be executed and appended to the back of the tooltip string
 ***
 `spacing`:
 
 Keys Supported:
 - spacing_start: i32
+   - Start spacing
 - spacing_end: i32
+   - End spacing
 ***
 `box`:
 
 Keys Supported:
 - width: i32
+   - Box custom requested width
 - widgets: JSON
+   - Embedded child widgets
 ***
 `cava`:
 
 Keys Supported:
 - Shared: `hybrid` -> `cava_update_rate`: u64
+   - How often the new Cava output should be displayed, in milliseconds
 - Shared: `hybrid` -> `cava_sed`: String
+   - SED to be used for translating the raw stdout into custom content
 - Shared: `hybrid` -> `cava_bars`: i32
+   - How many internal Cava bars that should be outputted
 - Shared: `hybrid` -> `cava_framerate`: i32
+   - Internal Cava framerate
 ***
 `tray`:
 

@@ -11,7 +11,7 @@ lazy_static! {
 pub fn get_path() -> String {
     format!(
         "{}/.config/HybridBar/",
-        std::env::var("HOME").unwrap_or_else(|_| execute!("whoami").to_owned())
+        std::env::var("HOME").unwrap_or_else(|_| execute!("whoami"))
     )
 }
 

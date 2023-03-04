@@ -1,3 +1,5 @@
+use gtk::RevealerTransitionType;
+
 use crate::widget::Align;
 
 /// Fetched config data.
@@ -23,4 +25,22 @@ pub struct BaseKeys {
     pub tooltip: String,
     pub tooltip_command: String,
     pub alignment: Align,
+}
+
+pub trait RevealerExtensions {
+    fn from_str(string: &str) -> Option<RevealerTransitionType>;
+}
+
+impl RevealerExtensions for RevealerTransitionType {
+    /// Tries to get the transition type based on the string input.
+    /// Note: The string has to be lowercase and spaces replaced with underscores.
+    /// This can only return `Crossfade`, `SlideLeft` and `SlideRight`.
+    fn from_str(string: &str) -> Option<RevealerTransitionType> {
+        match string {
+            "crossfade" => Some(RevealerTransitionType::Crossfade),
+            "slide_left" => Some(RevealerTransitionType::SlideLeft),
+            "slide_right" => Some(RevealerTransitionType::SlideRight),
+            _ => None
+        }
+    } 
 }

@@ -1,7 +1,7 @@
 use gtk::Box;
 
 /// Widget alignment.
-// Allow for uppercase enum namings here.
+#[derive(Clone, Copy)]
 pub enum Align {
     Left,
     Centered,
@@ -11,15 +11,13 @@ pub enum Align {
 /// Implements `from_str` for the Align structure.
 impl Align {
     /// Tries to get the enum by its string-identifier.
+    /// Note: Only lowercase letters will be detected.
     pub fn from_str(string: &str) -> Option<Align> {
-        if string.eq_ignore_ascii_case("left") {
-            Some(Align::Left)
-        } else if string.eq_ignore_ascii_case("centered") {
-            Some(Align::Centered)
-        } else if string.eq_ignore_ascii_case("right") {
-            Some(Align::Right)
-        } else {
-            None
+        match string {
+            "left" => Some(Align::Left),
+            "centered" => Some(Align::Centered),
+            "right" => Some(Align::Right),
+            _ => None,
         }
     }
 }

@@ -1,7 +1,7 @@
 use crate::{
     config::{get_custom_variables, with_variables, CONFIG},
     r#loop::update,
-    structures::BaseKeys,
+    structures::{BaseKeys, RevealerExtensions},
     utils::cava::{self, HAS_CAVA_STARTED},
     *,
 };
@@ -117,9 +117,6 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 .split_once(ALIGNMENT)
                 .expect(ERR_INVALID_WIDGET_FORMAT);
 
-            // Formats the widget alignment.
-            let widget_alignment = widget_alignment.to_uppercase();
-
             // Base keys, all being optional.
             let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(json);
             let base_keys = BaseKeys {
@@ -128,7 +125,7 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 update_rate,
                 tooltip,
                 tooltip_command,
-                alignment: Align::from_str(&widget_alignment).expect(ERR_INVALID_ALIGNMENT),
+                alignment: Align::from_str(widget_alignment).expect(ERR_INVALID_ALIGNMENT),
             };
 
             // Gets every element after the widget identifier, then appends '_' in between.
@@ -190,6 +187,11 @@ pub fn add_widget(
                 command,
                 label: Label::new(None),
                 listen: key["listen"].as_bool().unwrap_or_default(),
+                revealer: Revealer::new(),
+                reveal_if_eq: key["reveal_if_eq"].as_str().map(|string| string.to_owned()),
+                reveal_anim: RevealerTransitionType::from_str(
+                    key["reveal_anim"].as_str().unwrap_or("crossfade"),
+                ),
             };
 
             label.add(widget_name, alignment, left, centered, right, box_holder)

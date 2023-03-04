@@ -1,6 +1,8 @@
 use crate::{
     config,
-    constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
+    constants::{
+        ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, ERR_WRONG_LABEL_RANIM, PROC_TARGET,
+    },
     ui,
     utils::aliases::use_aliases,
     widget::{Align, HWidget},
@@ -28,6 +30,9 @@ pub struct LabelWidget {
     pub update_rate: u64,
     pub label: Label,
     pub listen: bool,
+    pub revealer: Revealer,
+    pub reveal_if_eq: Option<String>,
+    pub reveal_anim: Option<RevealerTransitionType>,
 }
 
 /// 0.3.2: If `listen` is `true`, call this function and then set the label text-value
@@ -89,6 +94,7 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
 /// Starts updating the dynamic label content.
 fn start_label_loop(label_ref: &mut LabelWidget) {
     let label = take(&mut label_ref.label);
+    let label_rv = label.clone();
     let command = label_ref.command.to_owned();
     let update_rate = label_ref.update_rate;
     if command.is_empty() || update_rate <= 3 {
@@ -117,6 +123,33 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
 
     tick();
     glib::timeout_add_local(Duration::from_millis(update_rate), tick);
+    start_revealer(
+        take(&mut label_ref.reveal_if_eq),
+        label_rv,
+        take(&mut label_ref.revealer),
+    );
+}
+
+/// Starts the revealer tick if `reveal_if_eq` is assigned.
+fn start_revealer(reveal_if_eq: Option<String>, label: Label, revealer: Revealer) {
+    if reveal_if_eq.is_none() {
+        return;
+    }
+
+    let mut reveal_if_eq = reveal_if_eq.unwrap();
+    let is_inverted = reveal_if_eq.starts_with("!=");
+    if is_inverted {
+        reveal_if_eq = reveal_if_eq.replace("!=", "");
+    }
+
+    let rv_tick = move || {
+        let is_eq = label.text().eq(&reveal_if_eq);
+        revealer.set_reveal_child(if is_inverted { !is_eq } else { is_eq });
+        glib::Continue(true)
+    };
+
+    rv_tick();
+    glib::timeout_add_local(Duration::from_millis(50), rv_tick);
 }
 
 /// Updates the labels content with the string from `BUFFER`.
@@ -152,7 +185,15 @@ impl HWidget for LabelWidget {
         self.label.set_widget_name(name);
         self.label.set_markup(&self.text);
         self.label.set_tooltip_markup(Some(&self.tooltip));
-        ui::add_and_align(&self.label, align, left, centered, right, box_holder);
+        self.revealer.set_child(Some(&self.label));
+        self.revealer
+            .set_transition_type(self.reveal_anim.expect(ERR_WRONG_LABEL_RANIM));
+        ui::add_and_align(&self.revealer, align, left, centered, right, box_holder);
+
+        // 0.4.7: If the revealer string is unset, always reveal the widget.
+        if self.reveal_if_eq.is_none() {
+            self.revealer.set_reveal_child(true);
+        }
 
         if !is_static {
             if self.listen {
