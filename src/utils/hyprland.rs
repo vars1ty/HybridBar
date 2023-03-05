@@ -13,6 +13,10 @@ pub struct HyprlandData {
 pub fn get_data() -> HyprlandData {
     HyprlandData {
         workspace: Workspace::get_active().unwrap().id,
-        window: Client::get_active().unwrap().unwrap().title,
+        window: if let Some(window) = Client::get_active().unwrap() {
+            window.title
+        } else {
+            String::default()
+        },
     }
 }
