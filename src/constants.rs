@@ -4,6 +4,8 @@
 pub const HYBRID_ROOT_JSON: &str = "hybrid";
 /// Master Variables JSON Key.
 pub const HYBRID_V_ROOT_JSON: &str = "variables";
+/// Master Features JSON Key.
+pub const HYBRID_F_ROOT_JSON: &str = "features";
 /// Process to be used for calling external commands.
 pub const PROC_TARGET: &str = "sh";
 /// Default stylesheet file.

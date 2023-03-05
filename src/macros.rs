@@ -44,10 +44,12 @@ macro_rules! conf {
 }
 
 #[macro_export]
-/// Are experimental features enabled?
-macro_rules! experimental {
-    () => {
-        conf!($crate::constants::HYBRID_ROOT_JSON, "experimental", false)
+/// Checks if the specified feature is active.
+macro_rules! is_feature_active {
+    ($tag:literal) => {
+        $crate::config::get_config()[$crate::constants::HYBRID_ROOT_JSON]
+            [$crate::constants::HYBRID_F_ROOT_JSON]
+            .contains($tag)
     };
 }
 

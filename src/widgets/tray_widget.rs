@@ -150,7 +150,7 @@ impl HWidget for TrayWidget {
         right: &gtk::Box,
         box_holder: Option<&gtk::Box>,
     ) {
-        if !experimental!() {
+        if !is_feature_active!("tray_experimental") {
             return;
         }
 

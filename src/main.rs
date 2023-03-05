@@ -24,6 +24,8 @@ use gtk_layer_shell::Edge;
 use json::JsonValue;
 use std::path::Path;
 
+use crate::utils::hyprland;
+
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
     let expand_left = conf!(HYBRID_ROOT_JSON, "expand_left", true);
@@ -143,7 +145,7 @@ async fn main() {
         activate(app);
     });
 
-    if experimental!() {
+    if is_feature_active!("tray_experimental") {
         tracing_subscriber::fmt::init();
     }
 

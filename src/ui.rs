@@ -191,7 +191,7 @@ pub fn add_widget(
                 update_anim: RevealerTransitionType::from_str(
                     key["update_anim"].as_str().unwrap_or("crossfade"),
                 ),
-                anim_speed: key["anim_speed"].as_u32().unwrap_or(250),
+                anim_duration: key["anim_duration"].as_u32().unwrap_or(250),
             };
 
             label.add(widget_name, alignment, left, centered, right, box_holder)

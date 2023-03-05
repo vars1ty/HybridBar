@@ -32,7 +32,7 @@ pub struct LabelWidget {
     pub listen: bool,
     pub revealer: Revealer,
     pub update_anim: Option<RevealerTransitionType>,
-    pub anim_speed: u32,
+    pub anim_duration: u32,
 }
 
 /// 0.3.2: If `listen` is `true`, call this function and then set the label text-value
@@ -69,7 +69,7 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
         return;
     }
 
-    let label = label_ref.label.clone();
+    let label = label_ref.label.to_owned();
     let tooltip = take(&mut label_ref.tooltip);
     let tooltip_command = take(&mut label_ref.tooltip_command);
     let tick = move || {
@@ -104,7 +104,7 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
     let listen = label_ref.listen;
     let update_anim = take(&mut label_ref.update_anim).expect(ERR_WRONG_LABEL_RANIM);
     let revealer = take(&mut label_ref.revealer);
-    let anim_speed = label_ref.anim_speed;
+    let anim_speed = label_ref.anim_duration;
     let tick = move || {
         if !listen {
             let mut new_text = String::default();

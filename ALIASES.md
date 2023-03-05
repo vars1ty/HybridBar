@@ -16,6 +16,8 @@ These aliases are only valid for commands (+ tooltip commands).
 - `%cached_mem%` - Total amount of cached memory (in GB)
 - `%available_mem%` - Total amount of available memory (in GB)
 - `%used_mem%` - Total amount of used memory (in GB)
+- `%hl_workspace%` - Current Hyprland Workspace ID
+- `%hl_window%` - Current Hyprland Window Title
 
 ## I can just use `whoami`, why all of this?
 You may use completely dynamic commands like `whoami` if you want, the benefit with using aliases are:

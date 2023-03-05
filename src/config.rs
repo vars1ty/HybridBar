@@ -1,6 +1,10 @@
 use crate::{constants::*, structures::ConfigData, utils::environment};
 use json::JsonValue;
-use std::{collections::HashMap, fs, sync::RwLock};
+use std::{
+    collections::HashMap,
+    fs,
+    sync::{RwLock, RwLockReadGuard},
+};
 
 lazy_static! {
     /// Cached config.
@@ -39,57 +43,54 @@ fn read_config_raw() -> JsonValue {
 
 /// Tries to fetch a value from the config. Supported types are `String` and `i32`.
 pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bool) -> ConfigData {
-    if let Ok(cfg) = CONFIG.read() {
-        let cfg = &cfg[root];
-        if cfg.has_key(key) {
-            let grabbed_value = &cfg[key];
+    let cfg = &get_config()[root];
+    if cfg.has_key(key) {
+        let grabbed_value = &cfg[key];
 
-            // If the desired value isn't a string, try and get it as a 32-bit integer.
-            if !is_string {
-                return ConfigData::new(
-                    None,
-                    Some(
-                        grabbed_value.as_i32().unwrap_or_else(|| {
-                            panic!("[ERROR] Failed parsing {root}:{key} as i32!")
-                        }),
-                    ),
-                );
-            }
+        // If the desired value isn't a string, try and get it as a 32-bit integer.
+        if !is_string {
+            return ConfigData::new(
+                None,
+                Some(
+                    grabbed_value
+                        .as_i32()
+                        .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!")),
+                ),
+            );
+        }
 
-            // Convert it to a string-value.
-            if with_custom_variables {
-                ConfigData::new(
-                    Some(with_variables(
-                        grabbed_value.to_string(),
-                        &get_custom_variables(),
-                    )),
-                    None,
-                )
-            } else {
-                ConfigData::new(Some(grabbed_value.to_string()), None)
-            }
+        // Convert it to a string-value.
+        if with_custom_variables {
+            ConfigData::new(
+                Some(with_variables(
+                    grabbed_value.to_string(),
+                    &get_custom_variables(),
+                )),
+                None,
+            )
         } else {
-            // The key wasn't found, so just return None on all values.
-            ConfigData::default()
+            ConfigData::new(Some(grabbed_value.to_string()), None)
         }
     } else {
-        panic!("{}", ERR_ACCESS_CONFIG)
+        // The key wasn't found, so just return None on all values.
+        ConfigData::default()
     }
+}
+
+/// Returns the entire config.
+pub fn get_config<'a>() -> RwLockReadGuard<'a, JsonValue> {
+    CONFIG.read().expect(ERR_ACCESS_CONFIG)
 }
 
 /// Gets all the custom variables.
 pub fn get_custom_variables() -> HashMap<String, String> {
-    if let Ok(cfg) = CONFIG.read() {
-        let cfg = &cfg[HYBRID_V_ROOT_JSON];
-        let mut map: HashMap<String, String> = HashMap::new();
-        for entry in cfg.entries() {
-            map.insert(entry.0.to_owned(), entry.1.to_string());
-        }
-
-        map
-    } else {
-        panic!("{}", ERR_ACCESS_CONFIG)
+    let cfg = &get_config()[HYBRID_V_ROOT_JSON];
+    let mut map: HashMap<String, String> = HashMap::new();
+    for entry in cfg.entries() {
+        map.insert(entry.0.to_owned(), entry.1.to_string());
     }
+
+    map
 }
 
 /// Replaces any variable-matching patterns in the `String` with the variables value.
