@@ -23,12 +23,11 @@ Keys Supported:
    - Command to be executed and appended to the back of the tooltip string
 - listen: bool
    - Should Hybrid listen to the commands output, rather than calling it once and moving on?
-- reveal_if_eq: String
-   - Fades in when the content of the dynamic label equals to this string.
-   - Put `!=` in front of the text to be checked to invert the equals-check
-- reveal_anim: String
-   - Changes the animation which is by default set to `crossfade`.
-   - Available animations are: `crossfade`, `slide_left` and `slide_right`
+- update_anim: String
+   - **Dynamic Labels only**: What animation should be played when the content has been updated?
+   - Values: `none`, `crossfade` (Default), `slide_left` and `slide_right`
+- anim_speed: u32
+  - **Dynamic Labels only**: How fast (in milliseconds) should the update animation last? Default is `250`.
 ***
 `button`:
 

@@ -31,8 +31,8 @@ pub struct LabelWidget {
     pub label: Label,
     pub listen: bool,
     pub revealer: Revealer,
-    pub reveal_if_eq: Option<String>,
-    pub reveal_anim: Option<RevealerTransitionType>,
+    pub update_anim: Option<RevealerTransitionType>,
+    pub anim_speed: u32,
 }
 
 /// 0.3.2: If `listen` is `true`, call this function and then set the label text-value
@@ -94,16 +94,17 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
 /// Starts updating the dynamic label content.
 fn start_label_loop(label_ref: &mut LabelWidget) {
     let label = take(&mut label_ref.label);
-    let label_rv = label.clone();
     let command = label_ref.command.to_owned();
-    let update_rate = label_ref.update_rate;
-    if command.is_empty() || update_rate <= 3 {
+    if command.is_empty() || label_ref.update_rate <= 3 {
         // Not eligible, cancel.
         return;
     }
 
-    let listen = label_ref.listen;
     let text = label_ref.text.to_owned();
+    let listen = label_ref.listen;
+    let update_anim = take(&mut label_ref.update_anim).expect(ERR_WRONG_LABEL_RANIM);
+    let revealer = take(&mut label_ref.revealer);
+    let anim_speed = label_ref.anim_speed;
     let tick = move || {
         if !listen {
             let mut new_text = String::default();
@@ -111,45 +112,27 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
             new_text.push_str(&use_aliases(&command));
 
             if !label.text().eq(&new_text) {
-                // Not the same as new_text; redraw.
-                label.set_text(&new_text);
+                restart_revealer!(
+                    revealer,
+                    || label.set_text(&new_text),
+                    update_anim,
+                    anim_speed
+                );
             }
         } else {
-            update_from_buffer(&label);
+            restart_revealer!(
+                revealer,
+                || update_from_buffer(&label),
+                update_anim,
+                anim_speed
+            );
         }
 
         glib::Continue(true)
     };
 
     tick();
-    glib::timeout_add_local(Duration::from_millis(update_rate), tick);
-    start_revealer(
-        take(&mut label_ref.reveal_if_eq),
-        label_rv,
-        take(&mut label_ref.revealer),
-    );
-}
-
-/// Starts the revealer tick if `reveal_if_eq` is assigned.
-fn start_revealer(reveal_if_eq: Option<String>, label: Label, revealer: Revealer) {
-    if reveal_if_eq.is_none() {
-        return;
-    }
-
-    let mut reveal_if_eq = reveal_if_eq.unwrap();
-    let is_inverted = reveal_if_eq.starts_with("!=");
-    if is_inverted {
-        reveal_if_eq = reveal_if_eq.replace("!=", "");
-    }
-
-    let rv_tick = move || {
-        let is_eq = label.text().eq(&reveal_if_eq);
-        revealer.set_reveal_child(if is_inverted { !is_eq } else { is_eq });
-        glib::Continue(true)
-    };
-
-    rv_tick();
-    glib::timeout_add_local(Duration::from_millis(50), rv_tick);
+    glib::timeout_add_local(Duration::from_millis(label_ref.update_rate), tick);
 }
 
 /// Updates the labels content with the string from `BUFFER`.
@@ -187,11 +170,14 @@ impl HWidget for LabelWidget {
         self.label.set_tooltip_markup(Some(&self.tooltip));
         self.revealer.set_child(Some(&self.label));
         self.revealer
-            .set_transition_type(self.reveal_anim.expect(ERR_WRONG_LABEL_RANIM));
+            .set_transition_type(self.update_anim.expect(ERR_WRONG_LABEL_RANIM));
         ui::add_and_align(&self.revealer, align, left, centered, right, box_holder);
 
-        // 0.4.7: If the revealer string is unset, always reveal the widget.
-        if self.reveal_if_eq.is_none() {
+        // 0.4.9: If the reveal_anim is unset, None or the label is static, then reveal instantly.
+        if self.update_anim.is_none()
+            || self.update_anim == Some(RevealerTransitionType::None)
+            || is_static
+        {
             self.revealer.set_reveal_child(true);
         }
 

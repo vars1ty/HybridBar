@@ -180,18 +180,18 @@ pub fn add_widget(
     match widget_type {
         "label" => {
             let label = LabelWidget {
-                update_rate,
                 tooltip,
                 tooltip_command,
                 text,
                 command,
+                update_rate,
                 label: Label::new(None),
                 listen: key["listen"].as_bool().unwrap_or_default(),
                 revealer: Revealer::new(),
-                reveal_if_eq: key["reveal_if_eq"].as_str().map(|string| string.to_owned()),
-                reveal_anim: RevealerTransitionType::from_str(
-                    key["reveal_anim"].as_str().unwrap_or("crossfade"),
+                update_anim: RevealerTransitionType::from_str(
+                    key["update_anim"].as_str().unwrap_or("crossfade"),
                 ),
+                anim_speed: key["anim_speed"].as_u32().unwrap_or(250),
             };
 
             label.add(widget_name, alignment, left, centered, right, box_holder)
