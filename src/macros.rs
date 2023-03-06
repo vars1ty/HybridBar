@@ -46,7 +46,7 @@ macro_rules! conf {
 #[macro_export]
 /// Checks if the specified feature is active.
 macro_rules! is_feature_active {
-    ($tag:literal) => {
+    ($tag:expr) => {
         $crate::config::get_config()[$crate::constants::HYBRID_ROOT_JSON]
             [$crate::constants::HYBRID_F_ROOT_JSON]
             .contains($tag)

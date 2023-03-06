@@ -1,5 +1,5 @@
-use crate::constants::ERR_NO_LXINFO;
 use crate::hyprland;
+use crate::{constants::ERR_NO_LXINFO, utils::hyprland::HyprlandData};
 use lxinfo::info;
 
 /// Replaces `find` with `replace` if found.
@@ -29,7 +29,7 @@ pub fn use_aliases(content: &str) -> String {
 
     let mut content = content.to_owned();
     if is_feature_active!("hyprland") {
-        let data = hyprland::get_data();
+        let data = HyprlandData::get_data();
         replace_if_present(&mut content, "%hl_workspace%", &data.workspace.to_string());
         replace_if_present(&mut content, "%hl_window%", &data.window);
         if !has_alias_chars(&content) {

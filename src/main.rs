@@ -22,9 +22,10 @@ use gtk::prelude::*;
 use gtk::*;
 use gtk_layer_shell::Edge;
 use json::JsonValue;
+use rune::FromValue;
 use std::path::Path;
 
-use crate::utils::hyprland;
+use crate::utils::{hyprland, rune_script};
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
@@ -135,6 +136,12 @@ pub fn load_css() {
 #[no_mangle]
 #[tokio::main]
 async fn main() {
+    let mut vm = rune_script::create_vm("dev", r#"pub fn main() {
+        let test = execute("whoami");
+        println(`${test}`)
+    } "#).unwrap();
+    vm.call(["main"], ()).unwrap();
+    todo!();
     log!("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
     log!("Loading CSS...");
