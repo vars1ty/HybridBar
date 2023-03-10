@@ -44,36 +44,35 @@ fn read_config_raw() -> JsonValue {
 /// Tries to fetch a value from the config. Supported types are `String` and `i32`.
 pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bool) -> ConfigData {
     let cfg = &get_config()[root];
-    if cfg.has_key(key) {
-        let grabbed_value = &cfg[key];
+    if !cfg.has_key(key) {
+        return ConfigData::default();
+    }
 
-        // If the desired value isn't a string, try and get it as a 32-bit integer.
-        if !is_string {
-            return ConfigData::new(
-                None,
-                Some(
-                    grabbed_value
-                        .as_i32()
-                        .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!")),
-                ),
-            );
-        }
+    let grabbed_value = &cfg[key];
 
-        // Convert it to a string-value.
-        if with_custom_variables {
-            ConfigData::new(
-                Some(with_variables(
-                    grabbed_value.to_string(),
-                    &get_custom_variables(),
-                )),
-                None,
-            )
-        } else {
-            ConfigData::new(Some(grabbed_value.to_string()), None)
-        }
+    // If the desired value isn't a string, try and get it as a 32-bit integer.
+    if !is_string {
+        return ConfigData::new(
+            None,
+            Some(
+                grabbed_value
+                    .as_i32()
+                    .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!")),
+            ),
+        );
+    }
+
+    // Convert it to a string-value.
+    if with_custom_variables {
+        ConfigData::new(
+            Some(with_variables(
+                grabbed_value.to_string(),
+                &get_custom_variables(),
+            )),
+            None,
+        )
     } else {
-        // The key wasn't found, so just return None on all values.
-        ConfigData::default()
+        ConfigData::new(Some(grabbed_value.to_string()), None)
     }
 }
 

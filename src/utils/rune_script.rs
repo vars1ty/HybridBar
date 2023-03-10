@@ -1,12 +1,16 @@
+use crate::utils::aliases;
 use rune::{
     termcolor::{ColorChoice, StandardStream},
     Context, ContextError, Diagnostics, Module, Result, Source, Sources, Vm,
 };
 use std::sync::Arc;
 
-use crate::utils::aliases;
+/*
+ * This contains unfinished code, use at your own risk!
+ */
 
 /// Installs custom functions which can be used by the user.
+#[allow(dead_code)]
 pub fn hybrid_mod(name: &str) -> Result<Module, ContextError> {
     let mut module = Module::new();
     module.function(&["execute"], execute)?;
@@ -18,6 +22,7 @@ pub fn hybrid_mod(name: &str) -> Result<Module, ContextError> {
 }
 
 /// Creates a new Virtual Machine for the given source.
+#[allow(dead_code)]
 pub fn create_vm(name: &str, source: &str) -> rune::Result<Vm> {
     let m = hybrid_mod(name)?;
     let mut context = Context::with_default_modules()?;
