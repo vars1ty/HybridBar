@@ -1,0 +1,18 @@
+2023-03-11 11:52:39 - Neovide panicked with the message 'Could not setup setting notifier for position_animation_length: Error sending request 'nvim_command''. (File: src/error_handling.rs; Line: 5, Column: 5)
+   0: <unknown>
+   1: <unknown>
+   2: <unknown>
+   3: <unknown>
+   4: <unknown>
+   5: <unknown>
+   6: <unknown>
+   7: <unknown>
+   8: <unknown>
+   9: <unknown>
+  10: <unknown>
+  11: <unknown>
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+

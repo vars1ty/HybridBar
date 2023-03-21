@@ -1,7 +1,7 @@
 use crate::{
     config::{get_custom_variables, with_variables, CONFIG},
     r#loop::update,
-    structures::{BaseKeys, RevealerExtensions},
+    structures::{BaseKeys, RevealerExtensions, WidgetHolders},
     utils::cava::{self, HAS_CAVA_STARTED},
     *,
 };
@@ -13,16 +13,20 @@ use crate::{
     },
 };
 use gtk::traits::*;
+use std::sync::RwLock;
+
+lazy_static! {
+    /// Holds the Left, Centered and Right box widgets.
+    pub static ref WIDGET_HOLDERS: RwLock<Option<WidgetHolders>> = RwLock::new(None);
+}
 
 /// Adds and aligns the specified widget.
-pub fn add_and_align(
-    widget: &impl IsA<Widget>,
-    align: Align,
-    left: &Box,
-    centered: &Box,
-    right: &Box,
-    box_holder: Option<&Box>,
-) {
+pub fn add_and_align(widget: &impl IsA<Widget>, align: Align, box_holder: Option<&Box>) {
+    let holders = WIDGET_HOLDERS.read().unwrap();
+    let holders = holders.as_ref().unwrap();
+    let left = &holders.left;
+    let centered = &holders.centered;
+    let right = &holders.right;
     if let Some(r#box) = box_holder {
         r#box.add(widget)
     } else {
@@ -35,7 +39,7 @@ pub fn add_and_align(
 }
 
 /// Builds all of the widgets.
-pub fn build_widgets(window: &ApplicationWindow) {
+pub fn build_widgets(window: &ApplicationWindow, vm: Option<Vm>) {
     // Create box widgets, which we'll be using to draw the content onto.
     let root = Box::new(Orientation::Horizontal, 0);
     let left = Box::new(Orientation::Horizontal, 0);
@@ -57,12 +61,19 @@ pub fn build_widgets(window: &ApplicationWindow) {
     root.add(&left);
     window.add(&root);
 
+    *WIDGET_HOLDERS.write().unwrap() = Some(WidgetHolders {
+        root,
+        left,
+        centered,
+        right,
+    });
+
     // Prepare and show all of the widgets.
-    create_components(&left, &centered, &right);
+    create_components();
     window.show_all();
 
     // Update dynamic content.
-    update();
+    update(vm);
 }
 
 /// Gets the base key values.
@@ -96,7 +107,7 @@ pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) 
 }
 
 /// Creates all of the widgets.
-fn create_components(left: &Box, centered: &Box, right: &Box) {
+fn create_components() {
     // Add all of the widgets defined from the config.
     if let Ok(cfg) = CONFIG.read() {
         const ALIGNMENT: char = '-';
@@ -144,7 +155,6 @@ fn create_components(left: &Box, centered: &Box, right: &Box) {
                 json,
                 (widget_type, &widget_name),
                 base_keys,
-                (left, centered, right),
                 identifier,
                 None,
             )
@@ -159,7 +169,6 @@ pub fn add_widget(
     key: &JsonValue,
     widget_pkg: (&str, &str),
     base_keys: BaseKeys,
-    left_centered_right: (&Box, &Box, &Box),
     identifier: &str,
     box_holder: Option<&Box>,
 ) {
@@ -173,9 +182,6 @@ pub fn add_widget(
     let tooltip = base_keys.tooltip;
     let tooltip_command = base_keys.tooltip_command;
     let alignment = base_keys.alignment;
-
-    // Extract left, centered and right.
-    let (left, centered, right) = left_centered_right;
 
     match widget_type {
         "label" => {
@@ -194,7 +200,7 @@ pub fn add_widget(
                 anim_duration: key["anim_duration"].as_u32().unwrap_or(250),
             };
 
-            label.add(widget_name, alignment, left, centered, right, box_holder)
+            label.add(widget_name, alignment, box_holder)
         }
         "button" => {
             let button = ButtonWidget {
@@ -204,7 +210,7 @@ pub fn add_widget(
                 button: Button::with_label(&text),
             };
 
-            button.add(widget_name, alignment, left, centered, right, box_holder)
+            button.add(widget_name, alignment, box_holder)
         }
         "spacing" => {
             let spacing = SpacingWidget {
@@ -212,7 +218,7 @@ pub fn add_widget(
                 spacing_end: key["spacing_end"].as_i32().unwrap_or_default(),
             };
 
-            spacing.add(widget_name, alignment, left, centered, right, box_holder)
+            spacing.add(widget_name, alignment, box_holder)
         }
         "box" => {
             let box_widget = BoxWidget {
@@ -220,7 +226,7 @@ pub fn add_widget(
                 widgets: key["widgets"].to_owned(),
             };
 
-            box_widget.add(widget_name, alignment, left, centered, right, box_holder)
+            box_widget.add(widget_name, alignment, box_holder)
         }
         "cava" => {
             let cava = CavaWidget {
@@ -235,9 +241,9 @@ pub fn add_widget(
                 }
             }
 
-            cava.add(widget_name, alignment, left, centered, right, box_holder)
+            cava.add(widget_name, alignment, box_holder)
         }
-        "tray" => TrayWidget.add(widget_name, alignment, left, centered, right, box_holder),
+        "tray" => TrayWidget.add(widget_name, alignment, box_holder),
         _ => {
             panic!("[ERROR] There is no widget type defined as '{identifier}'!\n")
         }

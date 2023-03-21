@@ -14,13 +14,7 @@ pub struct BoxWidget {
 }
 
 /// Builds the child widgets.
-fn build_child_widgets(
-    widgets: JsonValue,
-    left: &Box,
-    centered: &Box,
-    right: &Box,
-    box_holder: &Box,
-) {
+fn build_child_widgets(widgets: JsonValue, box_holder: &Box) {
     const SEPARATOR: &str = "_";
     let relevant = widgets.entries().filter(|(key, _)| key.contains(SEPARATOR));
 
@@ -57,7 +51,6 @@ fn build_child_widgets(
             json,
             (widget_type, &widget_name),
             base_keys,
-            (left, centered, right),
             widget_type,
             Some(box_holder),
         )
@@ -66,15 +59,7 @@ fn build_child_widgets(
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for BoxWidget {
-    fn add(
-        self,
-        name: &str,
-        align: Align,
-        left: &Box,
-        centered: &Box,
-        right: &Box,
-        box_holder: Option<&Box>,
-    ) {
+    fn add(self, name: &str, align: Align, box_holder: Option<&Box>) {
         let widget = Box::new(Orientation::Horizontal, 0);
         widget.set_widget_name(name);
         widget.set_width_request(self.width);
@@ -82,10 +67,10 @@ impl HWidget for BoxWidget {
         // 0.4.3: Experimental: Allow for widgets enclosed into boxes.
         // 0.4.7: Stabilize Box Child-Widgets.
         if !self.widgets.is_null() {
-            build_child_widgets(self.widgets, left, centered, right, &widget)
+            build_child_widgets(self.widgets, &widget)
         }
 
-        ui::add_and_align(&widget, align, left, centered, right, box_holder);
+        ui::add_and_align(&widget, align, box_holder);
         log!("Added a new box widget");
     }
 }

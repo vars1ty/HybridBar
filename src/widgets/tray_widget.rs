@@ -141,22 +141,14 @@ pub struct TrayWidget;
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for TrayWidget {
-    fn add(
-        self,
-        name: &str,
-        align: Align,
-        left: &gtk::Box,
-        centered: &gtk::Box,
-        right: &gtk::Box,
-        box_holder: Option<&gtk::Box>,
-    ) {
+    fn add(self, name: &str, align: Align, box_holder: Option<&gtk::Box>) {
         if !is_feature_active!("tray_experimental") {
             return;
         }
 
         let menu_bar = MenuBar::new();
         menu_bar.set_widget_name(name);
-        ui::add_and_align(&menu_bar, align, left, centered, right, box_holder);
+        ui::add_and_align(&menu_bar, align, box_holder);
         let (sender, receiver) = mpsc::channel(32);
         let (cmd_tx, cmd_rx) = mpsc::channel(32);
 

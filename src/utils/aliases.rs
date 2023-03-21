@@ -1,4 +1,3 @@
-use crate::hyprland;
 use crate::{constants::ERR_NO_LXINFO, utils::hyprland::HyprlandData};
 use lxinfo::info;
 

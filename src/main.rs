@@ -15,7 +15,7 @@ mod utils;
 mod widget;
 mod widgets;
 
-use crate::utils::hyprland;
+use crate::utils::rune_script::RuneVM;
 use constants::*;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;
@@ -23,7 +23,8 @@ use gtk::prelude::*;
 use gtk::*;
 use gtk_layer_shell::Edge;
 use json::JsonValue;
-use std::path::Path;
+use rune::Vm;
+use std::{fs::read_to_string, path::Path};
 
 /// Gets the anchors.
 fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
@@ -45,6 +46,14 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
         (Edge::Top, pos.eq_ignore_ascii_case("Top") || pos.is_empty()),
         (Edge::Bottom, pos.eq_ignore_ascii_case("Bottom")),
     ]
+}
+
+/// Builds the Rune VM.
+fn build_vm() -> Vm {
+    RuneVM::create_vm(
+        &read_to_string(format!("{}main.rn", config::get_path())).expect(ERR_READING_MAIN_RN),
+    )
+    .unwrap()
 }
 
 /// Initializes the status bar.
@@ -96,7 +105,14 @@ fn activate(application: &Application) {
     window.set_app_paintable(true);
 
     // Build all the widgets.
-    ui::build_widgets(&window);
+    ui::build_widgets(
+        &window,
+        if is_feature_active!("rune_vm") {
+            Some(build_vm())
+        } else {
+            None
+        },
+    );
     log!("Ready!");
 }
 

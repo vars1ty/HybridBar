@@ -9,6 +9,17 @@ pub struct ConfigData {
     pub number: Option<i32>,
 }
 
+/// Root, Left, Centered and Right boxes.
+pub struct WidgetHolders {
+    pub root: gtk::Box,
+    pub left: gtk::Box,
+    pub centered: gtk::Box,
+    pub right: gtk::Box,
+}
+
+unsafe impl Send for WidgetHolders {}
+unsafe impl Sync for WidgetHolders {}
+
 /// Implements `new` for Config Data.
 impl ConfigData {
     /// Creates a new Config Data instance and returns it.
@@ -40,7 +51,7 @@ impl RevealerExtensions for RevealerTransitionType {
             "crossfade" => Some(RevealerTransitionType::Crossfade),
             "slide_left" => Some(RevealerTransitionType::SlideLeft),
             "slide_right" => Some(RevealerTransitionType::SlideRight),
-            _ => None
+            _ => None,
         }
-    } 
+    }
 }

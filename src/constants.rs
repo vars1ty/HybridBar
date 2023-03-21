@@ -48,6 +48,7 @@ pub const ERR_SEND_MSG_UI: &str = "[ERROR] Couldn't send tray messages to the UI
 pub const ERR_ACCESS_CONFIG: &str = "[ERROR] Couldn't access CONFIG!";
 pub const ERR_WRONG_LABEL_RANIM: &str =
     "[ERROR] Invalid revealer animation! Use `crossfade`, `slide_left` or `slide_right`.";
+pub const ERR_READING_MAIN_RN: &str = "[ERROR] Couldn't find (or failed reading) main.rn!";
 
 // Constant warnings.
 
@@ -55,3 +56,4 @@ pub const WARN_CAVA_NO_LINES: &str = "[WARN] Cava: There are no more lines avail
 pub const WARN_CAVA_NO_BARS_INSTANCE: &str = "[WARN] Cava: Failed accessing cava::BARS, stopping!";
 pub const WARN_CAVA_NO_CRASHED_INSTANCE: &str =
     "[WARN] Cava: Failed accessing cava::HAS_CAVA_CRASHED, stopping!";
+pub const WARN_NO_TICK: &str = "[WARN] No `tick` function found, skipping loop.";

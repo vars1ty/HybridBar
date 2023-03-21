@@ -27,3 +27,17 @@ The non-experimental features listed are usually disabled for a variety of reaso
    "left-tray_tray": {}
 }
 ```
+2. Rune Scripting (`rune_vm`)
+   - Introduced in version `0.5.0`
+   - Adds scripting support for Hybrid which will be expanded upon in the future.
+   - To make it work, create a file called `main.rn` next to your `config.json` file.
+```json
+{
+    "left-label_dynamic": {
+        "update_rate": 300
+    }
+}
+```
+```rune
+pub fn dynamic() { set_label_text("Hello!"); }
+```
