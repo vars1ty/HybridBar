@@ -6,7 +6,7 @@
   - Yeah, as long as they follow the existing code structure and don't introduce breaking changes without a really good reason as to why it's needed.
 
 - Can I create custom widget types?
-  - No you can't create full-on custom types.
+  - You can create custom-ish types by utilizing scripting.
 
 - How do I move widgets up and down?
   - You can't move them up/down through the actual config, although you can somewhat do it via CSS.
@@ -28,14 +28,15 @@
   - Because if you for say, focus a window with some special characters and it's being drawn in markup, it'll freak out. I might be able to fix it later on, but for now it's not happening.
 
 - I want to add widgets at runtime
-  - Not possible for the time being.
+  - **Available since 0.5.0**
+  - Read `SCRIPTING.md`.
 
 - I'm tired of repeating long commands in the JSON, can variables be added?
   - **Available since 0.2.9**
   - Read `VARIABLES.md`.
 
 - Does Hybrid work outside Sway and Hyprland?
-  - Yes, it's been proven to work on KDE and will most definitely work on GNOME.
+  - Yes, it's been proven to work on KDE and Sway.
 
 - Does Hybrid work on X11?
   - Which part of **Wayland status bar** did you not understand?

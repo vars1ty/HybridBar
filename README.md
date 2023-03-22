@@ -8,7 +8,6 @@ With blur through Hyprland.
 The bottom bar is also made with Hybrid.
 
 ## What does it support?
-It supports:
 - Straight-forward configuration;
 - Labels with shell commands (+ listen support);
 - Spacings (a.k.a. Separators if styled);
@@ -21,7 +20,8 @@ It supports:
 - Top and Bottom pinning;
 - Transparency (+ blur if your compositor allows for blurring surface layers);
 - Experimental system tray via `stray`;
-- Different monitors for each configuration
+- Different monitors for each configuration;
+- Flexible experimental scripting through [Rune](https://github.com/rune-rs/rune/)
 
 ## I have no config
 If you installed outside the AUR, copy the example from `examples/config.json` into `~/.config/HybridBar/`.

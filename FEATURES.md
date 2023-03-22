@@ -31,13 +31,18 @@ The non-experimental features listed are usually disabled for a variety of reaso
    - Introduced in version `0.5.0`
    - Adds scripting support for Hybrid which will be expanded upon in the future.
    - To make it work, create a file called `main.rn` next to your `config.json` file.
-```json
-{
-    "left-label_dynamic": {
-        "update_rate": 300
-    }
+   - > **Warning**: Scripting is deemed as "unsafe" because the nature of GTK, **use at your own risk**.
+```rust
+/// Called every 250ms of the bars lifetime.
+pub fn tick() {
+    log("Tick! Hello from your custom script!");
+    // Let's add a new widget called "Awsome", here's the function parameters:
+    // Name, Content, Alignment (left, centered, right) 
+    Builder::add_label("Awesome", "Some text", "left");
+
+    // [...] - Widget added, now let's modify the text of the label to the output of the `date` shell-command.
+    let date = execute("date");
+    Builder::set_label_text("Awesome", date);
+    // - And done!
 }
-```
-```rune
-pub fn dynamic() { set_label_text("Hello!"); }
 ```

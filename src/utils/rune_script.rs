@@ -1,26 +1,112 @@
 use crate::{ui, utils::aliases, widget::Align};
-use gtk::{traits::WidgetExt, Label};
-use rune::{
-    termcolor::{ColorChoice, StandardStream},
-    Context, ContextError, Diagnostics, Module, Result, Source, Sources, Vm,
+use glib::Cast;
+use gtk::{
+    traits::{LabelExt, WidgetExt},
+    Label, Widget,
 };
-use std::sync::Arc;
+use rune::{
+termcolor::{ColorChoice, StandardStream},
+Any, Context, ContextError, Diagnostics, Module, Result, Source, Sources, Vm,
+};
+use std::{
+collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 /*
  * This contains unfinished code, use at your own risk!
- */
+*/
 
+/// Looks up a runtime-scripted widget, then passes it to `execute` for you to use as a reference.
+macro_rules! using_widget {
+    ($widget_type:ty, $name:expr, $execute:expr) => {{
+        let widgets = WIDGETS.lock().unwrap();
+        if let Some(gtk_widget) = widgets.get($name) {
+            let widget = gtk_widget.0.downcast_ref::<$widget_type>().unwrap();
+            $execute(widget);
+        } else {
+            log!(format!("[WARN] Found no widget named '{}'", $name))
+        }
+    }};
+}
+
+/// Adds a widget into `WIDGETS`.
+macro_rules! add_widget {
+    ($name:expr, $widget:expr) => {
+        WIDGETS
+            .lock()
+            .unwrap()
+            .insert($name.to_owned(), GTKWidget(gtk::Widget::from($widget)))
+    };
+}
+
+lazy_static! {
+    static ref WIDGETS: Mutex<HashMap<String, GTKWidget>> = Mutex::new(HashMap::new());
+}
+
+/// Widget Builder which hold certain exposed functions for the user, alongside some internal
+/// tools.
+#[derive(Any)]
+struct Builder;
+
+/// Wrapper around `Widget`.
+struct GTKWidget(Widget);
+
+/// Rune VM.
 pub struct RuneVM;
+
+// "Hack"-make `Widget` thread-safe.
+unsafe impl Send for GTKWidget {}
+unsafe impl Sync for GTKWidget {}
+
+impl Builder {
+    /// Adds a new label widget.
+    fn add_label(name: &str, content: &str, alignment: &str) {
+        let label = Label::new(Some(content));
+        label.set_widget_name(name);
+        ui::add_and_align(&label, Align::from_str(alignment).unwrap(), None);
+        label.show(); // Required otherwise it's inactive.
+        add_widget!(name, label);
+        log!(format!(
+            "Adding a new label widget from loaded script, widget name: '{name}'"
+        ));
+    }
+
+    /// Changes the text content of a `Label`.
+    fn set_label_text(name: &str, content: &str) {
+        using_widget!(Label, name, |label: &Label| { label.set_text(content) })
+    }
+
+    /// Changes the visibility of a `Label`.
+    fn set_label_visible(name: &str, visible: bool) {
+        using_widget!(Label, name, |label: &Label| { label.set_visible(visible) })
+    }
+
+    /// Checks whether or not the `Label` is visible.
+    fn is_label_visible(name: &str) -> bool {
+        let mut is_visible = false;
+        using_widget!(Label, name, |label: &Label| { is_visible = label.is_visible() });
+        is_visible
+    }
+}
 
 impl RuneVM {
     /// Installs custom functions which can be used by the user.
     #[allow(dead_code)]
     pub fn hybrid_mod() -> Result<Module, ContextError> {
         let mut module = Module::new();
+
+        // Base core functions.
         module.function(["execute"], Self::execute)?;
         module.function(["log"], Self::log)?;
         module.function(["is_feature_active"], Self::is_feature_active)?;
         module.function(["use_aliases"], Self::use_aliases)?;
+
+        // Widget-related functions.
+        module.function(["Builder", "add_label"], Builder::add_label)?;
+        module.function(["Builder", "set_label_text"], Builder::set_label_text)?;
+        module.function(["Builder", "set_label_visible"], Builder::set_label_visible)?;
+        module.function(["Builder", "is_label_visible"], Builder::is_label_visible)?;
         Ok(module)
     }
 
@@ -58,7 +144,7 @@ impl RuneVM {
 
     /// Prints a Hybrid verbose message.
     fn log(msg: &str) {
-        log!(msg)
+        log!(format!("[RUNE]: {msg}"))
     }
 
     /// Checks if the specified feature is active.
@@ -69,16 +155,5 @@ impl RuneVM {
     /// Checks for aliases in `content`, then replaces them with their real values.
     fn use_aliases(content: &str) -> String {
         aliases::use_aliases(content)
-    }
-
-    /// Adds a new label widget.
-    fn add_label(name: &str, content: &str, alignment: &str) {
-        let label = Label::new(Some(content));
-        label.set_widget_name(name);
-        ui::add_and_align(&label, Align::from_str(alignment).unwrap(), None);
-        label.show(); // Required otherwise it's inactive.
-        log!(&format!(
-            "Adding a new label widget from loaded script, widget name: '{name}'"
-        ));
     }
 }

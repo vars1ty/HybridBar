@@ -56,4 +56,5 @@ pub const WARN_CAVA_NO_LINES: &str = "[WARN] Cava: There are no more lines avail
 pub const WARN_CAVA_NO_BARS_INSTANCE: &str = "[WARN] Cava: Failed accessing cava::BARS, stopping!";
 pub const WARN_CAVA_NO_CRASHED_INSTANCE: &str =
     "[WARN] Cava: Failed accessing cava::HAS_CAVA_CRASHED, stopping!";
+pub const WARN_NO_MAIN: &str = "[WARN] No `main` function found, skipping call.";
 pub const WARN_NO_TICK: &str = "[WARN] No `tick` function found, skipping loop.";

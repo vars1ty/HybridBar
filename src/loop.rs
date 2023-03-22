@@ -1,12 +1,13 @@
 use crate::{
     constants::{
         ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, HYBRID_ROOT_JSON,
-        WARN_CAVA_NO_BARS_INSTANCE, WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_TICK,
+        WARN_CAVA_NO_BARS_INSTANCE, WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_MAIN, WARN_NO_TICK,
     },
     utils::cava::{self, HAS_CAVA_CRASHED},
     widget::HWidget,
 };
 use glib::Continue;
+use rune::FromValue;
 use rune::Vm;
 use std::time::Duration;
 
@@ -21,20 +22,33 @@ pub fn update(vm: Option<Vm>) {
 
 /// Attempts to start the script loop.
 fn start_script_loop(mut vm: Vm) {
+    if let Ok(func) = vm.lookup_function(["main"]) {
+        func.call::<(), ()>(()).unwrap();
+    } else {
+        log!(WARN_NO_MAIN)
+    }
+
     if vm.lookup_function(["tick"]).is_err() {
         log!(WARN_NO_TICK);
         return;
     }
 
-    glib::timeout_add_local(Duration::from_millis(250), move || {
+    // If `get_update_rate()` is present, use the value from that function.
+    // If not (or the parsing fails), use 250.
+    let update_rate = if let Ok(call) = vm.call(["get_update_rate"], ()) {
+        u64::from_value(call).unwrap_or(250)
+    } else {
+        250
+    };
+
+    glib::timeout_add_local(Duration::from_millis(update_rate), move || {
         let res = vm.call(["tick"], ());
         if let Err(err) = res {
             let (kind, _) = err.as_unwound();
-            println!("{kind:?}");
-            glib::Continue(false)
-        } else {
-            glib::Continue(true)
+            panic!("[ERROR] [RUNE]: Calling `tick` resulted in an error: {kind:?}");
         }
+
+        glib::Continue(true)
     });
 }
 
