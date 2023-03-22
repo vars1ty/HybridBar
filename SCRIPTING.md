@@ -1,6 +1,9 @@
 # Scripting
 > **Warning**: Scripting is experimental and locked behind the `experimental_rune_vm` feature.
 
+## Format
+`function_name(parameters) [Return Type]`
+
 ## Functions
 ### Core
 - `execute(&str) [String]` -> Executes the specified shell-command and returns it.
@@ -16,10 +19,10 @@ These functions are called automatically by Hybrid internally if found.
 - `get_update_rate() [u64]` -> Changes the update-rate for `tick` by returning the desired rate, 250 is the default.
 
 ### Builder
-`Builder::add_label(name [&str], content [&str], alignment [&str]) [()]` -> Adds a new label widget. Note that the alignment has to be lowercase and be one out of:
-- left
-- centered
-- right
+- `Builder::add_label(name [&str], content [&str], alignment [&str]) [()]` -> Adds a new label widget. Note that the alignment has to be lowercase and be one out of:
+   - left
+   - centered
+   - right
 
 - `Builder::set_label_text(name [&str], content [&str]) [()]` -> Changes the text content of a label.
 - `Builder::set_label_visible(name [&str], visible [bool]) -> [()]` -> Changes the labels visibility status.
