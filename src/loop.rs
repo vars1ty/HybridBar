@@ -1,13 +1,13 @@
 use crate::{
     constants::{
-        ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, HYBRID_ROOT_JSON,
-        WARN_CAVA_NO_BARS_INSTANCE, WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_MAIN, WARN_NO_TICK,
+        ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, ERR_UPDATE_RATE_TYPE,
+        HYBRID_ROOT_JSON, UPDATE_RATE_HASH, WARN_CAVA_NO_BARS_INSTANCE,
+        WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_MAIN, WARN_NO_TICK,
     },
     utils::cava::{self, HAS_CAVA_CRASHED},
     widget::HWidget,
 };
 use glib::Continue;
-use rune::FromValue;
 use rune::Vm;
 use std::time::Duration;
 
@@ -21,28 +21,41 @@ pub fn update(vm: Option<Vm>) {
 }
 
 /// Attempts to start the script loop.
-fn start_script_loop(mut vm: Vm) {
+fn start_script_loop(vm: Vm) {
     if let Ok(func) = vm.lookup_function(["main"]) {
         func.call::<(), ()>(()).unwrap();
     } else {
         log!(WARN_NO_MAIN)
     }
 
-    if vm.lookup_function(["tick"]).is_err() {
+    let tick_func = vm.lookup_function(["tick"]);
+    if tick_func.is_err() {
         log!(WARN_NO_TICK);
         return;
     }
 
-    // If `get_update_rate()` is present, use the value from that function.
+    let tick_func = tick_func.unwrap();
+
+    // If `UPDATE_RATE` is present, use the value from that constant.
     // If not (or the parsing fails), use 250.
-    let update_rate = if let Ok(call) = vm.call(["get_update_rate"], ()) {
-        u64::from_value(call).unwrap_or(250)
-    } else {
-        250
-    };
+    let mut update_rate: u64 = 250;
+    for (hash, value) in vm.unit().iter_constants() {
+        if hash.to_string() != UPDATE_RATE_HASH {
+            continue;
+        }
+
+        update_rate = value
+            .clone()
+            .into_value()
+            .into_integer()
+            .expect(ERR_UPDATE_RATE_TYPE)
+            .try_into()
+            .unwrap_or(250);
+        break;
+    }
 
     glib::timeout_add_local(Duration::from_millis(update_rate), move || {
-        let res = vm.call(["tick"], ());
+        let res = tick_func.call::<(), ()>(());
         if let Err(err) = res {
             let (kind, _) = err.as_unwound();
             panic!("[ERROR] [RUNE]: Calling `tick` resulted in an error: {kind:?}");

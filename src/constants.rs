@@ -15,6 +15,9 @@ pub const DEFAULT_CONFIG: &str = "config.json";
 /// Cava temporary config path.
 pub const CAVA_TMP_CONFIG: &str = "/tmp/cava_tmp_hybrid.conf";
 
+/// Hash for the UPDATE_RATE constant.
+pub const UPDATE_RATE_HASH: &str = "0x578fa6af41cafefe";
+
 // Constant errors.
 
 pub const ERR_PARSE_CAVA_UPDATE_RATE: &str =
@@ -49,6 +52,8 @@ pub const ERR_ACCESS_CONFIG: &str = "[ERROR] Couldn't access CONFIG!";
 pub const ERR_WRONG_LABEL_RANIM: &str =
     "[ERROR] Invalid revealer animation! Use `crossfade`, `slide_left` or `slide_right`.";
 pub const ERR_READING_MAIN_RN: &str = "[ERROR] Couldn't find (or failed reading) main.rn!";
+pub const ERR_UPDATE_RATE_TYPE: &str =
+    "[ERROR] The `UPDATE_RATE` constant has to be a valid number!";
 
 // Constant warnings.
 

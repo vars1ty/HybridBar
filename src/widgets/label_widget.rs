@@ -100,11 +100,11 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
         return;
     }
 
-    let text = label_ref.text.to_owned();
-    let listen = label_ref.listen;
+    let text = take(&mut label_ref.text);
+    let listen = take(&mut label_ref.listen);
     let update_anim = take(&mut label_ref.update_anim).expect(ERR_WRONG_LABEL_RANIM);
     let revealer = take(&mut label_ref.revealer);
-    let anim_speed = label_ref.anim_duration;
+    let anim_speed = take(&mut label_ref.anim_duration);
     let tick = move || {
         if !listen {
             let mut new_text = String::default();
@@ -120,12 +120,7 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
                 );
             }
         } else {
-            restart_revealer!(
-                revealer,
-                || update_from_buffer(&label),
-                update_anim,
-                anim_speed
-            );
+            update_from_buffer(&label, &revealer, update_anim, anim_speed);
         }
 
         glib::Continue(true)
@@ -136,14 +131,24 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
 }
 
 /// Updates the labels content with the string from `BUFFER`.
-fn update_from_buffer(label: &Label) {
+fn update_from_buffer(
+    label: &Label,
+    revealer: &Revealer,
+    update_anim: RevealerTransitionType,
+    anim_speed: u32,
+) {
     if let Ok(new_content) = BUFFER.lock() {
         let old_content = label.text();
         // eq-check the new content for old_content. Doing the opposite requires a .to_string()
         // call.
         if !new_content.eq(&old_content) {
             // Not the same; set content and redraw.
-            label.set_text(&new_content);
+            restart_revealer!(
+                revealer,
+                || label.set_text(&new_content),
+                update_anim,
+                anim_speed
+            );
         }
     } else {
         log!(format!(
