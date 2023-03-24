@@ -5,13 +5,11 @@ use gtk::{
     Label, Widget,
 };
 use rune::{
-termcolor::{ColorChoice, StandardStream},
-Any, Context, ContextError, Diagnostics, Module, Result, Source, Sources, Vm,
+    termcolor::{ColorChoice, StandardStream},
+    Any, Context, ContextError, Diagnostics, Module, Result, Source, Sources, Vm,
 };
-use std::{
-collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use smallvec::SmallVec;
+use std::sync::{Arc, Mutex};
 
 /*
  * This contains unfinished code, use at your own risk!
@@ -21,27 +19,42 @@ collections::HashMap,
 macro_rules! using_widget {
     ($widget_type:ty, $name:expr, $execute:expr) => {{
         let widgets = WIDGETS.lock().unwrap();
-        if let Some(gtk_widget) = widgets.get($name) {
-            let widget = gtk_widget.0.downcast_ref::<$widget_type>().unwrap();
+        for widget in widgets.iter() {
+            if widget.name != $name {
+                continue;
+            }
+
+            let widget = widget.widget.downcast_ref::<$widget_type>().unwrap();
             $execute(widget);
-        } else {
-            log!(format!("[WARN] Found no widget named '{}'", $name))
+            break;
         }
+
+        log!(format!("[WARN] Found no widget named '{}'", $name))
     }};
 }
 
 /// Adds a widget into `WIDGETS`.
 macro_rules! add_widget {
     ($name:expr, $widget:expr) => {
-        WIDGETS
-            .lock()
-            .unwrap()
-            .insert($name.to_owned(), GTKWidget(gtk::Widget::from($widget)))
+        let mut widgets = WIDGETS.lock().unwrap();
+        // Check so there's no widgets with the same name.
+        for widget in widgets.iter() {
+            // Ignore case only in this case.
+            if widget.name.eq_ignore_ascii_case(&*$name) {
+                panic!("[ERROR] [RUNE]: There's already a widget with the same name as '{}', please pick a different name!", $name);
+            }
+        }
+
+        // No widgets with the same name, continue.
+        widgets.push(GTKWidget {
+            name: $name,
+            widget: gtk::Widget::from($widget),
+        });
     };
 }
 
 lazy_static! {
-    static ref WIDGETS: Mutex<HashMap<String, GTKWidget>> = Mutex::new(HashMap::new());
+    static ref WIDGETS: Mutex<SmallVec<[GTKWidget; 6]>> = Mutex::new(SmallVec::new());
 }
 
 /// Widget Builder which hold certain exposed functions for the user, alongside some internal
@@ -50,7 +63,10 @@ lazy_static! {
 struct Builder;
 
 /// Wrapper around `Widget`.
-struct GTKWidget(Widget);
+struct GTKWidget {
+    pub name: String,
+    pub widget: Widget,
+}
 
 /// Rune VM.
 pub struct RuneVM;
@@ -66,7 +82,7 @@ impl Builder {
         label.set_widget_name(name);
         ui::add_and_align(&label, Align::from_str(alignment).unwrap(), None);
         label.show(); // Required otherwise it's inactive.
-        add_widget!(name, label);
+        add_widget!(name.to_owned(), label);
         log!(format!(
             "Adding a new label widget from loaded script, widget name: '{name}'"
         ));
@@ -85,7 +101,9 @@ impl Builder {
     /// Checks whether or not the `Label` is visible.
     fn is_label_visible(name: &str) -> bool {
         let mut is_visible = false;
-        using_widget!(Label, name, |label: &Label| { is_visible = label.is_visible() });
+        using_widget!(Label, name, |label: &Label| {
+            is_visible = label.is_visible()
+        });
         is_visible
     }
 }
