@@ -1,4 +1,5 @@
 use crate::{constants::*, widgets::cava_widget::CavaWidget};
+use smallvec::SmallVec;
 use std::{fs::write, process::Stdio, sync::Mutex};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
@@ -14,7 +15,7 @@ lazy_static! {
     /// Has Cava crashed? If true, don't keep `update_cava` running.
     pub static ref HAS_CAVA_CRASHED: Mutex<bool> = Mutex::new(false);
     /// All active Cava widget instances.
-    pub static ref CAVA_INSTANCES: Mutex<Vec<CavaWidget>> = Mutex::new(Vec::new());
+    pub static ref CAVA_INSTANCES: Mutex<SmallVec<[CavaWidget; 2]>> = Mutex::new(SmallVec::new());
 }
 
 /// Gets the sed to use for Cava.

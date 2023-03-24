@@ -797,6 +797,7 @@ dependencies = [
  "lazy_static",
  "lxinfo",
  "rune",
+ "smallvec",
  "stray",
  "tokio",
  "tracing-subscriber",

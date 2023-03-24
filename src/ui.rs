@@ -13,6 +13,7 @@ use crate::{
     },
 };
 use gtk::traits::*;
+use smallvec::SmallVec;
 use std::sync::RwLock;
 
 lazy_static! {
@@ -118,7 +119,7 @@ fn create_components() {
 
         for (key, json) in relevant {
             // Gets the widget identifiers.
-            let identifiers: Vec<_> = key.split(SEPARATOR).collect();
+            let identifiers: SmallVec<[&str; 4]> = key.split(SEPARATOR).collect();
 
             // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
             let identifier = identifiers[0];

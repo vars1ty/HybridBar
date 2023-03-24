@@ -6,6 +6,7 @@ use crate::{
 };
 use gtk::{traits::*, *};
 use json::JsonValue;
+use smallvec::SmallVec;
 
 /// Creates a new basic box widget.
 pub struct BoxWidget {
@@ -20,7 +21,7 @@ fn build_child_widgets(widgets: JsonValue, box_holder: &Box) {
 
     for (key, json) in relevant {
         // Gets the widget identifiers.
-        let identifiers: Vec<_> = key.split(SEPARATOR).collect();
+        let identifiers: SmallVec<[&str; 4]> = key.split(SEPARATOR).collect();
 
         // Type example: `label_ABC` <= `label` is the IDENTIFIER, `ABC` is the NAME.
         let widget_type = identifiers[0];

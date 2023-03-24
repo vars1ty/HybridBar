@@ -15,6 +15,7 @@ tokio = { version = "1.26.0", features = [ "full" ] }
 tracing-subscriber = "0.3.16"
 gtk-layer-shell = "0.6.0"
 lazy_static = "1.4.0"
+smallvec = "1.10.0"
 hyprland = "0.3.0"
 lxinfo = "0.1.2"
 rune = "0.12.1"
