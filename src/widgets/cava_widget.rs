@@ -21,7 +21,7 @@ impl HWidget for CavaWidget {
         self.label.set_widget_name(name);
         ui::add_and_align(&self.label, align, box_holder);
         cava::CAVA_INSTANCES
-            .lock()
+            .write()
             .expect(ERR_ACCESS_CAVA_INSTANCES)
             .push(self);
     }

@@ -69,7 +69,7 @@ fn start_script_loop(vm: Vm) {
 fn start_cava_loop() {
     // Only start the cava loop if there are actually Cava widgets available.
     let widgets = cava::CAVA_INSTANCES
-        .lock()
+        .read()
         .expect(ERR_ACCESS_CAVA_INSTANCES);
     if widgets.is_empty() {
         return;
@@ -93,14 +93,14 @@ fn update_cava() -> Continue {
     if let Ok(ref bars) = cava::BARS.lock() {
         // Loop through all Cava widget instances and sync the text.
         let widgets = cava::CAVA_INSTANCES
-            .lock()
+            .read()
             .expect(ERR_ACCESS_CAVA_INSTANCES);
         let widgets = widgets.iter();
         for widget in widgets {
             widget.update_label_direct(bars);
         }
 
-        if let Ok(has_cava_crashed) = HAS_CAVA_CRASHED.lock() {
+        if let Ok(has_cava_crashed) = HAS_CAVA_CRASHED.read() {
             glib::Continue(!*has_cava_crashed)
         } else {
             log!(WARN_CAVA_NO_CRASHED_INSTANCE);

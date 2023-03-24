@@ -1,6 +1,10 @@
 use crate::{constants::*, widgets::cava_widget::CavaWidget};
 use smallvec::SmallVec;
-use std::{fs::write, process::Stdio, sync::Mutex};
+use std::{
+    fs::write,
+    process::Stdio,
+    sync::{Mutex, RwLock},
+};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -13,9 +17,9 @@ lazy_static! {
     /// Current Cava bars.
     pub static ref BARS: Mutex<String> = Mutex::new(String::default());
     /// Has Cava crashed? If true, don't keep `update_cava` running.
-    pub static ref HAS_CAVA_CRASHED: Mutex<bool> = Mutex::new(false);
+    pub static ref HAS_CAVA_CRASHED: RwLock<bool> = RwLock::new(false);
     /// All active Cava widget instances.
-    pub static ref CAVA_INSTANCES: Mutex<SmallVec<[CavaWidget; 2]>> = Mutex::new(SmallVec::new());
+    pub static ref CAVA_INSTANCES: RwLock<SmallVec<[CavaWidget; 2]>> = RwLock::new(SmallVec::new());
 }
 
 /// Gets the sed to use for Cava.
@@ -95,7 +99,7 @@ pub fn update_bars() {
 
 /// Called when Cava has crashed.
 fn on_cava_crashed() -> ! {
-    *HAS_CAVA_CRASHED.lock().unwrap() = true;
+    *HAS_CAVA_CRASHED.write().unwrap() = true;
     BARS.lock().unwrap().clear();
     panic!("{}", WARN_CAVA_NO_LINES)
 }
