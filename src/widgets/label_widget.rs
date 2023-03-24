@@ -69,19 +69,24 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
         return;
     }
 
-    let label = label_ref.label.to_owned();
-    let tooltip = take(&mut label_ref.tooltip);
+    let label = label_ref.label.clone();
+    let mut tooltip = take(&mut label_ref.tooltip);
+    let initial_tooltip_len = tooltip.len();
     let tooltip_command = take(&mut label_ref.tooltip_command);
-    let tick = move || {
-        let mut new_tooltip = String::default();
-        new_tooltip.push_str(&tooltip);
-        new_tooltip.push_str(&use_aliases(&tooltip_command));
+    let mut tick = move || {
+        // Remove content after the initial static text-value, assuming there was any static
+        // text specified.
+        if tooltip.len() > initial_tooltip_len {
+            tooltip.drain(initial_tooltip_len..tooltip.len());
+        }
+
+        tooltip.push_str(&use_aliases(&tooltip_command));
 
         let tooltip_markup = label.tooltip_markup().unwrap_or_else(|| GString::from(""));
-        if !tooltip_markup.eq(&new_tooltip) {
+        if !tooltip_markup.eq(&tooltip) {
             // Markup support here, the user therefore has to deal with any upcoming issues due to
             // the command output, on their own.
-            label.set_tooltip_markup(Some(&new_tooltip));
+            label.set_tooltip_markup(Some(&tooltip));
         }
 
         glib::Continue(true)
@@ -93,31 +98,31 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
 
 /// Starts updating the dynamic label content.
 fn start_label_loop(label_ref: &mut LabelWidget) {
-    let label = take(&mut label_ref.label);
     let command = label_ref.command.to_owned();
     if command.is_empty() || label_ref.update_rate <= 3 {
         // Not eligible, cancel.
         return;
     }
 
-    let text = take(&mut label_ref.text);
+    let label = label_ref.label.clone();
+    let mut text = take(&mut label_ref.text);
+    let initial_text_len = text.len();
     let listen = take(&mut label_ref.listen);
     let update_anim = take(&mut label_ref.update_anim).expect(ERR_WRONG_LABEL_RANIM);
     let revealer = take(&mut label_ref.revealer);
     let anim_speed = take(&mut label_ref.anim_duration);
-    let tick = move || {
+    let mut tick = move || {
         if !listen {
-            let mut new_text = String::default();
-            new_text.push_str(&text);
-            new_text.push_str(&use_aliases(&command));
+            // Remove content after the initial static text-value, assuming there was any static
+            // text specified.
+            if text.len() > initial_text_len {
+                text.drain(initial_text_len..text.len());
+            }
 
-            if !label.text().eq(&new_text) {
-                restart_revealer!(
-                    revealer,
-                    || label.set_text(&new_text),
-                    update_anim,
-                    anim_speed
-                );
+            text.push_str(&use_aliases(&command));
+
+            if !label.text().eq(&text) {
+                restart_revealer!(revealer, || label.set_text(&text), update_anim, anim_speed);
             }
         } else {
             update_from_buffer(&label, &revealer, update_anim, anim_speed);

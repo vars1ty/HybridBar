@@ -1,11 +1,9 @@
 use crate::{constants::ERR_NO_LXINFO, utils::hyprland::HyprlandData};
 use lxinfo::info;
 
-/// Replaces `find` with `replace` if found.
-fn replace_if_present(content: &mut String, find: &str, replace: &str) {
-    if content.contains(find) {
-        *content = content.replace(find, replace);
-    }
+/// Replaces `find` with `replace`.
+fn replace(content: &mut String, find: &str, replace: &str) {
+    *content = content.replace(find, replace);
 }
 
 /// Checks if the first and last character in `content` is `%`.
@@ -29,8 +27,8 @@ pub fn use_aliases(content: &str) -> String {
     let mut content = content.to_owned();
     if is_feature_active!("hyprland") {
         let data = HyprlandData::get_data();
-        replace_if_present(&mut content, "%hl_workspace%", &data.workspace.to_string());
-        replace_if_present(&mut content, "%hl_window%", &data.window);
+        replace(&mut content, "%hl_workspace%", &data.workspace.to_string());
+        replace(&mut content, "%hl_window%", &data.window);
         if !has_alias_chars(&content) {
             // Success
             return content;
@@ -39,17 +37,17 @@ pub fn use_aliases(content: &str) -> String {
 
     if is_feature_active!("systemd") {
         if let Some(info) = info::get_system_information() {
-            replace_if_present(&mut content, "%username%", &info.username);
-            replace_if_present(&mut content, "%hostname%", &info.hostname);
-            replace_if_present(&mut content, "%shell%", &info.shell);
-            replace_if_present(&mut content, "%kernel%", &info.kernel);
-            replace_if_present(&mut content, "%used_mem%", &info.used_mem);
-            replace_if_present(&mut content, "%distro_id%", &info.distro_id);
-            replace_if_present(&mut content, "%total_mem%", &info.total_mem);
-            replace_if_present(&mut content, "%cached_mem%", &info.cached_mem);
-            replace_if_present(&mut content, "%available_mem%", &info.available_mem);
-            replace_if_present(&mut content, "%distro%", &info.distro_name);
-            replace_if_present(&mut content, "%distro_build_id%", &info.distro_build_id);
+            replace(&mut content, "%username%", &info.username);
+            replace(&mut content, "%hostname%", &info.hostname);
+            replace(&mut content, "%shell%", &info.shell);
+            replace(&mut content, "%kernel%", &info.kernel);
+            replace(&mut content, "%used_mem%", &info.used_mem);
+            replace(&mut content, "%distro_id%", &info.distro_id);
+            replace(&mut content, "%total_mem%", &info.total_mem);
+            replace(&mut content, "%cached_mem%", &info.cached_mem);
+            replace(&mut content, "%available_mem%", &info.available_mem);
+            replace(&mut content, "%distro%", &info.distro_name);
+            replace(&mut content, "%distro_build_id%", &info.distro_build_id);
             if !has_alias_chars(&content) {
                 // Success
                 return content;
