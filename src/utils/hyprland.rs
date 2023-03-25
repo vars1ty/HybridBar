@@ -19,7 +19,7 @@ impl HyprlandData {
             window: if let Some(window) = Client::get_active().unwrap() {
                 window.title
             } else {
-                String::default()
+                String::default() // TODO: Remove allocation (somehow?)
             },
         }
     }

@@ -150,6 +150,26 @@ impl Builder {
             "[ERROR] [RUNE]: Found no widgets named '{name}', please check if the name is correct!"
         );
     }
+
+    /// Renames a `Widget` to a new name.
+    /// Panics if no widget with the specified name was found.
+    fn rename_widget(name: &str, new_name: &str) {
+        let widgets = WIDGETS.lock().unwrap();
+        let widgets = widgets.iter();
+        for widget in widgets {
+            let widget = &widget.0;
+            if widget.widget_name().eq_ignore_ascii_case(name) {
+                widget.set_widget_name(new_name);
+                log!(format!("[RUNE]: Widget '{name}' renamed to '{new_name}'!"));
+                return;
+            }
+        }
+
+        // No widgets were found with the specified name, panic.
+        panic!(
+            "[ERROR] [RUNE]: Found no widgets named '{name}', please check if the name is correct!"
+        );
+    }
 }
 
 impl RuneVM {
@@ -175,6 +195,7 @@ impl RuneVM {
         )?;
         module.function(["Builder", "set_visible"], Builder::set_visible)?;
         module.function(["Builder", "is_visible"], Builder::is_visible)?;
+        module.function(["Builder", "rename_widget"], Builder::rename_widget)?;
         Ok(module)
     }
 
