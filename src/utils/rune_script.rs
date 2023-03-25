@@ -1,8 +1,8 @@
 use crate::{ui, utils::aliases, widget::Align};
 use glib::Cast;
 use gtk::{
-    traits::{LabelExt, WidgetExt},
-    Label, Widget,
+    traits::{ButtonExt, LabelExt, WidgetExt},
+    Button, Label, Widget,
 };
 use rune::{
     termcolor::{ColorChoice, StandardStream},
@@ -76,30 +76,79 @@ impl Builder {
         let label = Label::new(Some(content));
         label.set_widget_name(name);
         ui::add_and_align(&label, Align::from_str(alignment).unwrap(), None);
-        label.show(); // Required otherwise it's inactive.
+        label.show();
         add_widget!(name.to_owned(), label);
         log!(format!(
             "Adding a new label widget from loaded script, widget name: '{name}'"
         ));
     }
 
+    /// Adds a new button widget.
+    fn add_button(name: &str, content: &str, alignment: &str) {
+        let button = Button::with_label(content);
+        button.set_widget_name(name);
+        ui::add_and_align(&button, Align::from_str(alignment).unwrap(), None);
+        button.show();
+        add_widget!(name.to_owned(), button);
+        log!(format!(
+            "Adding a new button widget from loaded script, widget name: '{name}'"
+        ));
+    }
+
     /// Changes the text content of a `Label`.
     fn set_label_text(name: &str, content: &str) {
-        using_widget!(Label, name, |label: &Label| { label.set_text(content) })
+        using_widget!(Label, name, |label: &Label| label.set_text(content))
     }
 
-    /// Changes the visibility of a `Label`.
-    fn set_label_visible(name: &str, visible: bool) {
-        using_widget!(Label, name, |label: &Label| { label.set_visible(visible) })
+    /// Changes the text content of a `Button`.
+    fn set_button_text(name: &str, content: &str) {
+        using_widget!(Button, name, |button: &Button| button.set_label(content))
     }
 
-    /// Checks whether or not the `Label` is visible.
-    fn is_label_visible(name: &str) -> bool {
-        let mut is_visible = false;
-        using_widget!(Label, name, |label: &Label| {
-            is_visible = label.is_visible()
-        });
-        is_visible
+    /// Changes the shell-command of a `Button`.
+    fn set_button_command(name: &str, command: &'static str) {
+        using_widget!(Button, name, |button: &Button| button.connect_clicked(
+            |_| {
+                execute!(command);
+            }
+        ))
+    }
+
+    /// Changes the visibility of a `Widget` with the specified name.
+    /// Panics if no widget with the specified name was found.
+    fn set_visible(name: &str, visible: bool) {
+        let widgets = WIDGETS.lock().unwrap();
+        let widgets = widgets.iter();
+        for widget in widgets {
+            let widget = &widget.0;
+            if widget.widget_name().eq_ignore_ascii_case(name) {
+                widget.set_visible(visible);
+                return;
+            }
+        }
+
+        // No widgets were found with the specified name, panic.
+        panic!(
+            "[ERROR] [RUNE]: Found no widgets named '{name}', please check if the name is correct!"
+        );
+    }
+
+    /// Checks whether or not the `Widget` with the specified name is visible.
+    /// Panics if no widget with the specified name was found.
+    fn is_visible(name: &str) -> bool {
+        let widgets = WIDGETS.lock().unwrap();
+        let widgets = widgets.iter();
+        for widget in widgets {
+            let widget = &widget.0;
+            if widget.widget_name().eq_ignore_ascii_case(name) {
+                return widget.is_visible();
+            }
+        }
+
+        // No widgets were found with the specified name, panic.
+        panic!(
+            "[ERROR] [RUNE]: Found no widgets named '{name}', please check if the name is correct!"
+        );
     }
 }
 
@@ -117,9 +166,15 @@ impl RuneVM {
 
         // Widget-related functions.
         module.function(["Builder", "add_label"], Builder::add_label)?;
+        module.function(["Builder", "add_button"], Builder::add_button)?;
         module.function(["Builder", "set_label_text"], Builder::set_label_text)?;
-        module.function(["Builder", "set_label_visible"], Builder::set_label_visible)?;
-        module.function(["Builder", "is_label_visible"], Builder::is_label_visible)?;
+        module.function(["Builder", "set_button_text"], Builder::set_button_text)?;
+        module.function(
+            ["Builder", "set_button_command"],
+            Builder::set_button_command,
+        )?;
+        module.function(["Builder", "set_visible"], Builder::set_visible)?;
+        module.function(["Builder", "is_visible"], Builder::is_visible)?;
         Ok(module)
     }
 
