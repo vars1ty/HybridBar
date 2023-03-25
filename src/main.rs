@@ -160,10 +160,6 @@ async fn main() {
         activate(app);
     });
 
-    if is_feature_active!("tray_experimental") {
-        tracing_subscriber::fmt::init();
-    }
-
     application.run();
 }
 

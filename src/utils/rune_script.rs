@@ -68,7 +68,6 @@ pub struct RuneVM;
 
 // "Hack"-make `Widget` thread-safe.
 unsafe impl Send for GTKWidget {}
-unsafe impl Sync for GTKWidget {}
 
 impl Builder {
     /// Adds a new label widget.

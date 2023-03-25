@@ -9,7 +9,7 @@ use crate::{
     widget::{Align, HWidget},
     widgets::{
         box_widget::BoxWidget, button_widget::ButtonWidget, cava_widget::CavaWidget,
-        label_widget::LabelWidget, spacing_widget::SpacingWidget, tray_widget::TrayWidget,
+        label_widget::LabelWidget, spacing_widget::SpacingWidget,
     },
 };
 use gtk::traits::*;
@@ -25,16 +25,13 @@ lazy_static! {
 pub fn add_and_align(widget: &impl IsA<Widget>, align: Align, box_holder: Option<&Box>) {
     let holders = WIDGET_HOLDERS.read().unwrap();
     let holders = holders.as_ref().unwrap();
-    let left = &holders.left;
-    let centered = &holders.centered;
-    let right = &holders.right;
     if let Some(r#box) = box_holder {
         r#box.add(widget)
     } else {
         match align {
-            Align::Left => left.add(widget),
-            Align::Centered => centered.add(widget),
-            Align::Right => right.add(widget),
+            Align::Left => holders.left.add(widget),
+            Align::Centered => holders.centered.add(widget),
+            Align::Right => holders.right.add(widget),
         }
     }
 }
@@ -244,7 +241,6 @@ pub fn add_widget(
 
             cava.add(widget_name, alignment, box_holder)
         }
-        "tray" => TrayWidget.add(widget_name, alignment, box_holder),
         _ => {
             panic!("[ERROR] There is no widget type defined as '{identifier}'!\n")
         }
