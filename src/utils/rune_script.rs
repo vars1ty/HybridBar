@@ -20,11 +20,12 @@ macro_rules! using_widget {
     ($widget_type:ty, $name:expr, $execute:expr) => {{
         let widgets = WIDGETS.lock().unwrap();
         for widget in widgets.iter() {
-            if widget.name != $name {
+            let widget = &widget.0;
+            if widget.widget_name() != $name {
                 continue;
             }
 
-            let widget = widget.widget.downcast_ref::<$widget_type>().unwrap();
+            let widget = widget.downcast_ref::<$widget_type>().unwrap();
             $execute(widget);
             break;
         }
@@ -40,16 +41,13 @@ macro_rules! add_widget {
         // Check so there's no widgets with the same name.
         for widget in widgets.iter() {
             // Ignore case only in this case.
-            if widget.name.eq_ignore_ascii_case(&*$name) {
+            if widget.0.widget_name().eq_ignore_ascii_case(&*$name) {
                 panic!("[ERROR] [RUNE]: There's already a widget with the same name as '{}', please pick a different name!", $name);
             }
         }
 
         // No widgets with the same name, continue.
-        widgets.push(GTKWidget {
-            name: $name,
-            widget: gtk::Widget::from($widget),
-        });
+        widgets.push(GTKWidget(gtk::Widget::from($widget)));
     };
 }
 
@@ -63,10 +61,7 @@ lazy_static! {
 struct Builder;
 
 /// Wrapper around `Widget`.
-struct GTKWidget {
-    pub name: String,
-    pub widget: Widget,
-}
+struct GTKWidget(Widget);
 
 /// Rune VM.
 pub struct RuneVM;
