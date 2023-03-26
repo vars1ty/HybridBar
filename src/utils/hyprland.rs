@@ -23,4 +23,14 @@ impl HyprlandData {
             },
         }
     }
+
+    /// Returns the active workspace.
+    pub fn get_current_workspace() -> i32 {
+        Self::get_data().workspace
+    }
+
+    /// Returns the active window.
+    pub fn get_current_window() -> String {
+        Self::get_data().window
+    }
 }

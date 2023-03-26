@@ -11,11 +11,16 @@
 - `is_feature_active(&str) [bool]` -> Checks if the specified feature is active, then returns `true`/`false`.
 - `use_aliases(&str) [String]` -> Checks for aliases in the given content, then replaces it with their real values.
 
+### Feature-dependent
+> **Warning**: These functions require that the associated feature is enabled, otherwise it won't work.
+
+- `Hyprland::get_current_workspace() [i32]` -> Returns the currently active workspace.
+- `Hyprland::get_current_window() [String]` -> Returns the focused window.
+
 ### Called Functions
 These functions are called automatically by Hybrid internally if found.
 
 - `main() [()]` -> Main function, called once on Hybrid startup.
-- `tick() [()]` -> Update loop, called every 250ms unless overridden.
 - `get_update_rate() [u64]` -> Changes the update-rate for `tick` by returning the desired rate, 250 is the default.
 
 ### Builder
@@ -29,6 +34,8 @@ These functions are called automatically by Hybrid internally if found.
 
 ## Example
 ```rust
+pub const UPDATE_RATE = 5000; // 5 seconds
+
 pub fn main() {
     log("Hello!");
 }
@@ -37,8 +44,9 @@ pub fn tick() {
     let date = execute("date");
     log(`Ticking! Date is: ${date}`);
 }
-
-pub fn get_update_rate() {
-    5000 // 5 seconds
-}
 ```
+
+## Constants
+> **Warning**: Modifying these constants may impact performance and overall stability, you have been warned!
+
+- `UPDATE_RATE [u64]` -> The update-rate (in milliseconds) for how often Hybrid should call the `tick` function.

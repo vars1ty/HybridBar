@@ -1,4 +1,8 @@
-use crate::{ui, utils::aliases, widget::Align};
+use crate::{
+    ui,
+    utils::{aliases, hyprland::HyprlandData},
+    widget::Align,
+};
 use glib::Cast;
 use gtk::{
     traits::{ButtonExt, LabelExt, WidgetExt},
@@ -188,6 +192,18 @@ impl RuneVM {
         module.function(["Builder", "set_visible"], Builder::set_visible)?;
         module.function(["Builder", "is_visible"], Builder::is_visible)?;
         module.function(["Builder", "rename_widget"], Builder::rename_widget)?;
+
+        // Feature-related functions.
+        if is_feature_active!("hyprland") {
+            module.function(
+                ["Hyprland", "get_current_workspace"],
+                HyprlandData::get_current_workspace,
+            )?;
+            module.function(
+                ["Hyprland", "get_current_window"],
+                HyprlandData::get_current_window,
+            )?;
+        }
         Ok(module)
     }
 

@@ -7,21 +7,25 @@ With blur through Hyprland.
 
 The bottom bar is also made with Hybrid.
 
+## Why another status bar?
+Because I never found any good other alternative, and I needed:
+- Something simple to configure;
+- Basic-ish features. Even if alternatives did have it, it often required more effort than what I'd consider necessary;
+- A real project to make so I could learn more about Rust, hence the many refactors and frequent code-changes
+  - Hybrid was also made open-source so that others can make use of it and not only be limited to the other alternatives
+
+Hybrid implements everything I need in a status bar and a bit more.
+
+If something's missing and I really need it, then I'll most likely add it.
+
 ## What does it support?
-- Straight-forward configuration;
-- Labels with shell commands (+ listen support);
-- Spacings (a.k.a. Separators if styled);
-- Boxes with child widgets;
-- Custom update-rate for dynamic labels;
-- Cava;
-- Buttons with shell commands;
-- Tooltips for buttons and labels;
-- Markup for buttons and labels;
-- Top and Bottom pinning;
-- Transparency (+ blur if your compositor allows for blurring surface layers);
-- Experimental system tray via `stray`;
-- Different monitors for each configuration;
-- Flexible experimental scripting through [Rune](https://github.com/rune-rs/rune/)
+Hybrid supports a variety of features, most notably:
+- Cava embedded right into your bar;
+- Easy, documented configuration in form of JSON;
+- Scripting through [Rune](https://rune-rs.github.io/) and easy-to-use methods, all documented with examples provided;
+- Native GTK3 Transparency;
+- Ability to opt-in for special [features](https://github.com/vars1ty/HybridBar/blob/main/FEATURES.md);
+- And much more!
 
 ## I have no config
 If you installed outside the AUR, copy the example from `examples/config.json` into `~/.config/HybridBar/`.
@@ -32,7 +36,7 @@ Nope, it's been tested on KDE as well and it worked just fine.
 It just won't work on GNOME as it hasn't implemented the `wlr-layer-shell` protocol.
 
 # Config Layout
-I'm assuming you are familiar with JSON. If you aren't, well too bad.
+The configuration is written in plain JSON, the layout is setup to be as easy to read and write as possible.
 
 ## Base Setup
 Before you can use the bar, you have to adjust the color and alpha.
@@ -63,17 +67,16 @@ If you want a sample CSS which has good defaults, check `examples/style.css`.
 `HYBRID_CONFIG` = `name.json` : Locates the config inside the HybridBar config path, then uses it for the rest of the bars session.
 
 ## Background Updates
-Hybrid automatically performs background updates for dynamic labels/tooltips and Cava widgets.
-
-The rate for updating labels is read from the labels `update_rate` key (u64).
-
-It's worth noting that low update-rates may lead to performance decreases, the value specified is in **milliseconds**.
+Hybrid has background-loops running for **dynamic** content, aka:
+- Widgets that have a property like `command` or `tooltip_command` set;
+- Your script (if any), assuming it has the `tick` function present;
+- The Cava widget, otherwise it can't fetch new Cava data and display it
 
 # Build dependencies
 1. rust
 2. gtk-layer-shell
 3. gtk3
-4. a compositor that supports layer-shells
+4. A compositor that supports layer-shells
    - This excludes GNOME. KDE, Hyprland and Sway have been confirmed working.
 
 ## Installation
