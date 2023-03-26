@@ -23,7 +23,11 @@ pub fn update(vm: Option<Vm>) {
 /// Attempts to start the script loop.
 fn start_script_loop(vm: Vm) {
     if let Ok(func) = vm.lookup_function(["main"]) {
-        func.call::<(), ()>(()).unwrap();
+        let res = func.call::<(), ()>(());
+        if let Err(err) = res {
+            let (kind, _) = err.as_unwound();
+            panic!("[ERROR] [RUNE]: Calling `main` resulted in an error: {kind:?}");
+        }
     } else {
         log!(WARN_NO_MAIN)
     }

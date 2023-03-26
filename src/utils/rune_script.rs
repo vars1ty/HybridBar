@@ -17,21 +17,48 @@ use std::sync::{Arc, Mutex};
 
 /// Looks up a runtime-scripted widget, then passes it to `execute` for you to use as a reference.
 macro_rules! using_widget {
+    // Single widget-type variant.
     ($widget_type:ty, $name:expr, $execute:expr) => {{
         let widgets = WIDGETS.lock().unwrap();
         for widget in widgets.iter() {
             let widget = &widget.0;
-            if widget.widget_name() != $name {
+            if !widget.widget_name().eq_ignore_ascii_case($name) {
                 continue;
             }
 
             let widget = widget.downcast_ref::<$widget_type>().unwrap();
             $execute(widget);
-            break;
+            return;
         }
 
-        log!(format!("[WARN] Found no widget named '{}'", $name))
+        // No widgets were found with the specified name, panic.
+        panic!(
+            "[ERROR] [RUNE]: Found no widgets named '{}', please check if the name is correct!",
+            $name
+        );
     }};
+
+    // Any type variant
+    ($name:expr, $execute:expr) => {
+        let widgets = WIDGETS.lock().unwrap();
+        let widgets = widgets.iter();
+        let mut found_any = false;
+        for widget in widgets {
+            let widget = &widget.0;
+            if widget.widget_name().eq_ignore_ascii_case($name) {
+                found_any = true;
+                $execute(widget);
+            }
+        }
+
+        // No widgets were found with the specified name, panic.
+        if !found_any {
+            panic!(
+                "[ERROR] [RUNE]: Found no widgets named '{}', please check if the name is correct!",
+                $name
+            );
+        }
+    };
 }
 
 /// Adds a widget into `WIDGETS`.
@@ -66,7 +93,7 @@ struct GTKWidget(Widget);
 /// Rune VM.
 pub struct RuneVM;
 
-// "Hack"-make `Widget` thread-safe.
+// "Hack"-make `GTKWidget` thread-safe so that `Widget` can be used across "threads".
 unsafe impl Send for GTKWidget {}
 
 impl Builder {
@@ -116,38 +143,15 @@ impl Builder {
     /// Changes the visibility of a `Widget` with the specified name.
     /// Panics if no widget with the specified name was found.
     fn set_visible(name: &str, visible: bool) {
-        let widgets = WIDGETS.lock().unwrap();
-        let widgets = widgets.iter();
-        for widget in widgets {
-            let widget = &widget.0;
-            if widget.widget_name().eq_ignore_ascii_case(name) {
-                widget.set_visible(visible);
-                return;
-            }
-        }
-
-        // No widgets were found with the specified name, panic.
-        panic!(
-            "[ERROR] [RUNE]: Found no widgets named '{name}', please check if the name is correct!"
-        );
+        using_widget!(name, |widget: &Widget| widget.set_visible(visible));
     }
 
     /// Checks whether or not the `Widget` with the specified name is visible.
     /// Panics if no widget with the specified name was found.
     fn is_visible(name: &str) -> bool {
-        let widgets = WIDGETS.lock().unwrap();
-        let widgets = widgets.iter();
-        for widget in widgets {
-            let widget = &widget.0;
-            if widget.widget_name().eq_ignore_ascii_case(name) {
-                return widget.is_visible();
-            }
-        }
-
-        // No widgets were found with the specified name, panic.
-        panic!(
-            "[ERROR] [RUNE]: Found no widgets named '{name}', please check if the name is correct!"
-        );
+        let mut is_visible = false;
+        using_widget!(name, |widget: &Widget| is_visible = widget.is_visible());
+        is_visible
     }
 
     /// Renames a `Widget` to a new name.

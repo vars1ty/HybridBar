@@ -17,10 +17,10 @@ lazy_static = "1.4.0"
 smallvec = "1.10.0"
 hyprland = "0.3.0"
 lxinfo = "0.1.2"
-rune = "0.12.1"
-glib = "0.17.2"
+rune = "0.12.3"
+glib = "0.17.5"
 json = "0.12.4"
-gtk = "0.17.0"
+gtk = "0.17.1"
 
 [profile.release]
 codegen-units = 1

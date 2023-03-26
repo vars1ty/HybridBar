@@ -52,6 +52,7 @@ pub const ERR_WRONG_LABEL_RANIM: &str =
 pub const ERR_READING_MAIN_RN: &str = "[ERROR] Couldn't find (or failed reading) main.rn!";
 pub const ERR_UPDATE_RATE_TYPE: &str =
     "[ERROR] The `UPDATE_RATE` constant has to be a valid number!";
+pub const ERR_PARSE_CONFIG: &str = "[ERROR] Error parsing config!";
 
 // Constant warnings.
 
