@@ -1,7 +1,0 @@
-/// Called every 250ms of the bars lifetime.
-pub fn tick() {
-    log("Ticking!");
-    // Add a new label widget every 250ms.
-    // Name, Content, Alignment (left, centered, right)
-    add_label("name", "text", "centered");
-}

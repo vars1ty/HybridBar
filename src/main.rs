@@ -15,7 +15,7 @@ mod utils;
 mod widget;
 mod widgets;
 
-use crate::utils::rune_script::RuneVM;
+use crate::utils::rune::rune_script::RuneVM;
 use constants::*;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;

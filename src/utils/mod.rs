@@ -2,4 +2,4 @@ pub mod aliases;
 pub mod cava;
 pub mod environment;
 pub mod hyprland;
-pub mod rune_script;
+pub mod rune;

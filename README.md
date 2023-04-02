@@ -25,6 +25,8 @@ Hybrid supports a variety of features, most notably:
 - Scripting through [Rune](https://rune-rs.github.io/) and easy-to-use methods, all documented with examples provided;
 - Native GTK3 Transparency;
 - Ability to opt-in for special [features](https://github.com/vars1ty/HybridBar/blob/main/FEATURES.md);
+- Listening support for Label widgets;
+- Animations for when the content of a Label widget updates;
 - And much more!
 
 ## I have no config
