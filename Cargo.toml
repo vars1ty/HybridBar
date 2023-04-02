@@ -11,8 +11,8 @@ edition = "2021"
 license = "MIT"
 
 [dependencies]
-tokio = { version = "1.26.0", features = [ "full" ] }
-gtk-layer-shell = "0.6.0"
+tokio = { version = "1.27.0", features = [ "full" ] }
+gtk-layer-shell = "0.6.1"
 lazy_static = "1.4.0"
 smallvec = "1.10.0"
 hyprland = "0.3.1"
