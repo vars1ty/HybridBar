@@ -1,106 +1,94 @@
-use crate::{constants::*, structures::ConfigData, utils::environment};
+use crate::{constants::*, utils::environment};
 use json::JsonValue;
-use std::{
-    collections::HashMap,
-    fs,
-    sync::{RwLock, RwLockReadGuard},
-};
+use std::{collections::HashMap, fs};
 
-lazy_static! {
-    /// Cached config.
-    pub static ref CONFIG: RwLock<JsonValue> = RwLock::new(read_config_raw());
+#[derive(Debug)]
+pub struct Config {
+    /// Hybrid Config Directory path.
+    path: &'static str,
+
+    /// Raw config data.
+    config_data: JsonValue,
+
+    /// Update Frequency for dynamic widgets.
+    update_rate: u64,
 }
 
-/// Gets the root home path to Hybrid.
-pub fn get_path() -> String {
-    format!(
-        "{}/.config/HybridBar/",
-        std::env::var("HOME").unwrap_or_else(|_| format!("/home/{}", execute!("whoami")))
-    )
-}
-
-/// Returns the set update-rate.
-pub fn get_update_rate() -> u64 {
-    let update_rate = conf!(HYBRID_ROOT_JSON, "update_rate", false, false)
-        .number
-        .unwrap_or_else(|| 100)
-        .clamp(5, 10_000);
-
-    update_rate.try_into().expect(ERR_PARSE_UPDATE_RATE)
-}
-
-// Parses and returns the config.
-fn read_config_raw() -> JsonValue {
-    let mut conf_path = get_path();
-    conf_path.push_str(&environment::try_get_var("HYBRID_CONFIG", DEFAULT_CONFIG));
-    json::parse(
-        &fs::read_to_string(&conf_path)
-            // Don't panic if the file doesn't exist/couldn't be read. Instead use the example config.
-            .unwrap_or_else(|_| include_str!("../examples/config.json").to_owned()),
-    )
-    .expect(ERR_PARSE_CONFIG)
-}
-
-/// Tries to fetch a value from the config. Supported types are `String` and `i32`.
-pub fn try_get(root: &str, key: &str, is_string: bool, with_custom_variables: bool) -> ConfigData {
-    let cfg = &get_config()[root];
-    if !cfg.has_key(key) {
-        return ConfigData::default();
-    }
-
-    let grabbed_value = &cfg[key];
-
-    // If the desired value isn't a string, try and get it as a 32-bit integer.
-    if !is_string {
-        return ConfigData::new(
-            None,
-            Some(
-                grabbed_value
-                    .as_i32()
-                    .unwrap_or_else(|| panic!("[ERROR] Failed parsing {root}:{key} as i32!")),
-            ),
+impl Config {
+    pub fn init() -> Self {
+        // Get the directory path.
+        let path = format!(
+            "{}/.config/HybridBar/",
+            std::env::var("HOME").unwrap_or_else(|_| format!("/home/{}", execute!("whoami")))
         );
-    }
 
-    // Convert it to a string-value.
-    if with_custom_variables {
-        ConfigData::new(
-            Some(with_variables(
-                grabbed_value.to_string(),
-                &get_custom_variables(),
-            )),
-            None,
+        // Read the config.
+        let config_path = format!(
+            "{path}{}",
+            environment::try_get_var("HYBRID_CONFIG", DEFAULT_CONFIG)
+        );
+        let config_data = json::parse(
+            &fs::read_to_string(config_path)
+                .unwrap_or_else(|_| include_str!("../examples/config.json").to_owned()),
         )
-    } else {
-        ConfigData::new(Some(grabbed_value.to_string()), None)
-    }
-}
+        .expect(ERR_PARSE_CONFIG);
 
-/// Returns the entire config.
-pub fn get_config<'a>() -> RwLockReadGuard<'a, JsonValue> {
-    CONFIG.read().expect(ERR_ACCESS_CONFIG)
-}
+        // Get update-rate.
+        let update_rate = config_data[HYBRID_ROOT_JSON]["update_rate"]
+            .as_u64()
+            .unwrap_or_else(|| 100)
+            .clamp(5, 10_000);
 
-/// Gets all the custom variables.
-pub fn get_custom_variables() -> HashMap<String, String> {
-    let cfg = &get_config()[HYBRID_V_ROOT_JSON];
-    let mut map: HashMap<String, String> = HashMap::new();
-    for entry in cfg.entries() {
-        map.insert(entry.0.to_owned(), entry.1.to_string());
-    }
-
-    map
-}
-
-/// Replaces any variable-matching patterns in the `String` with the variables value.
-pub fn with_variables(input: String, custom_variables: &HashMap<String, String>) -> String {
-    let mut input = input;
-    for variable in custom_variables {
-        // Only replace if `result` actually contains the defined variable.
-        if input.contains(variable.0) {
-            input = input.replace(variable.0, variable.1);
+        Self {
+            path: Box::leak(Box::new(path)),
+            config_data,
+            update_rate: update_rate.try_into().expect(ERR_PARSE_UPDATE_RATE),
         }
     }
 
-    input
+    /// Gets the root home path to Hybrid.
+    pub fn get_path(&self) -> &str {
+        self.path
+    }
+
+    /// Returns the set update-rate.
+    pub fn get_update_rate(&self) -> u64 {
+        self.update_rate
+    }
+
+    /// Returns the config.
+    pub fn read_config_raw(&self) -> &JsonValue {
+        &self.config_data
+    }
+
+    /// Gets all the custom variables.
+    pub fn get_custom_variables(&self) -> HashMap<String, String> {
+        // TODO(varsity): Cache the variables so there's no need to create a new HashMap<> and
+        // iterate over all the entries every time.
+
+        let cfg = &self.config_data[HYBRID_V_ROOT_JSON];
+        let mut map: HashMap<String, String> = HashMap::new();
+        for entry in cfg.entries() {
+            map.insert(entry.0.to_owned(), entry.1.to_string());
+        }
+
+        map
+    }
+
+    /// Replaces any variable-matching patterns in the `String` with the variables value.
+    pub fn with_variables(
+        &self,
+        input: String,
+        custom_variables: &HashMap<String, String>,
+    ) -> String {
+        let mut input = input;
+        for variable in custom_variables {
+            // Only replace if `result` actually contains the defined variable.
+            if input.contains(variable.0) {
+                input = input.replace(variable.0, variable.1);
+            }
+        }
+
+        input
+    }
 }

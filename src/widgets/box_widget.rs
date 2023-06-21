@@ -1,4 +1,5 @@
 use crate::{
+    config::Config,
     constants::ERR_EMPTY_NAME,
     structures::BaseKeys,
     ui,
@@ -12,10 +13,11 @@ use smallvec::SmallVec;
 pub struct BoxWidget {
     pub width: i32,
     pub widgets: JsonValue,
+    pub config: &'static Config,
 }
 
 /// Builds the child widgets.
-fn build_child_widgets(widgets: JsonValue, box_holder: &Box) {
+fn build_child_widgets(widgets: JsonValue, box_holder: &Box, config: &'static Config) {
     const SEPARATOR: &str = "_";
     let relevant = widgets.entries().filter(|(key, _)| key.contains(SEPARATOR));
 
@@ -27,7 +29,8 @@ fn build_child_widgets(widgets: JsonValue, box_holder: &Box) {
         let widget_type = identifiers[0];
 
         // Base keys.
-        let (text, command, update_rate, tooltip, tooltip_command) = ui::get_base_keys(json);
+        let (text, command, update_rate, tooltip, tooltip_command) =
+            ui::get_base_keys(json, config);
         let base_keys = BaseKeys {
             text,
             command,
@@ -54,6 +57,7 @@ fn build_child_widgets(widgets: JsonValue, box_holder: &Box) {
             base_keys,
             widget_type,
             Some(box_holder),
+            config,
         )
     }
 }
@@ -68,7 +72,7 @@ impl HWidget for BoxWidget {
         // 0.4.3: Experimental: Allow for widgets enclosed into boxes.
         // 0.4.7: Stabilize Box Child-Widgets.
         if !self.widgets.is_null() {
-            build_child_widgets(self.widgets, &widget)
+            build_child_widgets(self.widgets, &widget, self.config)
         }
 
         ui::add_and_align(&widget, align, box_holder);

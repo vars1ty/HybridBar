@@ -15,7 +15,9 @@ impl HyprlandData {
     /// Gets the workspace and active window.
     pub fn get_data() -> HyprlandData {
         HyprlandData {
-            workspace: Workspace::get_active().unwrap().id,
+            workspace: Workspace::get_active()
+                .expect("[ERROR] Workspace::get_active() failed!")
+                .id,
             window: if let Some(window) = Client::get_active().unwrap() {
                 window.title
             } else {

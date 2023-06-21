@@ -14,11 +14,6 @@ impl HybridModule {
         log!(format!("[RUNE]: {msg}"))
     }
 
-    /// Checks if the specified feature is active.
-    pub fn is_feature_active(tag: &str) -> bool {
-        is_feature_active!(tag)
-    }
-
     /// Checks for aliases in `content`, then replaces them with their real values.
     pub fn use_aliases(content: &str) -> String {
         aliases::use_aliases(content)

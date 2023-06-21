@@ -29,31 +29,6 @@ macro_rules! execute {
 }
 
 #[macro_export]
-/// Gets a value from the config.
-macro_rules! conf {
-    ($root:expr, $key:expr, $is_string:expr, $with_custom_variables:expr) => {
-        $crate::config::try_get($root, $key, $is_string, $with_custom_variables)
-    };
-    ($root:expr, $key:expr, $default:expr) => {
-        if let Some(res) = conf!($root, $key, true, false).string {
-            res == "true"
-        } else {
-            $default
-        }
-    };
-}
-
-#[macro_export]
-/// Checks if the specified feature is active.
-macro_rules! is_feature_active {
-    ($tag:expr) => {
-        $crate::config::get_config()[$crate::constants::HYBRID_ROOT_JSON]
-            [$crate::constants::HYBRID_F_ROOT_JSON]
-            .contains($tag)
-    };
-}
-
-#[macro_export]
 /// Restarts the given `Revealer` and plays the given animation after the `after` closure has
 /// finished.
 macro_rules! restart_revealer {

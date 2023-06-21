@@ -1,5 +1,4 @@
 use crate::{
-    config::{get_custom_variables, with_variables, CONFIG},
     r#loop::update,
     structures::{BaseKeys, RevealerExtensions, WidgetHolders},
     utils::cava::{self, HAS_CAVA_STARTED},
@@ -37,7 +36,7 @@ pub fn add_and_align(widget: &impl IsA<Widget>, align: Align, box_holder: Option
 }
 
 /// Builds all of the widgets.
-pub fn build_widgets(window: &ApplicationWindow, vm: Option<Vm>) {
+pub fn build_widgets(window: &ApplicationWindow, vm: Option<Vm>, config: &'static Config) {
     // Create box widgets, which we'll be using to draw the content onto.
     let root = Box::new(Orientation::Horizontal, 0);
     let left = Box::new(Orientation::Horizontal, 0);
@@ -67,21 +66,24 @@ pub fn build_widgets(window: &ApplicationWindow, vm: Option<Vm>) {
     });
 
     // Prepare and show all of the widgets.
-    create_components();
+    create_components(config);
     window.show_all();
 
     // Update dynamic content.
-    update(vm);
+    update(vm, config);
 }
 
 /// Gets the base key values.
-pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) {
-    let custom_variables = &get_custom_variables();
-    let text = with_variables(
+pub fn get_base_keys(
+    root: &JsonValue,
+    config: &'static Config,
+) -> (String, String, u64, String, String) {
+    let custom_variables = &config.get_custom_variables();
+    let text = config.with_variables(
         root["text"].as_str().unwrap_or_default().to_owned(),
         custom_variables,
     );
-    let command = with_variables(
+    let command = config.with_variables(
         root["command"].as_str().unwrap_or_default().to_owned(),
         custom_variables,
     );
@@ -90,11 +92,11 @@ pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) 
         .unwrap_or(100)
         .try_into()
         .unwrap_or_else(|_| panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}"));
-    let tooltip = with_variables(
+    let tooltip = config.with_variables(
         root["tooltip"].as_str().unwrap_or_default().to_owned(),
         custom_variables,
     );
-    let tooltip_command = with_variables(
+    let tooltip_command = config.with_variables(
         root["tooltip_command"]
             .as_str()
             .unwrap_or_default()
@@ -105,60 +107,58 @@ pub fn get_base_keys(root: &JsonValue) -> (String, String, u64, String, String) 
 }
 
 /// Creates all of the widgets.
-fn create_components() {
+fn create_components(config: &'static Config) {
     // Add all of the widgets defined from the config.
-    if let Ok(cfg) = CONFIG.read() {
-        const ALIGNMENT: char = '-';
-        const SEPARATOR: &str = "_";
-        let relevant = cfg
-            .entries()
-            .filter(|(key, _)| key.contains(ALIGNMENT) && key.contains(SEPARATOR));
+    const ALIGNMENT: char = '-';
+    const SEPARATOR: &str = "_";
+    let relevant = config
+        .read_config_raw()
+        .entries()
+        .filter(|(key, _)| key.contains(ALIGNMENT) && key.contains(SEPARATOR));
 
-        for (key, json) in relevant {
-            // Gets the widget identifiers.
-            let identifiers: SmallVec<[&str; 4]> = key.split(SEPARATOR).collect();
+    for (key, json) in relevant {
+        // Gets the widget identifiers.
+        let identifiers: SmallVec<[&str; 4]> = key.split(SEPARATOR).collect();
 
-            // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
-            let identifier = identifiers[0];
+        // Identifier example: `left-label_ABC` <= `left-label` is the IDENTIFIER, `ABC` is the NAME.
+        let identifier = identifiers[0];
 
-            // Grabs widget alignment and widget type from the identifier separated by '-'.
-            let (widget_alignment, widget_type) = identifier
-                .split_once(ALIGNMENT)
-                .expect(ERR_INVALID_WIDGET_FORMAT);
+        // Grabs widget alignment and widget type from the identifier separated by '-'.
+        let (widget_alignment, widget_type) = identifier
+            .split_once(ALIGNMENT)
+            .expect(ERR_INVALID_WIDGET_FORMAT);
 
-            // Base keys, all being optional.
-            let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(json);
-            let base_keys = BaseKeys {
-                text,
-                command,
-                update_rate,
-                tooltip,
-                tooltip_command,
-                alignment: Align::from_str(widget_alignment).expect(ERR_INVALID_ALIGNMENT),
-            };
+        // Base keys, all being optional.
+        let (text, command, update_rate, tooltip, tooltip_command) = get_base_keys(json, config);
+        let base_keys = BaseKeys {
+            text,
+            command,
+            update_rate,
+            tooltip,
+            tooltip_command,
+            alignment: Align::from_str(widget_alignment).expect(ERR_INVALID_ALIGNMENT),
+        };
 
-            // Gets every element after the widget identifier, then appends '_' in between.
-            let widget_name = identifiers[1..].join(SEPARATOR);
+        // Gets every element after the widget identifier, then appends '_' in between.
+        let widget_name = identifiers[1..].join(SEPARATOR);
 
-            if widget_name.is_empty() {
-                panic!("{}", ERR_EMPTY_NAME)
-            }
-
-            log!(format!(
-                "Adding widget '{identifier}' with alignment '{widget_alignment}'!",
-            ));
-
-            // Add the widget.
-            add_widget(
-                json,
-                (widget_type, &widget_name),
-                base_keys,
-                identifier,
-                None,
-            )
+        if widget_name.is_empty() {
+            panic!("{}", ERR_EMPTY_NAME)
         }
-    } else {
-        panic!("{}", ERR_ACCESS_CONFIG)
+
+        log!(format!(
+            "Adding widget '{identifier}' with alignment '{widget_alignment}'!",
+        ));
+
+        // Add the widget.
+        add_widget(
+            json,
+            (widget_type, &widget_name),
+            base_keys,
+            identifier,
+            None,
+            config,
+        )
     }
 }
 
@@ -169,6 +169,7 @@ pub fn add_widget(
     base_keys: BaseKeys,
     identifier: &str,
     box_holder: Option<&Box>,
+    config: &'static Config,
 ) {
     // Extract name and type.
     let (widget_type, widget_name) = widget_pkg;
@@ -196,6 +197,7 @@ pub fn add_widget(
                     key["update_anim"].as_str().unwrap_or("crossfade"),
                 ),
                 anim_duration: key["anim_duration"].as_u32().unwrap_or(250),
+                config,
             };
 
             label.add(widget_name, alignment, box_holder)
@@ -222,6 +224,7 @@ pub fn add_widget(
             let box_widget = BoxWidget {
                 width: key["width"].as_i32().unwrap_or_default(),
                 widgets: key["widgets"].to_owned(),
+                config,
             };
 
             box_widget.add(widget_name, alignment, box_holder)
@@ -233,7 +236,7 @@ pub fn add_widget(
 
             if let Ok(mut has_cava_started) = HAS_CAVA_STARTED.lock() {
                 if !*has_cava_started {
-                    cava::update_bars();
+                    cava::update_bars(config);
                     // Ensure it only calls update_bars once.
                     *has_cava_started = true
                 }

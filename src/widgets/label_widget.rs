@@ -1,8 +1,6 @@
 use crate::{
-    config,
-    constants::{
-        ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, ERR_WRONG_LABEL_RANIM, PROC_TARGET,
-    },
+    config::Config,
+    constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
     ui,
     utils::aliases::use_aliases,
     widget::{Align, HWidget},
@@ -31,13 +29,14 @@ pub struct LabelWidget {
     pub label: Label,
     pub listen: bool,
     pub revealer: Revealer,
-    pub update_anim: Option<RevealerTransitionType>,
+    pub update_anim: RevealerTransitionType,
     pub anim_duration: u32,
+    pub config: &'static Config,
 }
 
 /// 0.3.2: If `listen` is `true`, call this function and then set the label text-value
 ///   to that of `BUFFER`.
-fn begin_listen(cmd: String) {
+fn begin_listen(cmd: String, config: &'static Config) {
     task::spawn(async move {
         let mut child = Command::new(PROC_TARGET)
             .args(["-c", &cmd])
@@ -49,7 +48,7 @@ fn begin_listen(cmd: String) {
         let out = child.stdout.take().expect(ERR_TAKE_STDOUT);
 
         let mut reader = BufReader::new(out).lines();
-        let update_rate = config::get_update_rate();
+        let update_rate = config.get_update_rate();
         loop {
             *BUFFER.lock().unwrap() = reader
                 .next_line()
@@ -108,13 +107,15 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
     let mut text = take(&mut label_ref.text);
     let initial_text_len = text.len();
     let listen = take(&mut label_ref.listen);
-    let update_anim = take(&mut label_ref.update_anim).expect(ERR_WRONG_LABEL_RANIM);
+    let update_anim = label_ref.update_anim;
     let revealer = take(&mut label_ref.revealer);
     let anim_speed = take(&mut label_ref.anim_duration);
     let mut tick = move || {
         if !listen {
             // Remove content after the initial static text-value, assuming there was any static
             // text specified.
+            // This ensures that the static text-value is preserved, and that the command output is
+            // appended after it.
             if text.len() > initial_text_len {
                 text.drain(initial_text_len..text.len());
             }
@@ -171,21 +172,17 @@ impl HWidget for LabelWidget {
         self.label.set_markup(&self.text);
         self.label.set_tooltip_markup(Some(&self.tooltip));
         self.revealer.set_child(Some(&self.label));
-        self.revealer
-            .set_transition_type(self.update_anim.expect(ERR_WRONG_LABEL_RANIM));
+        self.revealer.set_transition_type(self.update_anim);
         ui::add_and_align(&self.revealer, align, box_holder);
 
         // 0.4.9: If the reveal_anim is unset, None or the label is static, then reveal instantly.
-        if self.update_anim.is_none()
-            || self.update_anim == Some(RevealerTransitionType::None)
-            || is_static
-        {
+        if self.update_anim == RevealerTransitionType::None || is_static {
             self.revealer.set_reveal_child(true);
         }
 
         if !is_static {
             if self.listen {
-                begin_listen(self.command.to_owned());
+                begin_listen(self.command.to_owned(), self.config);
             }
 
             self.start_loop();

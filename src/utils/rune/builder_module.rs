@@ -150,10 +150,20 @@ impl Builder {
 
     /// Changes the tooltip content of a `Widget`.
     pub fn set_tooltip(name: &str, content: &str, markup: bool) {
-        using_widget!(name, |widget: &Widget| if markup {
-            widget.set_tooltip_markup(Some(content))
+        let content = if content.is_empty() {
+            None
         } else {
-            widget.set_tooltip_text(Some(content))
+            Some(content)
+        };
+        using_widget!(name, |widget: &Widget| if markup {
+            widget.set_tooltip_markup(content);
+        } else {
+            widget.set_tooltip_text(content)
         });
+    }
+
+    /// Changes the opacity of a `Widget`.
+    pub fn set_opacity(name: &str, opacity: f64) {
+        using_widget!(name, |widget: &Widget| widget.set_opacity(opacity));
     }
 }

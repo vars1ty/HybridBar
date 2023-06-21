@@ -1,8 +1,8 @@
 use crate::{
+    config::Config,
     constants::{
-        ERR_ACCESS_CAVA_INSTANCES, ERR_PARSE_CAVA_UPDATE_RATE, ERR_UPDATE_RATE_TYPE,
-        HYBRID_ROOT_JSON, UPDATE_RATE_HASH, WARN_CAVA_NO_BARS_INSTANCE,
-        WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_MAIN, WARN_NO_TICK,
+        ERR_ACCESS_CAVA_INSTANCES, ERR_UPDATE_RATE_TYPE, HYBRID_ROOT_JSON, UPDATE_RATE_HASH,
+        WARN_CAVA_NO_BARS_INSTANCE, WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_MAIN, WARN_NO_TICK,
     },
     utils::cava::{self, HAS_CAVA_CRASHED},
     widget::HWidget,
@@ -12,12 +12,12 @@ use rune::Vm;
 use std::time::Duration;
 
 /// Updates dynamic bar content.
-pub fn update(vm: Option<Vm>) {
+pub fn update(vm: Option<Vm>, config: &'static Config) {
     if let Some(vm) = vm {
         start_script_loop(vm);
     }
 
-    start_cava_loop();
+    start_cava_loop(config);
 }
 
 /// Attempts to start the script loop.
@@ -42,7 +42,7 @@ fn start_script_loop(vm: Vm) {
 
     // If `UPDATE_RATE` is present, use the value from that constant.
     // If not (or the parsing fails), use 250.
-    let mut update_rate: u64 = 250;
+    let mut update_rate = 250u64;
     for (hash, value) in vm.unit().iter_constants() {
         if hash.to_string() != UPDATE_RATE_HASH {
             continue;
@@ -70,7 +70,7 @@ fn start_script_loop(vm: Vm) {
 }
 
 /// Attempts to start the Cava update loop.
-fn start_cava_loop() {
+fn start_cava_loop(config: &'static Config) {
     // Only start the cava loop if there are actually Cava widgets available.
     let widgets = cava::CAVA_INSTANCES
         .read()
@@ -82,11 +82,9 @@ fn start_cava_loop() {
     // Run the `update_cava` closure every x ms.
     glib::timeout_add_local(
         Duration::from_millis(
-            conf!(HYBRID_ROOT_JSON, "cava_update_rate", false, false)
-                .number
-                .unwrap_or_else(|| 1)
-                .try_into()
-                .expect(ERR_PARSE_CAVA_UPDATE_RATE),
+            config.read_config_raw()[HYBRID_ROOT_JSON]["cava_update_rate"]
+                .as_u64()
+                .unwrap_or(1),
         ),
         update_cava,
     );
@@ -94,14 +92,14 @@ fn start_cava_loop() {
 
 /// Updates all Cava widgets.
 fn update_cava() -> Continue {
-    if let Ok(ref bars) = cava::BARS.lock() {
+    if let Ok(bars) = cava::BARS.read() {
         // Loop through all Cava widget instances and sync the text.
         let widgets = cava::CAVA_INSTANCES
             .read()
             .expect(ERR_ACCESS_CAVA_INSTANCES);
         let widgets = widgets.iter();
         for widget in widgets {
-            widget.update_label_direct(bars);
+            widget.update_label_direct(&bars);
         }
 
         if let Ok(has_cava_crashed) = HAS_CAVA_CRASHED.read() {

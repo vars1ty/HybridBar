@@ -15,7 +15,7 @@ mod utils;
 mod widget;
 mod widgets;
 
-use crate::utils::rune::rune_script::RuneVM;
+use crate::{config::Config, utils::rune::rune_script::RuneVM};
 use constants::*;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;
@@ -27,13 +27,16 @@ use rune::Vm;
 use std::{fs::read_to_string, path::Path};
 
 /// Gets the anchors.
-fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
-    let expand_left = conf!(HYBRID_ROOT_JSON, "expand_left", true);
-    let expand_right = conf!(HYBRID_ROOT_JSON, "expand_right", true);
-
-    let pos = conf!(HYBRID_ROOT_JSON, "position", true, false)
-        .string
-        .unwrap_or_else(|| "Top".to_owned());
+fn get_anchors(config: &'static Config) -> [(gtk_layer_shell::Edge, bool); 4] {
+    let expand_left = config.read_config_raw()[HYBRID_ROOT_JSON]["expand_left"]
+        .as_bool()
+        .unwrap_or_default();
+    let expand_right = config.read_config_raw()[HYBRID_ROOT_JSON]["expand_right"]
+        .as_bool()
+        .unwrap_or_default();
+    let pos = config.read_config_raw()[HYBRID_ROOT_JSON]["position"]
+        .as_str()
+        .unwrap_or("Top");
 
     if !pos.eq_ignore_ascii_case("Top") && !pos.eq_ignore_ascii_case("Bottom") && !pos.is_empty() {
         panic!("{}", ERR_INVALID_POS)
@@ -49,19 +52,17 @@ fn get_anchors() -> [(gtk_layer_shell::Edge, bool); 4] {
 }
 
 /// Builds the Rune VM.
-fn build_vm() -> Vm {
-    RuneVM::create_vm(
-        &read_to_string(format!("{}main.rn", config::get_path())).expect(ERR_READING_MAIN_RN),
-    )
-    .unwrap()
+fn build_vm(config_dir: &str) -> Vm {
+    RuneVM::create_vm(&read_to_string(format!("{}main.rn", config_dir)).expect(ERR_READING_MAIN_RN))
+        .unwrap()
 }
 
 /// Initializes the status bar.
-fn activate(application: &Application) {
+fn activate(application: &Application, config: &'static Config) {
     // Create a normal GTK window however you like
     let window = ApplicationWindow::new(application);
     window.connect_screen_changed(set_visual);
-    window.connect_draw(draw);
+    window.connect_draw(move |_app, ctx| draw(_app, ctx, config));
 
     // Initialize layer shell before the window has been fully initialized.
     gtk_layer_shell::init_for_window(&window);
@@ -75,24 +76,24 @@ fn activate(application: &Application) {
     // Toggling this off may help some if they are in applications that have weird unicode text, which may mess with the bars scaling.
     gtk_layer_shell::auto_exclusive_zone_enable(&window);
 
-    for (anchor, state) in get_anchors() {
+    for (anchor, state) in get_anchors(config) {
         gtk_layer_shell::set_anchor(&window, anchor, state);
     }
 
     // Allows for specifing the namespace of the layer.
     // The default is "gtk-layer-shell" to not break existing configs.
-    let namespace = conf!(HYBRID_ROOT_JSON, "namespace", true, false)
-        .string
-        .unwrap_or_else(|| "gtk-layer-shell".to_owned());
+    let namespace = config.read_config_raw()[HYBRID_ROOT_JSON]["namespace"]
+        .as_str()
+        .unwrap_or("gtk-layer-shell");
 
-    gtk_layer_shell::set_namespace(&window, &namespace);
+    gtk_layer_shell::set_namespace(&window, namespace);
 
     // Initialize gdk::Display by default value, which is decided by the compositor.
     let display = Display::default().expect(ERR_GET_DISPLAY);
 
     // Loads the monitor variable from config, default is 0.
-    let config_monitor = conf!(HYBRID_ROOT_JSON, "monitor", false, false)
-        .number
+    let config_monitor = config.read_config_raw()[HYBRID_ROOT_JSON]["monitor"]
+        .as_i32()
         .unwrap_or_default();
 
     // Gets the actual gdk::Monitor from configured number.
@@ -105,27 +106,20 @@ fn activate(application: &Application) {
     window.set_app_paintable(true);
 
     // Build all the widgets.
-    ui::build_widgets(
-        &window,
-        if is_feature_active!("rune_vm") {
-            Some(build_vm())
-        } else {
-            None
-        },
-    );
+    ui::build_widgets(&window, Some(build_vm(config.get_path())), config);
     log!("Ready!");
 }
 
 /// Loads the CSS
-pub fn load_css() {
+pub fn load_css(config: &'static Config) {
     let provider = CssProvider::new();
     // 0.2.8: Allow for defining the name of the stylesheet to look up
-    let css_file = conf!(HYBRID_ROOT_JSON, "stylesheet", true, false)
-        .string
-        .unwrap_or_else(|| DEFAULT_CSS.to_owned());
+    let css_file = config.read_config_raw()[HYBRID_ROOT_JSON]["stylesheet"]
+        .as_str()
+        .unwrap_or(DEFAULT_CSS);
 
-    let mut css_path = config::get_path();
-    css_path.push_str(&css_file);
+    let mut css_path = config.get_path().to_owned();
+    css_path.push_str(css_file);
 
     if Path::new(&css_path).is_file() {
         provider
@@ -150,14 +144,16 @@ pub fn load_css() {
 #[no_mangle]
 #[tokio::main]
 async fn main() {
+    log!("Reading config...");
+    let config = std::boxed::Box::leak(std::boxed::Box::new(Config::init()));
     log!("Building application...");
     let application = Application::new(None, ApplicationFlags::default());
     log!("Loading CSS...");
-    application.connect_startup(|_| load_css());
+    application.connect_startup(|_| load_css(config));
     log!("Creating viewport...");
     // Activate the layer shell.
     application.connect_activate(|app| {
-        activate(app);
+        activate(app, config);
     });
 
     application.run();
@@ -189,14 +185,14 @@ fn get_background_float(cfg: &JsonValue, identifier: &str, from_255: bool) -> f6
 }
 
 /// Draws the window using a custom color and opacity.
-fn draw(_: &ApplicationWindow, ctx: &cairo::Context) -> Inhibit {
-    let cfg = config::CONFIG.read().unwrap();
+fn draw(_: &ApplicationWindow, ctx: &cairo::Context, config: &'static Config) -> Inhibit {
+    let cfg = config.read_config_raw();
 
     // Fetch config for the values.
-    let r = get_background_float(&cfg, "r", true);
-    let g = get_background_float(&cfg, "g", true);
-    let b = get_background_float(&cfg, "b", true);
-    let a = get_background_float(&cfg, "a", false);
+    let r = get_background_float(cfg, "r", true);
+    let g = get_background_float(cfg, "g", true);
+    let b = get_background_float(cfg, "b", true);
+    let a = get_background_float(cfg, "a", false);
 
     // Apply
     ctx.set_source_rgba(r, g, b, a);

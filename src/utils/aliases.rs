@@ -25,35 +25,29 @@ pub fn use_aliases(content: &str) -> String {
     }
 
     let mut content = content.to_owned();
-    if is_feature_active!("hyprland") {
-        let data = HyprlandData::get_data();
-        replace(&mut content, "%hl_workspace%", &data.workspace.to_string());
-        replace(&mut content, "%hl_window%", &data.window);
+    let data = HyprlandData::get_data();
+    replace(&mut content, "%hl_workspace%", &data.workspace.to_string());
+    replace(&mut content, "%hl_window%", &data.window);
+    if !has_alias_chars(&content) {
+        // Success
+        return content;
+    }
+
+    if let Some(info) = info::get_system_information() {
+        replace(&mut content, "%username%", &info.username);
+        replace(&mut content, "%hostname%", &info.hostname);
+        replace(&mut content, "%shell%", &info.shell);
+        replace(&mut content, "%kernel%", &info.kernel);
+        replace(&mut content, "%used_mem%", &info.used_mem);
+        replace(&mut content, "%distro_id%", &info.distro_id);
+        replace(&mut content, "%total_mem%", &info.total_mem);
+        replace(&mut content, "%cached_mem%", &info.cached_mem);
+        replace(&mut content, "%available_mem%", &info.available_mem);
+        replace(&mut content, "%distro%", &info.distro_name);
+        replace(&mut content, "%distro_build_id%", &info.distro_build_id);
         if !has_alias_chars(&content) {
             // Success
             return content;
-        }
-    }
-
-    if is_feature_active!("systemd") {
-        if let Some(info) = info::get_system_information() {
-            replace(&mut content, "%username%", &info.username);
-            replace(&mut content, "%hostname%", &info.hostname);
-            replace(&mut content, "%shell%", &info.shell);
-            replace(&mut content, "%kernel%", &info.kernel);
-            replace(&mut content, "%used_mem%", &info.used_mem);
-            replace(&mut content, "%distro_id%", &info.distro_id);
-            replace(&mut content, "%total_mem%", &info.total_mem);
-            replace(&mut content, "%cached_mem%", &info.cached_mem);
-            replace(&mut content, "%available_mem%", &info.available_mem);
-            replace(&mut content, "%distro%", &info.distro_name);
-            replace(&mut content, "%distro_build_id%", &info.distro_build_id);
-            if !has_alias_chars(&content) {
-                // Success
-                return content;
-            }
-        } else {
-            panic!("{}", ERR_NO_LXINFO);
         }
     }
 

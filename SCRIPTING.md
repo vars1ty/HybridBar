@@ -31,8 +31,8 @@ These functions are called automatically by Hybrid internally if found.
 - `Builder::set_button_text(name [&str], content [&str]) [()]` -> Changes the text content of a button.
 - `Builder::set_button_command(name [&str], shell_command [&str]) [()]` -> Changes the shell-command to be executed upon pressing the button.
 - `Builder::set_tooltip(name [&str], content [&str], markup [bool]) [()]` -> Changes the tooltip content of a widget.
-- `Builder::set_visible(name [&str], visible [bool]) -> [()]` -> Changes the labels visibility status.
-- `Builder::is_visible(name [&str]) -> [bool]` -> Checks whether or not the specified widget is visible.
+- `Builder::set_visible(name [&str], visible [bool]) [()]` -> Changes the widgets visibility status.
+- `Builder::is_visible(name [&str]) [bool]` -> Checks whether or not the specified widget is visible.
 
 ## Example
 ```rust

@@ -24,10 +24,6 @@ impl RuneVM {
         // Base core functions.
         module.function(["Hybrid", "execute"], HybridModule::execute)?;
         module.function(["Hybrid", "log"], HybridModule::log)?;
-        module.function(
-            ["Hybrid", "is_feature_active"],
-            HybridModule::is_feature_active,
-        )?;
         module.function(["Hybrid", "use_aliases"], HybridModule::use_aliases)?;
 
         // Widget-related functions.
@@ -43,18 +39,17 @@ impl RuneVM {
         module.function(["Builder", "is_visible"], Builder::is_visible)?;
         module.function(["Builder", "rename_widget"], Builder::rename_widget)?;
         module.function(["Builder", "set_tooltip"], Builder::set_tooltip)?;
+        module.function(["Builder", "set_opacity"], Builder::set_opacity)?;
 
         // Feature-related functions.
-        if is_feature_active!("hyprland") {
-            module.function(
-                ["Hyprland", "get_current_workspace"],
-                HyprlandData::get_current_workspace,
-            )?;
-            module.function(
-                ["Hyprland", "get_current_window"],
-                HyprlandData::get_current_window,
-            )?;
-        }
+        module.function(
+            ["Hyprland", "get_current_workspace"],
+            HyprlandData::get_current_workspace,
+        )?;
+        module.function(
+            ["Hyprland", "get_current_window"],
+            HyprlandData::get_current_window,
+        )?;
         Ok(module)
     }
 
