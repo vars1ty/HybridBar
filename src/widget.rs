@@ -1,3 +1,4 @@
+use crate::ui::UI;
 use gtk::Box;
 
 /// Widget alignment.
@@ -25,7 +26,7 @@ impl Align {
 /// Implements basic traits for custom user-defined widgets.
 pub trait HWidget {
     /// Invoked when the widget should be added.
-    fn add(self, name: &str, align: Align, box_holder: Option<&Box>);
+    fn add(self, ui: &UI, name: &str, align: Align, box_holder: Option<&Box>);
 
     /// Label Widget: Tells the label to update content to the specified new content.
     #[allow(unused_variables)]

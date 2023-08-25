@@ -1,7 +1,8 @@
 use crate::{
-    ui,
+    config::Config,
     utils::aliases::use_aliases,
     widget::{Align, HWidget},
+    UI,
 };
 use gtk::{glib::GString, traits::*, *};
 use std::{mem::take, time::Duration};
@@ -12,11 +13,12 @@ pub struct ButtonWidget {
     pub tooltip_command: String,
     pub command: String,
     pub button: Button,
+    pub config: &'static Config,
 }
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for ButtonWidget {
-    fn add(mut self, name: &str, align: Align, box_holder: Option<&Box>) {
+    fn add(mut self, ui: &UI, name: &str, align: Align, box_holder: Option<&Box>) {
         self.button.set_widget_name(name);
         // 0.2.8: Support tooltips for buttons
         self.button.set_tooltip_markup(Some(&self.tooltip));
@@ -33,7 +35,7 @@ impl HWidget for ButtonWidget {
             });
         }
 
-        ui::add_and_align(&self.button, align, box_holder);
+        ui.add_and_align(&self.button, align, box_holder);
         log!("Added a new button widget");
     }
 
@@ -41,10 +43,11 @@ impl HWidget for ButtonWidget {
         let button = self.button.clone();
         let tooltip = take(&mut self.tooltip);
         let tooltip_command = take(&mut self.tooltip_command);
+        let config = self.config;
         let tick = move || {
             let mut new_tooltip = String::default();
             new_tooltip.push_str(&tooltip);
-            new_tooltip.push_str(&use_aliases(&tooltip_command));
+            new_tooltip.push_str(&use_aliases(&tooltip_command, config));
 
             let tooltip_markup = button.tooltip_markup().unwrap_or_else(|| GString::from(""));
             if !tooltip_markup.eq(&new_tooltip) {

@@ -1,5 +1,5 @@
 # Features
-In 0.4.9 and higher, you may enable additional features in Hybrid Bar, including experimental ones.
+In 0.4.9 and higher, you may enable additional features in Hybrid Bar, including experimental ones, if any are available.
 
 The non-experimental features listed are usually disabled for a variety of reasons:
 - Compatibility concerns
@@ -11,29 +11,6 @@ The non-experimental features listed are usually disabled for a variety of reaso
 1. System Information via lxinfo (`systemd`)
    - Allows for calling aliases such as `%username%` which utilize libc calls over commands, which are typically faster
    - This is disabled by default because it relies on files such as `/etc/os-release` to be present on your system.
-2. Hyprland Support (`hyprland`)
+2. Hyprland Support (`Hyprland`)
    - Adds the `%hl_workspace%` and `%hl_window%` aliases.
    - Workspace gets the current workspace id, whereas Window gets the focused window title.
-
-## Experimental Features
-> **Warning**: Experimental features are under development. They may break, change or be removed entirely.
-
-1. Rune Scripting (`rune_vm`)
-   - Introduced in version `0.5.0`
-   - Adds scripting support for Hybrid which will be expanded upon in the future.
-   - To make it work, create a file called `main.rn` next to your `config.json` file.
-   - > **Warning**: Scripting is deemed as "unsafe" because the nature of GTK, **use at your own risk**.
-```rust
-/// Called every 250ms of the bars lifetime.
-pub fn tick() {
-    log("Tick! Hello from your custom script!");
-    // Let's add a new widget called "Awsome", here's the function parameters:
-    // Name, Content, Alignment (left, centered, right) 
-    Builder::add_label("Awesome", "Some text", "left");
-
-    // [...] - Widget added, now let's modify the text of the label to the output of the `date` shell-command.
-    let date = execute("date");
-    Builder::set_label_text("Awesome", date);
-    // - And done!
-}
-```

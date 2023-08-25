@@ -15,7 +15,7 @@ mod utils;
 mod widget;
 mod widgets;
 
-use crate::{config::Config, utils::rune::rune_script::RuneVM};
+use crate::{config::Config, ui::UI, utils::rune::rune_script::RuneVM};
 use constants::*;
 use gtk::gdk::*;
 use gtk::gio::ApplicationFlags;
@@ -52,13 +52,16 @@ fn get_anchors(config: &'static Config) -> [(gtk_layer_shell::Edge, bool); 4] {
 }
 
 /// Builds the Rune VM.
-fn build_vm(config_dir: &str) -> Vm {
-    RuneVM::create_vm(&read_to_string(format!("{}main.rn", config_dir)).expect(ERR_READING_MAIN_RN))
-        .unwrap()
+fn build_vm(ui: &'static UI, config_dir: &str) -> Vm {
+    RuneVM::create_vm(
+        ui,
+        &read_to_string(format!("{config_dir}main.rn")).expect(ERR_READING_MAIN_RN),
+    )
+    .unwrap()
 }
 
 /// Initializes the status bar.
-fn activate(application: &Application, config: &'static Config) {
+fn activate(ui: &'static UI, application: &Application, config: &'static Config) {
     // Create a normal GTK window however you like
     let window = ApplicationWindow::new(application);
     window.connect_screen_changed(set_visual);
@@ -106,7 +109,7 @@ fn activate(application: &Application, config: &'static Config) {
     window.set_app_paintable(true);
 
     // Build all the widgets.
-    ui::build_widgets(&window, Some(build_vm(config.get_path())), config);
+    ui.build_widgets(&window, Some(build_vm(ui, config.get_path())), config);
     log!("Ready!");
 }
 
@@ -151,9 +154,10 @@ async fn main() {
     log!("Loading CSS...");
     application.connect_startup(|_| load_css(config));
     log!("Creating viewport...");
+    let ui = std::boxed::Box::leak(std::boxed::Box::new(UI::init(config)));
     // Activate the layer shell.
     application.connect_activate(|app| {
-        activate(app, config);
+        activate(ui, app, config);
     });
 
     application.run();

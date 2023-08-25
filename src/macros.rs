@@ -27,23 +27,3 @@ macro_rules! execute {
         result
     }};
 }
-
-#[macro_export]
-/// Restarts the given `Revealer` and plays the given animation after the `after` closure has
-/// finished.
-macro_rules! restart_revealer {
-    ($revealer:expr, $after:expr, $anim:expr, $speed:expr) => {
-        if $anim == RevealerTransitionType::None {
-            // No transition, skip full restart and instead just call directly.
-            $after();
-        } else {
-            $revealer.set_transition_duration(0);
-            $revealer.set_reveal_child(false);
-            $revealer.set_transition_type(RevealerTransitionType::None);
-            $after();
-            $revealer.set_transition_duration($speed);
-            $revealer.set_transition_type($anim);
-            $revealer.set_reveal_child(true);
-        }
-    };
-}

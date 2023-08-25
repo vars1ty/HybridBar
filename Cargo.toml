@@ -6,25 +6,26 @@ readme = "README.md"
 repository = "https://github.com/vars1ty/HybridBar"
 keywords = [ "hyprland", "wayland", "status-bar", "gtk-layer-shell", "linux" ]
 categories = [ "rendering", "gui" ]
-version = "0.4.9"
+version = "0.5.0"
 edition = "2021"
 license = "MIT"
 
 [dependencies]
-tokio = { version = "1.28.2", features = [ "full" ] }
 gtk-layer-shell = "0.6.1"
+parking_lot = "0.12.1"
 lazy_static = "1.4.0"
-smallvec = "1.10.0"
-hyprland = "0.3.3"
+smallvec = "1.11.0"
+hyprland = "0.3.9"
 lxinfo = "0.1.2"
-rune = "0.12.3"
-glib = "0.17.9"
+tokio = "1.32.0"
+rune = "0.12.4"
+glib = "0.18.1"
 json = "0.12.4"
 gtk = "0.17.1"
 
 [profile.release]
 codegen-units = 1
 panic = "abort"
-opt-level = "z"
+opt-level = "s"
 strip = true
 lto = "fat"

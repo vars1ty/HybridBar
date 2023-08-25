@@ -1,4 +1,4 @@
-use crate::utils::aliases;
+use crate::{config::Config, utils::aliases};
 
 /// The Hybrid module, providing functionalities such as `Hybrid::execute(cmd)`.
 pub struct HybridModule;
@@ -15,7 +15,7 @@ impl HybridModule {
     }
 
     /// Checks for aliases in `content`, then replaces them with their real values.
-    pub fn use_aliases(content: &str) -> String {
-        aliases::use_aliases(content)
+    pub fn use_aliases(content: &str, config: &'static Config) -> String {
+        aliases::use_aliases(content, config)
     }
 }

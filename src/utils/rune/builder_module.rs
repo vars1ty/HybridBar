@@ -1,6 +1,6 @@
-use crate::{ui, widget::Align};
-use glib::Cast;
+use crate::{widget::Align, UI};
 use gtk::{traits::*, Button, Label, Widget};
+use gtk::prelude::Cast;
 use rune::Any;
 use smallvec::SmallVec;
 use std::sync::Mutex;
@@ -86,10 +86,10 @@ pub struct Builder;
 
 impl Builder {
     /// Adds a new label widget.
-    pub fn add_label(name: &str, content: &str, alignment: &str) {
+    pub fn add_label(ui: &UI, name: &str, content: &str, alignment: &str) {
         let label = Label::new(Some(content));
         label.set_widget_name(name);
-        ui::add_and_align(&label, Align::from_str(alignment).unwrap(), None);
+        ui.add_and_align(&label, Align::from_str(alignment).unwrap(), None);
         label.show();
         add_widget!(name.to_owned(), label);
         log!(format!(
@@ -98,10 +98,10 @@ impl Builder {
     }
 
     /// Adds a new button widget.
-    pub fn add_button(name: &str, content: &str, alignment: &str) {
+    pub fn add_button(ui: &UI, name: &str, content: &str, alignment: &str) {
         let button = Button::with_label(content);
         button.set_widget_name(name);
-        ui::add_and_align(&button, Align::from_str(alignment).unwrap(), None);
+        ui.add_and_align(&button, Align::from_str(alignment).unwrap(), None);
         button.show();
         add_widget!(name.to_owned(), button);
         log!(format!(

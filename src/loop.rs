@@ -1,13 +1,13 @@
 use crate::{
     config::Config,
     constants::{
-        ERR_ACCESS_CAVA_INSTANCES, ERR_UPDATE_RATE_TYPE, HYBRID_ROOT_JSON, UPDATE_RATE_HASH,
-        WARN_CAVA_NO_BARS_INSTANCE, WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_MAIN, WARN_NO_TICK,
+        ERR_UPDATE_RATE_TYPE, HYBRID_ROOT_JSON, UPDATE_RATE_HASH, WARN_CAVA_NO_BARS_INSTANCE,
+        WARN_CAVA_NO_CRASHED_INSTANCE, WARN_NO_MAIN, WARN_NO_TICK,
     },
     utils::cava::{self, HAS_CAVA_CRASHED},
     widget::HWidget,
 };
-use glib::Continue;
+use glib::ControlFlow::{self, *};
 use rune::Vm;
 use std::time::Duration;
 
@@ -65,16 +65,14 @@ fn start_script_loop(vm: Vm) {
             panic!("[ERROR] [RUNE]: Calling `tick` resulted in an error: {kind:?}");
         }
 
-        glib::Continue(true)
+        Continue
     });
 }
 
 /// Attempts to start the Cava update loop.
 fn start_cava_loop(config: &'static Config) {
     // Only start the cava loop if there are actually Cava widgets available.
-    let widgets = cava::CAVA_INSTANCES
-        .read()
-        .expect(ERR_ACCESS_CAVA_INSTANCES);
+    let widgets = cava::CAVA_INSTANCES.read();
     if widgets.is_empty() {
         return;
     }
@@ -91,25 +89,27 @@ fn start_cava_loop(config: &'static Config) {
 }
 
 /// Updates all Cava widgets.
-fn update_cava() -> Continue {
-    if let Ok(bars) = cava::BARS.read() {
+fn update_cava() -> ControlFlow {
+    if let Some(bars) = cava::BARS.try_read() {
         // Loop through all Cava widget instances and sync the text.
-        let widgets = cava::CAVA_INSTANCES
-            .read()
-            .expect(ERR_ACCESS_CAVA_INSTANCES);
+        let widgets = cava::CAVA_INSTANCES.read();
         let widgets = widgets.iter();
         for widget in widgets {
             widget.update_label_direct(&bars);
         }
 
-        if let Ok(has_cava_crashed) = HAS_CAVA_CRASHED.read() {
-            glib::Continue(!*has_cava_crashed)
+        if let Some(has_cava_crashed) = HAS_CAVA_CRASHED.try_read() {
+            if !*has_cava_crashed {
+                Continue
+            } else {
+                Break
+            }
         } else {
             log!(WARN_CAVA_NO_CRASHED_INSTANCE);
-            glib::Continue(false)
+            Break
         }
     } else {
         log!(WARN_CAVA_NO_BARS_INSTANCE);
-        glib::Continue(false)
+        Break
     }
 }

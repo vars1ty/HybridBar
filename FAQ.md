@@ -63,3 +63,7 @@
   - **Available since 0.4.9**
   - Create a key named `features` in `hybrid`, then specify what features you want. For example:
   - `"features": ["tray_experimental", "hyprland]`
+
+- Why not GTK4?
+  - Because it removed support for transparent windows (unless you make everything transparent).
+  - Plus I don't see any benefit of using GTK4 over GTK3, when it doesn't have anything that's really needed.

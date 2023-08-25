@@ -1,10 +1,7 @@
 use crate::{config::Config, constants::*, widgets::cava_widget::CavaWidget};
+use parking_lot::RwLock;
 use smallvec::SmallVec;
-use std::{
-    fs::write,
-    process::Stdio,
-    sync::{Mutex, RwLock},
-};
+use std::{fs::write, process::Stdio, sync::Mutex};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -89,7 +86,7 @@ pub fn update_bars(config: &'static Config) {
                 .unwrap_or_else(|_| on_cava_crashed())
                 .unwrap_or_else(|| on_cava_crashed());
 
-            if let Ok(mut w_bars) = BARS.write() {
+            if let Some(mut w_bars) = BARS.try_write() {
                 *w_bars = bars;
             }
         }
@@ -98,7 +95,7 @@ pub fn update_bars(config: &'static Config) {
 
 /// Called when Cava has crashed.
 fn on_cava_crashed() -> ! {
-    *HAS_CAVA_CRASHED.write().unwrap() = true;
-    BARS.write().unwrap().clear();
+    *HAS_CAVA_CRASHED.write() = true;
+    BARS.write().clear();
     panic!("{}", WARN_CAVA_NO_LINES)
 }

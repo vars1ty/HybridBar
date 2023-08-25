@@ -1,6 +1,6 @@
 use crate::{
-    ui,
     widget::{Align, HWidget},
+    UI,
 };
 use gtk::{traits::*, *};
 
@@ -12,14 +12,14 @@ pub struct SpacingWidget {
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for SpacingWidget {
-    fn add(self, name: &str, align: Align, box_holder: Option<&Box>) {
+    fn add(self, ui: &UI, name: &str, align: Align, box_holder: Option<&Box>) {
         let widget = Box::new(Orientation::Horizontal, 0);
         // 0.2.2: Allow for named spacings
         widget.set_widget_name(name);
         widget.set_margin_start(self.spacing_start);
         widget.set_margin_end(self.spacing_end);
 
-        ui::add_and_align(&widget, align, box_holder);
+        ui.add_and_align(&widget, align, box_holder);
         log!("Added a new spacing widget");
     }
 }

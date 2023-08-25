@@ -1,8 +1,7 @@
 use crate::{
-    constants::ERR_ACCESS_CAVA_INSTANCES,
-    ui,
     utils::cava,
     widget::{Align, HWidget},
+    UI,
 };
 use gtk::{traits::*, *};
 
@@ -17,13 +16,10 @@ unsafe impl Sync for CavaWidget {}
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for CavaWidget {
-    fn add(self, name: &str, align: Align, box_holder: Option<&Box>) {
+    fn add(self, ui: &UI, name: &str, align: Align, box_holder: Option<&Box>) {
         self.label.set_widget_name(name);
-        ui::add_and_align(&self.label, align, box_holder);
-        cava::CAVA_INSTANCES
-            .write()
-            .expect(ERR_ACCESS_CAVA_INSTANCES)
-            .push(self);
+        ui.add_and_align(&self.label, align, box_holder);
+        cava::CAVA_INSTANCES.write().push(self);
     }
 
     fn update_label_direct(&self, new_content: &str) {

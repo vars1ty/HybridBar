@@ -1,9 +1,9 @@
 use crate::{
     config::Config,
     constants::{ERR_NO_LINES, ERR_STRING_NONE, ERR_TAKE_STDOUT, PROC_TARGET},
-    ui,
-    utils::aliases::use_aliases,
+    utils::{aliases::use_aliases, ui_utils::UIUtils},
     widget::{Align, HWidget},
+    UI,
 };
 use gtk::{glib::GString, traits::*, *};
 use std::{mem::take, process::Stdio, sync::Mutex, time::Duration};
@@ -72,6 +72,7 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
     let mut tooltip = take(&mut label_ref.tooltip);
     let initial_tooltip_len = tooltip.len();
     let tooltip_command = take(&mut label_ref.tooltip_command);
+    let config = label_ref.config;
     let mut tick = move || {
         // Remove content after the initial static text-value, assuming there was any static
         // text specified.
@@ -79,7 +80,7 @@ fn start_tooltip_loop(label_ref: &mut LabelWidget) {
             tooltip.drain(initial_tooltip_len..tooltip.len());
         }
 
-        tooltip.push_str(&use_aliases(&tooltip_command));
+        tooltip.push_str(&use_aliases(&tooltip_command, config));
 
         let tooltip_markup = label.tooltip_markup().unwrap_or_else(|| GString::from(""));
         if !tooltip_markup.eq(&tooltip) {
@@ -110,6 +111,7 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
     let update_anim = label_ref.update_anim;
     let revealer = take(&mut label_ref.revealer);
     let anim_speed = take(&mut label_ref.anim_duration);
+    let config = label_ref.config;
     let mut tick = move || {
         if !listen {
             // Remove content after the initial static text-value, assuming there was any static
@@ -120,10 +122,12 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
                 text.drain(initial_text_len..text.len());
             }
 
-            text.push_str(&use_aliases(&command));
+            text.push_str(&use_aliases(&command, config));
 
             if !label.text().eq(&text) {
-                restart_revealer!(revealer, || label.set_text(&text), update_anim, anim_speed);
+                UIUtils::restart_revealer(&revealer, update_anim, anim_speed, || {
+                    label.set_text(&text)
+                });
             }
         } else {
             update_from_buffer(&label, &revealer, update_anim, anim_speed);
@@ -143,19 +147,18 @@ fn update_from_buffer(
     update_anim: RevealerTransitionType,
     anim_speed: u32,
 ) {
-    if let Ok(new_content) = BUFFER.lock() {
+    if let Ok(mut new_content) = BUFFER.lock() {
         let old_content = label.text();
         // eq-check the new content for old_content. Doing the opposite requires a .to_string()
         // call.
         if !new_content.eq(&old_content) {
             // Not the same; set content and redraw.
-            restart_revealer!(
-                revealer,
-                || label.set_text(&new_content),
-                update_anim,
-                anim_speed
-            );
+            UIUtils::restart_revealer(revealer, update_anim, anim_speed, || {
+                label.set_text(&new_content)
+            });
         }
+
+        new_content.clear();
     } else {
         log!(format!(
             "[WARN] Failed retrieving content from BUFFER for label '{}'!",
@@ -166,14 +169,14 @@ fn update_from_buffer(
 
 // Implements HWidget for the widget so that we can actually use it.
 impl HWidget for LabelWidget {
-    fn add(mut self, name: &str, align: Align, box_holder: Option<&Box>) {
+    fn add(mut self, ui: &UI, name: &str, align: Align, box_holder: Option<&Box>) {
         let is_static = self.command.is_empty() || self.update_rate == 0;
         self.label.set_widget_name(name);
         self.label.set_markup(&self.text);
         self.label.set_tooltip_markup(Some(&self.tooltip));
         self.revealer.set_child(Some(&self.label));
         self.revealer.set_transition_type(self.update_anim);
-        ui::add_and_align(&self.revealer, align, box_holder);
+        ui.add_and_align(&self.revealer, align, box_holder);
 
         // 0.4.9: If the reveal_anim is unset, None or the label is static, then reveal instantly.
         if self.update_anim == RevealerTransitionType::None || is_static {

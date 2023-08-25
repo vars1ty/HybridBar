@@ -12,6 +12,12 @@ pub struct Config {
 
     /// Update Frequency for dynamic widgets.
     update_rate: u64,
+
+    /// Custom user-defined variables.
+    variables: HashMap<String, String>,
+
+    /// Explicitly enabled/disabled features.
+    features: HashMap<String, bool>,
 }
 
 impl Config {
@@ -36,13 +42,18 @@ impl Config {
         // Get update-rate.
         let update_rate = config_data[HYBRID_ROOT_JSON]["update_rate"]
             .as_u64()
-            .unwrap_or_else(|| 100)
+            .unwrap_or(100)
             .clamp(5, 10_000);
+
+        let variables = Self::get_custom_variables_raw(&config_data);
+        let features = Self::get_features_raw(&config_data);
 
         Self {
             path: Box::leak(Box::new(path)),
             config_data,
-            update_rate: update_rate.try_into().expect(ERR_PARSE_UPDATE_RATE),
+            update_rate,
+            variables,
+            features,
         }
     }
 
@@ -61,18 +72,36 @@ impl Config {
         &self.config_data
     }
 
-    /// Gets all the custom variables.
-    pub fn get_custom_variables(&self) -> HashMap<String, String> {
-        // TODO(varsity): Cache the variables so there's no need to create a new HashMap<> and
-        // iterate over all the entries every time.
-
-        let cfg = &self.config_data[HYBRID_V_ROOT_JSON];
-        let mut map: HashMap<String, String> = HashMap::new();
+    /// Gets all the user-defined variables without using the cache.
+    fn get_custom_variables_raw(config_data: &JsonValue) -> HashMap<String, String> {
+        let cfg = &config_data[HYBRID_V_ROOT_JSON];
+        let mut map = HashMap::new();
         for entry in cfg.entries() {
             map.insert(entry.0.to_owned(), entry.1.to_string());
         }
 
         map
+    }
+
+    /// Gets the features without using the cache.
+    fn get_features_raw(config_data: &JsonValue) -> HashMap<String, bool> {
+        let cfg = &config_data[HYBRID_ROOT_JSON][HYBRID_F_ROOT_JSON];
+        let mut map = HashMap::new();
+        for entry in cfg.members() {
+            map.insert(entry.to_string(), true);
+        }
+
+        map
+    }
+
+    /// Gets all the user-defined variables.
+    pub fn get_custom_variables(&self) -> &HashMap<String, String> {
+        &self.variables
+    }
+
+    /// Checks if the given feature is active or not.
+    pub fn is_feature_active(&self, feature: &str) -> bool {
+        *self.features.get(feature).unwrap_or(&false)
     }
 
     /// Replaces any variable-matching patterns in the `String` with the variables value.
@@ -83,10 +112,7 @@ impl Config {
     ) -> String {
         let mut input = input;
         for variable in custom_variables {
-            // Only replace if `result` actually contains the defined variable.
-            if input.contains(variable.0) {
-                input = input.replace(variable.0, variable.1);
-            }
+            input = input.replace(variable.0, variable.1);
         }
 
         input
