@@ -21,7 +21,7 @@ tokio = "1.32.0"
 rune = "0.12.4"
 glib = "0.18.1"
 json = "0.12.4"
-gtk = "0.17.1"
+gtk = "0.17.1" # Locked due to gtk-layer-shell
 
 [profile.release]
 codegen-units = 1

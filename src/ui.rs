@@ -249,7 +249,6 @@ impl UI {
                 let box_widget = BoxWidget {
                     width: key["width"].as_i32().unwrap_or_default(),
                     widgets: key["widgets"].to_owned(),
-                    config,
                 };
 
                 box_widget.add(self, widget_name, alignment, box_holder)

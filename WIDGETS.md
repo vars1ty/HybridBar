@@ -91,7 +91,7 @@ Every widget **has** to contain an underscore (`_`) after the type, then you add
 
 If you don't specify a name for the widget after the underscore, the bar will crash and say that discarded names aren't supported.
 
-**NOTE**: Widgets with the same name (regardless of type) aren't officially supported and may suffer from weird behavior.
+**NOTE**: Widgets with the same name (regardless of type) aren't supported and may suffer from weird behavior.
 
 The `text` and `command` nested JSON keys are simply described as:
 - text: Raw Label Text

@@ -13,7 +13,6 @@ use smallvec::SmallVec;
 pub struct BoxWidget {
     pub width: i32,
     pub widgets: JsonValue,
-    pub config: &'static Config,
 }
 
 /// Builds the child widgets.
@@ -71,7 +70,7 @@ impl HWidget for BoxWidget {
         // 0.4.3: Experimental: Allow for widgets enclosed into boxes.
         // 0.4.7: Stabilize Box Child-Widgets.
         if !self.widgets.is_null() {
-            build_child_widgets(ui, self.widgets, &widget, self.config)
+            build_child_widgets(ui, self.widgets, &widget, ui.get_config())
         }
 
         ui.add_and_align(&widget, align, box_holder);

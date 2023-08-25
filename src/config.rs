@@ -67,7 +67,7 @@ impl Config {
         self.update_rate
     }
 
-    /// Returns the config.
+    /// Returns the config as a `JsonValue`.
     pub fn read_config_raw(&self) -> &JsonValue {
         &self.config_data
     }
