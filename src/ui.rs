@@ -98,15 +98,9 @@ impl UI {
         root: &JsonValue,
         config: &'static Config,
     ) -> (String, String, u64, String, String) {
-        let custom_variables = &config.get_custom_variables();
-        let text = config.with_variables(
-            root["text"].as_str().unwrap_or_default().to_owned(),
-            custom_variables,
-        );
-        let command = config.with_variables(
-            root["command"].as_str().unwrap_or_default().to_owned(),
-            custom_variables,
-        );
+        let text = config.with_variables(root["text"].as_str().unwrap_or_default().to_owned());
+        let command =
+            config.with_variables(root["command"].as_str().unwrap_or_default().to_owned());
         let update_rate: u64 = root["update_rate"]
             .as_i32()
             .unwrap_or(100)
@@ -114,16 +108,13 @@ impl UI {
             .unwrap_or_else(|_| {
                 panic!("[ERROR] Couldn't convert update_rate to u64! Source: {root}")
             });
-        let tooltip = config.with_variables(
-            root["tooltip"].as_str().unwrap_or_default().to_owned(),
-            custom_variables,
-        );
+        let tooltip =
+            config.with_variables(root["tooltip"].as_str().unwrap_or_default().to_owned());
         let tooltip_command = config.with_variables(
             root["tooltip_command"]
                 .as_str()
                 .unwrap_or_default()
                 .to_owned(),
-            custom_variables,
         );
         (text, command, update_rate, tooltip, tooltip_command)
     }

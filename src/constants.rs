@@ -20,10 +20,6 @@ pub const UPDATE_RATE_HASH: &str = "0x578fa6af41cafefe";
 
 // Constant errors.
 
-pub const ERR_PARSE_CAVA_UPDATE_RATE: &str =
-    "[ERROR] hybrid:cava_update_rate couldn't be parsed into a 64-bit unsigned integer (u64)!";
-pub const ERR_PARSE_UPDATE_RATE: &str = "[ERROR] Cannot convert update_rate into u64!";
-pub const ERR_ACCESS_CAVA_INSTANCES: &str = "[ERROR] Couldn't access ui::CAVA_INSTANCES!";
 pub const ERR_INVALID_POS: &str =
     "[ERROR] Invalid position! Values: [ TOP, BOTTOM ] - casing doesn't matter.";
 pub const ERR_GET_DISPLAY: &str =
@@ -42,13 +38,8 @@ pub const ERR_INVALID_ALIGNMENT: &str =
 pub const ERR_TAKE_STDOUT: &str = "[ERROR] Cannot take stdout from child process!";
 pub const ERR_NO_LINES: &str = "[ERROR] There are no more lines available!";
 pub const ERR_STRING_NONE: &str = "[ERROR] The string value is None!";
-pub const ERR_NO_LXINFO: &str =
-    "System Info isn't available for this system, therefore aliases have been disabled.";
 pub const ERR_WRITE_TMP_CONF: &str = "[ERROR] Failed writing to the temporary Cava config!";
 pub const ERR_START_CAVA: &str = "[ERROR] Cannot start Cava script!";
-pub const ERR_ACCESS_CONFIG: &str = "[ERROR] Couldn't access CONFIG!";
-pub const ERR_WRONG_LABEL_RANIM: &str =
-    "[ERROR] Invalid revealer animation! Use `crossfade`, `slide_left` or `slide_right`.";
 pub const ERR_READING_MAIN_RN: &str = "[ERROR] Couldn't find (or failed reading) main.rn!";
 pub const ERR_UPDATE_RATE_TYPE: &str =
     "[ERROR] The `UPDATE_RATE` constant has to be a valid number!";

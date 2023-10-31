@@ -105,12 +105,9 @@ impl Config {
     }
 
     /// Replaces any variable-matching patterns in the `String` with the variables value.
-    pub fn with_variables(
-        &self,
-        input: String,
-        custom_variables: &HashMap<String, String>,
-    ) -> String {
+    pub fn with_variables(&self, input: String) -> String {
         let mut input = input;
+        let custom_variables = self.get_custom_variables();
         for variable in custom_variables {
             input = input.replace(variable.0, variable.1);
         }
