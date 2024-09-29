@@ -108,7 +108,7 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
     let update_anim = take(&mut label_ref.update_anim).expect(ERR_WRONG_LABEL_RANIM);
     let revealer = take(&mut label_ref.revealer);
 
-    if !command.is_empty() {
+    if !command.is_empty() && update_rate <= 500 {
         update_rate = 500;
     }
 
@@ -116,17 +116,14 @@ fn start_label_loop(label_ref: &mut LabelWidget) {
         // Not eligible, cancel.
         return;
     }
+    println!("{}", update_rate);
 
     // INFO: This is just to update the animation speed for less not showing due to animation
     // I've experienced some issue that I want to update the result everytime, that's why I added
     // this, you may also check my configuration thou.
-    if update_anim == RevealerTransitionType::Crossfade && update_rate > 250 && update_rate <= 0 && anim_speed > 250 {
+    if update_anim == RevealerTransitionType::Crossfade && update_rate <= 500 && update_rate >= 0 && anim_speed >= 250 {
         if update_rate <= u32::MAX as u64 {
-            if update_rate > 10{
-                anim_speed = update_rate as u32;
-            }else{
-                anim_speed = 0;
-            }
+            anim_speed = 0;
         }
     }
 
