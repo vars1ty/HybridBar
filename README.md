@@ -1,6 +1,11 @@
 # Hybrid Bar
 A simple status bar focused on wlroots Wayland compositors
 
+## ⚠️ Project Ended
+Hybrid Bar har been ended as the codebase is too messy and lack of interest on maintaining it.
+
+You are free to fork the project and continue it on your own, if you want a potential future alternative: [Crisp](https://github.com/vars1ty/Crisp).
+
 ## Preview
 With blur through Hyprland.
 ![image](https://user-images.githubusercontent.com/54314240/197680577-2bc0cff4-2438-4c8d-8428-11499d0519c6.png)
